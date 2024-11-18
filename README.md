@@ -17,10 +17,7 @@ for use with [jupyterhub-kubespawner](https://github.com/jupyterhub/kubespawner)
 
 ## Limitations
 
-1. While multiple `profile_options` are supported, only a single `profile` is
-   supported.
-
-2. The forms values don't remember their previous state upon refresh
+1. The forms values don't remember their previous state upon refresh
 
 ## How to use
 
