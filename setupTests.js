@@ -225,11 +225,11 @@ window.profileList = [
     slug: "empty-options",
     description: "Profile with empty options",
     display_name: "Empty Options",
-    profile_options: {}
+    profile_options: {},
   },
   {
     slug: "no-options",
     description: "Profile with no options",
-    display_name: "No Options"
+    display_name: "No Options",
   },
 ];
