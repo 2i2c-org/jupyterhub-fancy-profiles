@@ -234,4 +234,22 @@ describe("Profile form with URL Params", () => {
     expect(screen.getByLabelText("Repository").value).toEqual("org/repo");
     expect(screen.getByLabelText("Git Ref").value).toEqual("v1.0");
   });
+
+  test("no-option profiles are rendered", () => {
+    render(
+      <SpawnerFormProvider>
+        <ProfileForm />
+      </SpawnerFormProvider>,
+    );
+
+    const empty = screen.queryByRole("radio", {
+      name: "Empty Options Profile with empty options",
+    });
+    expect(empty).toBeInTheDocument();
+
+    const noObject = screen.queryByRole("radio", {
+      name: "No Options Profile with no options",
+    });
+    expect(noObject).toBeInTheDocument();
+  });
 });
