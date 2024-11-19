@@ -38,23 +38,6 @@
   margin: 0 !important;
 }
 
-.profile-option-container {
-  display: grid;
-  grid-template-columns: 10rem minmax(0, 1fr);
-  gap: 1rem;
-  margin-bottom: 2rem;
-  width: 100%;
-}
-
-.profile-option-label-container {
-  grid-column-start: 1;
-  align-self: center;
-}
-
-.profile-option-control-container {
-  grid-column-start: 2;
-}
-
 .selected-profile {
   background-color: #f8f8f8;
 }
@@ -70,6 +53,7 @@
   background-color: black;
   padding: 16px;
 }
+
 .profile-option-control-container input[type="text"] {
   width: 100%;
   /* 8px here, even though we only use 4px for .react-select-item-container.
