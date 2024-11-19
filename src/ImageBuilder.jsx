@@ -67,6 +67,7 @@ function ImageLogs({ setTerm, setFitAddon, name }) {
         rows: 1,
         // Increase scrollback since image builds can sometimes produce a ton of output
         scrollback: 10000,
+        // colors checked with the contrast checker at https://webaim.org/resources/contrastchecker/
         theme: {
           red: "\x1b[38;2;248;113;133m",
           green: "\x1b[38;2;134;239;172m",
