@@ -8,7 +8,8 @@
   "scripts": {
     "webpack": "webpack",
     "webpack:watch": "webpack --watch",
-    "test": "jest"
+    "test": "jest",
+    "lint": "eslint 'src/**/*.js' 'src/**/*.jsx'"
   },
   "dependencies": {
     "@jupyterhub/binderhub-client": "0.4.0",
@@ -41,10 +42,11 @@
     "babel-jest": "^29.7.0",
     "babel-loader": "^8.2.1",
     "css-loader": "^6.7.3",
-    "eslint": "^8.49.0",
-    "eslint-plugin-prettier": "^5.0.0",
-    "eslint-plugin-react": "^7.33.2",
-    "eslint-plugin-unused-imports": "^3.0.0",
+    "eslint": "^9.14.0",
+    "eslint-plugin-prettier": "^5.2.1",
+    "eslint-plugin-react": "^7.37.2",
+    "eslint-plugin-unused-imports": "^4.1.4",
+    "globals": "^14.0.0",
     "identity-obj-proxy": "^3.0.0",
     "jest": "^29.7.0",
     "jest-environment-jsdom": "^29.7.0",
