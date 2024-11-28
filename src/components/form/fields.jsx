@@ -21,11 +21,13 @@ function validateField(value, validateConfig, touched) {
 
 function Field({ id, label, hint, children, error }) {
   return (
-    <div className={`profile-option-container ${error ? "has-error" : ""}`}>
-      <div className="profile-option-label-container">
-        <label htmlFor={id}>{label}</label>
+    <div className={`row mb-4 align-items-center ${error ? "has-error" : ""}`}>
+      <div className="col-sm-12 col-xl-3">
+        <label className="form-label" htmlFor={id}>
+          {label}
+        </label>
       </div>
-      <div className="profile-option-control-container">
+      <div className="col-sm-12 col-xl-9">
         {children}
         {error && <div className="profile-option-control-error">{error}</div>}
         {hint && <div className="profile-option-control-hint">{hint}</div>}
@@ -88,6 +90,7 @@ function _TextField(
   return (
     <Field id={id} label={label} hint={hint} error={touched && error}>
       <input
+        className="form-control"
         ref={ref}
         type="text"
         id={id}

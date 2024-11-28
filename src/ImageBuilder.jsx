@@ -54,7 +54,10 @@ async function buildImage(repo, ref, term, fitAddon) {
 
 function ImageLogs({ setTerm, setFitAddon, name }) {
   const terminalId = `${name}--terminal`;
+  const observedElementRef = useRef(null);
+
   useEffect(() => {
+    let observer;
     async function setup() {
       const { Terminal } = await import("xterm");
       const { FitAddon } = await import("xterm-addon-fit");
@@ -84,12 +87,24 @@ function ImageLogs({ setTerm, setFitAddon, name }) {
       setTerm(term);
       setFitAddon(fitAddon);
       term.write("Logs will appear here when image is being built");
+
+      if (observedElementRef.current) {
+        observer = new ResizeObserver(() => {
+          console.log("resize");
+          fitAddon.fit();
+        });
+        observer.observe(observedElementRef.current);
+      }
     }
     setup();
+
+    return () => {
+      if (observer) observer.disconnect();
+    };
   }, []);
 
   return (
-    <div className="terminal-container">
+    <div className="terminal-container" ref={observedElementRef}>
       <div id={terminalId}></div>
     </div>
   );
@@ -156,21 +171,24 @@ export function ImageBuilder({ name, isActive }) {
   // don't generate the hidden input that posts the built image out.
   return (
     <>
-      <div className="profile-option-container">
-        <div className="profile-option-label-container">
-          <b>Provider</b>
+      <div className="row mb-4 align-items-center ">
+        <div className="col-sm-3">
+          <div className="form-label">Provider</div>
         </div>
-        <div className="profile-option-control-container">GitHub</div>
+        <div className="col-sm-9">GitHub</div>
       </div>
 
       <div
-        className={`profile-option-container ${repoError ? "has-error" : ""}`}
+        className={`row mb-4 align-items-center ${repoError ? "has-error" : ""}`}
       >
-        <div className="profile-option-label-container">
-          <label htmlFor="repo">Repository</label>
+        <div className="col-sm-12 col-xl-3">
+          <label htmlFor="repo" className="form-label">
+            Repository
+          </label>
         </div>
-        <div className="profile-option-control-container">
+        <div className="col-sm-12 col-xl-9">
           <input
+            className="form-control"
             id="repo"
             type="text"
             ref={repoFieldRef}
@@ -221,11 +239,11 @@ export function ImageBuilder({ name, isActive }) {
         }
         onChange={() => {}} // Hack to prevent a console error, while at the same time allowing for this field to be validatable, ie. not making it read-only
       />
-      <div className="profile-option-container">
-        <div className="profile-option-label-container">
-          <b>Build Logs</b>
+      <div className="row mb-4 align-items-center">
+        <div className="col-sm-12 col-xl-3">
+          <div className="form-label">Build Logs</div>
         </div>
-        <div className="profile-option-control-container">
+        <div className="col-sm-12 col-xl-9">
           <ImageLogs setFitAddon={setFitAddon} setTerm={setTerm} name={name} />
           {customImageError && (
             <div className="profile-option-control-error">
