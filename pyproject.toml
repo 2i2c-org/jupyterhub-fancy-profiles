@@ -23,3 +23,10 @@ version_file = "jupyterhub_fancy_profiles/_version.py"
 [tool.setuptools.packages.find]
 where = [""]
 include = ["jupyterhub_fancy_profiles*"]
+
+[tool.codespell]
+# Ref: https://github.com/codespell-project/codespell#using-a-config-file
+skip = '.git*,package-lock.json,*.css'
+check-hidden = true
+# ignore-regex = ''
+# ignore-words-list = ''

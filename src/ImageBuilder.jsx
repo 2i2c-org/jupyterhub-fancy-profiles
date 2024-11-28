@@ -150,7 +150,7 @@ export function ImageBuilder({ name, isActive }) {
       .finally(() => setIsBuildingImage(false));
   };
 
-  // We render everything, but only toggle visibility based on wether we are being
+  // We render everything, but only toggle visibility based on whether we are being
   // shown or hidden. This provides for more DOM stability, and also allows the image
   // to continue being built evn if the user moves away elsewhere. When hidden, we just
   // don't generate the hidden input that posts the built image out.

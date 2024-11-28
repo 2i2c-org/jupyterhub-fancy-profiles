@@ -75,7 +75,7 @@ The primary contents are:
    `HTML` for constructing the form itself. This can contain multiple templates
    that are composed together using all of jinja2's composition features (like `include`)
 2. `src/` contains JS and CSS that are packaged via standard frontend bundling
-   tools (`webpack` and `babel`), outputing assets into `jupyterhub_fancy_profiles/static/`.
+   tools (`webpack` and `babel`), outputting assets into `jupyterhub_fancy_profiles/static/`.
    This allows us to use _standard_ frontend tooling to write JS & CSS - for
    example, [xterm.js](http://xtermjs.org/) can be used without many complications.
 
