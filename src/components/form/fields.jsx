@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { forwardRef, useState } from "react";
 
 import { CustomizedSelect } from "./CustomSelect";
 
@@ -19,7 +19,7 @@ function validateField(value, validateConfig, touched) {
   return;
 }
 
-function Field({ id, label, children, error }) {
+function Field({ id, label, hint, children, error }) {
   return (
     <div className="profile-option-container">
       <div className="profile-option-label-container">
@@ -29,8 +29,8 @@ function Field({ id, label, children, error }) {
       </div>
       <div className="profile-option-control-container">
         {children}
-
         {error && <div className="invalid-feedback">{error}</div>}
+        {hint && <div className="profile-option-control-hint">{hint}</div>}
       </div>
     </div>
   );
@@ -39,6 +39,7 @@ function Field({ id, label, children, error }) {
 export function SelectField({
   id,
   label,
+  hint,
   options,
   defaultOption,
   onChange,
@@ -57,7 +58,7 @@ export function SelectField({
   );
 
   return (
-    <Field id={id} label={label} error={error}>
+    <Field id={id} label={label} hint={hint} error={error}>
       <CustomizedSelect
         options={options}
         id={id}
@@ -75,14 +76,10 @@ export function SelectField({
   );
 }
 
-export function TextField({
-  id,
-  label,
-  value,
-  validate = {},
-  onChange,
-  tabIndex,
-}) {
+function _TextField(
+  { id, label, value, hint, validate = {}, onChange, tabIndex },
+  ref,
+) {
   const [touched, setTouched] = useState(false);
   const onBlur = () => setTouched(true);
 
@@ -91,9 +88,10 @@ export function TextField({
   const error = validateField(value, validate, touched);
 
   return (
-    <Field id={id} label={label} error={touched && error}>
+    <Field id={id} label={label} hint={hint} error={touched && error}>
       <input
         className={`form-control ${error ? "is-invalid" : ""}`}
+        ref={ref}
         type="text"
         id={id}
         name={id}
@@ -109,3 +107,5 @@ export function TextField({
     </Field>
   );
 }
+
+export const TextField = forwardRef(_TextField);

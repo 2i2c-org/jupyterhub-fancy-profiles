@@ -67,8 +67,10 @@ but can be adapted to work with any other local kubernetes setup.
    username and password.
 
    ```bash
-   python -m jupyterhub
+   jupyterhub
    ```
+
+   **Troubleshooting:** On MacOS, if you're seeing the error `Errno 8: Nodename nor servname provided`, try running `jupyterhub --ip=localhost` instead.
 
 8. If you're working on the JS / CSS, you can also run the following command in another
    terminal to automatically watch and rebuild the JS / CSS as you edit.

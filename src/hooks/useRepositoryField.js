@@ -20,10 +20,9 @@ function extractOrgAndRepo(value) {
 }
 
 export default function useRepositoryField(defaultValue) {
-  const [value, setValue] = useState(defaultValue);
+  const [value, setValue] = useState(defaultValue || "");
   const [error, setError] = useState();
   const [repoId, setRepoId] = useState();
-  const [isValidating, setIsValidating] = useState(false);
 
   useEffect(() => {
     if (defaultValue) {
@@ -32,8 +31,7 @@ export default function useRepositoryField(defaultValue) {
     }
   }, [defaultValue]);
 
-  const validate = async () => {
-    setIsValidating(true);
+  const validate = () => {
     setError();
     const orgRepoString = extractOrgAndRepo(value);
 
@@ -41,28 +39,15 @@ export default function useRepositoryField(defaultValue) {
       setIsValidating(false);
       return "Provide the repository as the format 'organization/repository'.";
     }
-
-    const repoExists = await fetch(
-      `https://api.github.com/repos/${orgRepoString}`,
-      {
-        method: "HEAD",
-      },
-    )
-      .then((r) => r.ok)
-      .finally(() => setIsValidating(false));
-
-    if (!repoExists) {
-      return "The repository doesn't exist or is not public.";
-    }
   };
 
   const onChange = useCallback((e) => {
     setValue(e.target.value);
   }, []);
 
-  const onBlur = useCallback(async () => {
+  const onBlur = useCallback(() => {
     setRepoId();
-    const err = await validate();
+    const err = validate();
     if (err) {
       setError(err);
     } else {
@@ -74,7 +59,6 @@ export default function useRepositoryField(defaultValue) {
     repo: value,
     repoError: error,
     repoId,
-    repoIsValidating: isValidating,
     repoFieldProps: {
       value,
       onChange,

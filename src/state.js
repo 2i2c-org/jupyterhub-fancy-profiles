@@ -5,6 +5,9 @@ export const SpawnerFormContext = createContext();
 
 function isDynamicImageProfile(profile) {
   const { profile_options } = profile;
+
+  if (!profile_options) return false;
+
   return Object.entries(profile_options).some(([key, option]) =>
     hasDynamicImageBuilding(key, option),
   );

@@ -29,9 +29,9 @@ function useSelectOptions(config, customOptions = []) {
   // OR the first item from options which could be an extra or custom choice
   const defaultChoiceName =
     Object.keys(choices).find((choiceName) => choices[choiceName].default) ||
-    Object.keys(choices).length > 0
+    (Object.keys(choices).length > 0
       ? Object.keys(choices)[0]
-      : options[0].value;
+      : options[0].value);
 
   const defaultOption = options.find(
     (option) => option.value === defaultChoiceName,

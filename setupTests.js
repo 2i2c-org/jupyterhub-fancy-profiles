@@ -199,6 +199,7 @@ window.profileList = [
     slug: "custom",
   },
   {
+    slug: "build-custom-environment",
     description: "Dynamic Image building + unlisted choice",
     display_name: "Build custom environment",
     profile_options: {
@@ -219,5 +220,16 @@ window.profileList = [
         },
       },
     },
+  },
+  {
+    slug: "empty-options",
+    description: "Profile with empty options",
+    display_name: "Empty Options",
+    profile_options: {},
+  },
+  {
+    slug: "no-options",
+    description: "Profile with no options",
+    display_name: "No Options",
   },
 ];

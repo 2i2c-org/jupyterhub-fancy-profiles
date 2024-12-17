@@ -64,7 +64,10 @@ function ResourceSelect({ id, profile, config, customOptions = [] }) {
         />
       )}
       {!!selectedCustomOption && (
-        <selectedCustomOption.component name={FIELD_ID_UNLISTED} />
+        <selectedCustomOption.component
+          name={FIELD_ID_UNLISTED}
+          isActive={isActive}
+        />
       )}
     </>
   );

@@ -264,4 +264,9 @@ c.KubeSpawner.profile_list = [
             }
         },
     },
+    {
+        "display_name": "Profile without any options",
+        "description": "Just a profile that doesn't contain any profile options",
+        "kubespawner_override": {"image": "pangeo/pangeo-notebook:2023.09.11"},
+    },
 ]

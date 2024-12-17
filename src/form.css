@@ -7,10 +7,14 @@
 
 .profile-select {
   display: flex;
-  padding: 5rem 2rem;
+  padding: 2rem 2rem;
   flex-direction: row;
   border-bottom: 1px solid #ccc;
   gap: 3rem;
+}
+
+.profile-select-body {
+  flex: 1;
 }
 
 .profile-select-body .profile-select-label {
@@ -30,9 +34,10 @@
 
 .profile-option-container {
   display: grid;
-  grid-template-columns: 1fr 6fr;
+  grid-template-columns: 10rem minmax(0, 1fr);
   gap: 1rem;
   margin-bottom: 2rem;
+  width: 100%;
 }
 
 .profile-option-label-container {
@@ -74,6 +79,11 @@
 .profile-option-control-info {
   margin-top: 0.25rem;
   font-size: 0.875em;
+
+.profile-option-control-hint {
+  color: #555;
+  margin-top: 0.3rem;
+  font-size: 0.9rem;
 }
 
 .profile-form-error {
