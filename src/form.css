@@ -53,6 +53,10 @@
   background-color: #f8f8f8;
 }
 
+[data-bs-theme="dark"] .selected-profile {
+  background-color: #070707;
+}
+
 #submit-button {
   grid-column-start: 1;
   grid-column-end: 3;
@@ -114,10 +118,22 @@
     */
   color: #ddd;
 }
+
+/* react-select styling */
+[data-bs-theme="dark"]
+  .react-select-item-container.react-select-item-menu-display.react-select-item-selected
+  .react-select-item-description {
+  color: #222222;
+}
+
 .react-select-item-container {
   padding: 4px;
 }
 
 .react-select-item-description {
   color: #999;
+}
+
+[data-bs-theme="dark"] .react-select-item-description {
+  color: #666666;
 }
