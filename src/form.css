@@ -22,12 +22,6 @@
   margin-bottom: 1rem;
 }
 
-.profile-select-label-heading {
-  display: block;
-  font-size: 2rem;
-  font-weight: bold;
-}
-
 .profile-select-radio {
   display: flex;
   gap: 1rem;
@@ -59,6 +53,10 @@
   background-color: #f8f8f8;
 }
 
+[data-bs-theme="dark"] .selected-profile {
+  background-color: #070707;
+}
+
 #submit-button {
   grid-column-start: 1;
   grid-column-end: 3;
@@ -71,35 +69,24 @@
   padding: 16px;
 }
 .profile-option-control-container input[type="text"] {
-  width: 100%;
   /* 8px here, even though we only use 4px for .react-select-item-container.
        Achieves similar visual effect.
     */
   padding: 8px;
-  border: 1px solid gray;
   border-radius: 4px;
 }
 
+.profile-option-control-container input[type="text"]:not(.is-invalid) {
+  border: 1px solid gray;
+}
+
 .profile-option-control-info {
-  margin-top: 0.5rem;
-}
-
-.profile-option-container.has-error label {
-  color: red;
-}
-
-.profile-option-container.has-error input {
-  border-color: red;
+  margin-top: 0.25rem;
+  font-size: 0.875em;
 }
 
 .profile-option-control-hint {
   color: #555;
-  margin-top: 0.3rem;
-  font-size: 0.9rem;
-}
-
-.profile-option-control-error {
-  color: red;
   margin-top: 0.3rem;
   font-size: 0.9rem;
 }
@@ -127,14 +114,31 @@
 .react-select-item-container.react-select-item-menu-display.react-select-item-selected
   .react-select-item-description {
   /* When rendering an option in react select's *menu*, if it is the currently selected one, make the description much lighter.
-       Otherwise, it gets unreadable in the blue;
+     Otherwise, it gets unreadable in the blue;
     */
   color: #ddd;
-}
-.react-select-item-container {
-  padding: 4px;
 }
 
 .react-select-item-description {
   color: #999;
+}
+
+[data-bs-theme="dark"]
+  .react-select-item-container.react-select-item-menu-display.react-select-item-selected
+  .react-select-item-description {
+  color: #222222;
+}
+
+[data-bs-theme="dark"] .react-select-item-container .react-select-item-title {
+  color: #000;
+}
+
+[data-bs-theme="dark"]
+  .react-select-item-container
+  .react-select-item-description {
+  color: #666;
+}
+
+.react-select-item-container {
+  padding: 4px;
 }

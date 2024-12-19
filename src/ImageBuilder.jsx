@@ -75,7 +75,7 @@ function ImageLogs({ setTerm, setFitAddon, name }) {
           blue: "\x1b[38;2;147;197;253m",
           magenta: "\x1b[38;2;249;168;212m",
           cyan: "\x1b[38;2;103;232;249m",
-        }
+        },
       });
       const fitAddon = new FitAddon();
       term.loadAddon(fitAddon);
@@ -89,7 +89,7 @@ function ImageLogs({ setTerm, setFitAddon, name }) {
   }, []);
 
   return (
-    <div className="terminal-container">
+    <div className="terminal-container border">
       <div id={terminalId}></div>
     </div>
   );
@@ -157,29 +157,26 @@ export function ImageBuilder({ name, isActive }) {
   return (
     <>
       <div className="profile-option-container">
-        <div className="profile-option-label-container">
-          <b>Provider</b>
-        </div>
+        <div className="profile-option-label-container">Provider</div>
         <div className="profile-option-control-container">GitHub</div>
       </div>
 
-      <div
-        className={`profile-option-container ${repoError ? "has-error" : ""}`}
-      >
+      <div className="profile-option-container">
         <div className="profile-option-label-container">
-          <label htmlFor="repo">Repository</label>
+          <label htmlFor="repo" className="form-label">
+            Repository
+          </label>
         </div>
         <div className="profile-option-control-container">
           <input
+            className={`form-control ${repoError ? "is-invalid" : ""}`}
             id="repo"
             type="text"
             ref={repoFieldRef}
             {...repoFieldProps}
             aria-invalid={!!repoError}
           />
-          {repoError && (
-            <div className="profile-option-control-error">{repoError}</div>
-          )}
+          {repoError && <div className="invalid-feedback">{repoError}</div>}
         </div>
       </div>
 

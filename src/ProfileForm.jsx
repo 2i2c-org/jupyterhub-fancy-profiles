@@ -86,10 +86,8 @@ function Form() {
                 id={`profile-option-${slug}-label`}
                 className="profile-select-label"
               >
-                <span className="profile-select-label-heading">
-                  {display_name}
-                </span>
-                <span>{description}</span>
+                <h2>{display_name}</h2>
+                <p>{description}</p>
               </div>
 
               {profile_options && (
