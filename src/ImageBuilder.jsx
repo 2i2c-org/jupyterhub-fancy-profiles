@@ -75,7 +75,7 @@ function ImageLogs({ setTerm, setFitAddon, name }) {
           blue: "\x1b[38;2;147;197;253m",
           magenta: "\x1b[38;2;249;168;212m",
           cyan: "\x1b[38;2;103;232;249m",
-        }
+        },
       });
       const fitAddon = new FitAddon();
       term.loadAddon(fitAddon);
@@ -89,7 +89,7 @@ function ImageLogs({ setTerm, setFitAddon, name }) {
   }, []);
 
   return (
-    <div className="terminal-container">
+    <div className="terminal-container border">
       <div id={terminalId}></div>
     </div>
   );
@@ -176,7 +176,7 @@ export function ImageBuilder({ name, isActive }) {
             {...repoFieldProps}
             aria-invalid={!!repoError}
           />
-         {repoError && <div className="invalid-feedback">{repoError}</div>}
+          {repoError && <div className="invalid-feedback">{repoError}</div>}
         </div>
       </div>
 
