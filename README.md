@@ -5,6 +5,11 @@ for use with [jupyterhub-kubespawner](https://github.com/jupyterhub/kubespawner)
 
 ![Screenshot showing an image selector](screenshot.png)
 
+## JupyterHub version supported
+
+`jupyterhub-fancy-profiles` version 0.4.0 and above require JupyterHub 5. If you
+are using an older version of JupyterHub, please use version 0.3.x.
+
 ## Features
 
 1. Interpret a `profileList` given to kubespawner, and render a better looking
