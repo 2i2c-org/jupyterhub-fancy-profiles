@@ -22,7 +22,7 @@ jobs:
           images: |
             quay.io/yuvipanda/z2jh-hub-with-fancy-profiles
           tags: |
-            prefix=z2jh-v3.2.1-fancy-profiles-sha-,type=sha
+            prefix=z2jh-v4.0.0-fancy-profiles-sha-,type=sha
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
