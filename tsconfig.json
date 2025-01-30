@@ -2,7 +2,7 @@
   "compilerOptions": {
     "outDir": "./jupyterhub_fancy_profiles/static/dist/",
     "noImplicitAny": true,
-    "module": "es6",
+    "module": "esnext",
     "target": "es5",
     "jsx": "react-jsx",
     "allowJs": true,

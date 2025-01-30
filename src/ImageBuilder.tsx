@@ -1,9 +1,17 @@
 import { useEffect, useState, useRef, useContext } from "react";
+import { type Terminal } from "xterm";
+import { type FitAddon } from "xterm-addon-fit";
+
 import { TextField } from "./components/form/fields";
 import { SpawnerFormContext } from "./state";
 import useRepositoryField from "./hooks/useRepositoryField";
 
-async function buildImage(repo, ref, term, fitAddon) {
+async function buildImage(
+  repo: string,
+  ref: string,
+  term: Terminal,
+  fitAddon: FitAddon
+) {
   const { BinderRepository } = await import("@jupyterhub/binderhub-client");
   const providerSpec = "gh/" + repo + "/" + ref;
   // FIXME: Assume the binder api is available in the same hostname, under /services/binder/
@@ -52,7 +60,13 @@ async function buildImage(repo, ref, term, fitAddon) {
   }
 }
 
-function ImageLogs({ setTerm, setFitAddon, name }) {
+interface IImageLogs {
+  setTerm: React.Dispatch<React.SetStateAction<Terminal>>;
+  setFitAddon: React.Dispatch<React.SetStateAction<FitAddon>>;
+  name: string;
+}
+
+function ImageLogs({ setTerm, setFitAddon, name }: IImageLogs) {
   const terminalId = `${name}--terminal`;
   useEffect(() => {
     async function setup() {
@@ -95,7 +109,12 @@ function ImageLogs({ setTerm, setFitAddon, name }) {
   );
 }
 
-export function ImageBuilder({ name, isActive }) {
+interface IImageBuilder {
+  name: string;
+  isActive: boolean;
+}
+
+export function ImageBuilder({ name, isActive }: IImageBuilder) {
   const {
     binderRepo,
     ref: repoRef,
@@ -103,17 +122,17 @@ export function ImageBuilder({ name, isActive }) {
   } = useContext(SpawnerFormContext);
   const { repo, repoId, repoFieldProps, repoError } =
     useRepositoryField(binderRepo);
-  const [ref, setRef] = useState(repoRef || "HEAD");
-  const repoFieldRef = useRef();
-  const branchFieldRef = useRef();
+  const [ref, setRef] = useState<string>(repoRef || "HEAD");
+  const repoFieldRef = useRef<HTMLInputElement>();
+  const branchFieldRef = useRef<HTMLInputElement>();
 
-  const [customImage, setCustomImage] = useState("");
-  const [customImageError, setCustomImageError] = useState(null);
+  const [customImage, setCustomImage] = useState<string>("");
+  const [customImageError, setCustomImageError] = useState<string>(null);
 
-  const [term, setTerm] = useState(null);
-  const [fitAddon, setFitAddon] = useState(null);
+  const [term, setTerm] = useState<Terminal>(null);
+  const [fitAddon, setFitAddon] = useState<FitAddon>(null);
 
-  const [isBuildingImage, setIsBuildingImage] = useState(false);
+  const [isBuildingImage, setIsBuildingImage] = useState<boolean>(false);
 
   useEffect(() => {
     if (!isActive) setCustomImageError("");
@@ -126,13 +145,13 @@ export function ImageBuilder({ name, isActive }) {
   }, [binderRepo, repoRef, setCustomOption]);
 
   const handleBuildStart = async () => {
-    if (!repo) {
+    if (repoFieldRef.current && !repo) {
       repoFieldRef.current.focus();
       repoFieldRef.current.blur();
       return;
     }
 
-    if (!ref) {
+    if (branchFieldRef.current && !ref) {
       branchFieldRef.current.focus();
       branchFieldRef.current.blur();
       return;
@@ -192,7 +211,7 @@ export function ImageBuilder({ name, isActive }) {
           }
         }
         onChange={(e) => setRef(e.target.value)}
-        tabIndex={isActive ? "0" : "-1"}
+        tabIndex={isActive ? 0 : -1}
       />
 
       <div className="right-button">

@@ -9,7 +9,7 @@
     "webpack": "webpack",
     "webpack:watch": "webpack --watch",
     "test": "jest",
-    "lint": "eslint 'src/**/*.js' 'src/**/*.jsx' 'src/**/*.ts' 'src/**/*.tsx'"
+    "lint": "eslint 'src/**/*.js' 'src/**/*.ts' 'src/**/*.tsx'"
   },
   "dependencies": {
     "@jupyterhub/binderhub-client": "0.4.0",
