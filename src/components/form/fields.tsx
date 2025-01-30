@@ -58,7 +58,7 @@ interface ISelectField extends Omit<IField, "children"> {
   value: string;
   onChange: (e: {value: string}) => void;
   validate?: TValidateConfig;
-  tabIndex: number;
+  tabIndex?: number;
 }
 
 export function SelectField({
@@ -103,7 +103,7 @@ export function SelectField({
 interface ITextFieldProps extends Omit<IField, "children"> {
   value: string;
   validate?: TValidateConfig;
-  tabIndex: number;
+  tabIndex?: number;
   onChange: React.ChangeEventHandler<HTMLInputElement>
 }
 

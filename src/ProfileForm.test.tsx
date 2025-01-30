@@ -181,15 +181,15 @@ describe("Profile form", () => {
       </SpawnerFormProvider>,
     );
     const hiddenRadio = container.querySelector('[name="profile"]');
-    expect(hiddenRadio.value).toEqual("custom");
+    expect((hiddenRadio as HTMLInputElement).value).toEqual("custom");
     const defaultRadio = screen.getByRole("radio", {
       name: "Bring your own image Specify your own docker image",
     });
-    expect(defaultRadio.checked).toBeTruthy();
+    expect((defaultRadio as HTMLInputElement).checked).toBeTruthy();
     const nonDefaultRadio = screen.getByRole("radio", {
       name: "GPU Nvidia Tesla T4 GPU",
     });
-    expect(nonDefaultRadio.checked).toBeFalsy();
+    expect((nonDefaultRadio as HTMLInputElement).checked).toBeFalsy();
   });
 
   test("having dynamic_image_building enabled and no other choices shows dropdown", async () => {
@@ -229,10 +229,10 @@ describe("Profile form with URL Params", () => {
     const radio = screen.getByRole("radio", {
       name: "Build custom environment Dynamic Image building + unlisted choice",
     });
-    expect(radio.checked).toBeTruthy();
+    expect((radio as HTMLInputElement).checked).toBeTruthy();
 
-    expect(screen.getByLabelText("Repository").value).toEqual("org/repo");
-    expect(screen.getByLabelText("Git Ref").value).toEqual("v1.0");
+    expect((screen.getByLabelText("Repository") as HTMLInputElement).value).toEqual("org/repo");
+    expect((screen.getByLabelText("Git Ref") as HTMLInputElement).value).toEqual("v1.0");
   });
 
   test("no-option profiles are rendered", () => {
