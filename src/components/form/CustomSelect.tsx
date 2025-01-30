@@ -70,7 +70,6 @@ export function CustomizedSelect({
         );
       }}
       onChange={(option, meta) => {
-        console.log(meta);
         if (
           lastSelectedChoice !== null &&
           option !== lastSelectedChoice &&

@@ -90,7 +90,7 @@ function ImageLogs({ setTerm, setFitAddon, name }) {
 
   return (
     <div className="terminal-container border">
-      <div id={terminalId}></div>
+      <div id={terminalId} />
     </div>
   );
 }
@@ -146,7 +146,7 @@ export function ImageBuilder({ name, isActive }) {
           "\nImage has been built! Click the start button to launch your server",
         );
       })
-      .catch(() => console.log(`Error building image.`))
+      .catch(() => console.log("Error building image."))
       .finally(() => setIsBuildingImage(false));
   };
 
@@ -214,8 +214,7 @@ export function ImageBuilder({ name, isActive }) {
         aria-hidden="true"
         style={{ display: "none" }}
         onInvalid={() =>
-          setCustomImageError("Wait for the image build to complete.")
-        }
+          setCustomImageError("Wait for the image build to complete.")}
         onChange={() => {}} // Hack to prevent a console error, while at the same time allowing for this field to be validatable, ie. not making it read-only
       />
       <div className="profile-option-container">

@@ -180,7 +180,7 @@ describe("Profile form", () => {
         <ProfileForm />
       </SpawnerFormProvider>,
     );
-    const hiddenRadio = container.querySelector('[name="profile"]');
+    const hiddenRadio = container.querySelector("[name='profile']");
     expect((hiddenRadio as HTMLInputElement).value).toEqual("custom");
     const defaultRadio = screen.getByRole("radio", {
       name: "Bring your own image Specify your own docker image",
