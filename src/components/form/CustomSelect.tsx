@@ -1,5 +1,20 @@
-import { useState } from "react";
-import Select from "react-select";
+import { FocusEventHandler, useState } from "react";
+import Select, { ActionMeta } from "react-select";
+import { SelectOption } from "../../types/fields";
+
+interface ICustomSelect {
+  name: string;
+  hasError?: boolean;
+  options: SelectOption[];
+  defaultValue: SelectOption;
+  value: SelectOption;
+  onChange?: (option: SelectOption, meta: ActionMeta<SelectOption>) => void;
+  onBlur: FocusEventHandler<HTMLInputElement>;
+  tabIndex: number;
+  required: boolean;
+  "aria-invalid": boolean;
+  "aria-label": string;
+}
 
 /**
  * Customized react-select with a few extra options
@@ -23,7 +38,7 @@ import Select from "react-select";
  * @param {Props} props
  * @returns
  */
-export function CustomizedSelect({ options, hasError, ...props }) {
+export function CustomizedSelect({ options, hasError, ...props }: ICustomSelect) {
   const [lastSelectedChoice, setLastSelectedChoice] = useState(null);
   return (
     <Select

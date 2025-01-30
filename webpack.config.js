@@ -2,11 +2,16 @@ const webpack = require("webpack");
 const path = require("path");
 
 module.exports = {
-  entry: path.resolve(__dirname, "src", "index.jsx"),
+  entry: path.resolve(__dirname, "src", "index.tsx"),
   devtool: "source-map",
   mode: "development",
   module: {
     rules: [
+      {
+        test: /\.(ts|tsx)/,
+        exclude: /node_modules/,
+        use: "ts-loader",
+      },
       {
         test: /\.(js|jsx)/,
         exclude: /node_modules/,
@@ -24,6 +29,6 @@ module.exports = {
     path: path.resolve(__dirname, "jupyterhub_fancy_profiles/static/dist/"),
   },
   resolve: {
-    extensions: [".css", ".js", ".jsx"],
+    extensions: [".css", ".js", ".jsx", ".ts", ".tsx"],
   },
 };

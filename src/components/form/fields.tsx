@@ -1,8 +1,17 @@
-import { forwardRef, useState } from "react";
+import { forwardRef, PropsWithChildren, useState } from "react";
 
 import { CustomizedSelect } from "./CustomSelect";
+import { SelectOption } from "../../types/fields";
 
-function validateField(value, validateConfig, touched) {
+type TValidateConfig = {
+  required?: string;
+  pattern?: {
+    value: string;
+    message: string;
+  };
+}
+
+function validateField(value: string, validateConfig: TValidateConfig, touched: boolean) {
   if (!touched) return;
 
   if (validateConfig.required && !value) {
@@ -19,7 +28,14 @@ function validateField(value, validateConfig, touched) {
   return;
 }
 
-function Field({ id, label, hint, children, error }) {
+interface IField extends PropsWithChildren {
+  id: string;
+  label: string;
+  hint?: string;
+  error?: string;
+}
+
+function Field({ id, label, hint, children, error }: IField) {
   return (
     <div className="profile-option-container">
       <div className="profile-option-label-container">
@@ -36,6 +52,15 @@ function Field({ id, label, hint, children, error }) {
   );
 }
 
+interface ISelectField extends Omit<IField, "children"> {
+  options: SelectOption[];
+  defaultOption: SelectOption;
+  value: string;
+  onChange: (e: {value: string}) => void;
+  validate?: TValidateConfig;
+  tabIndex: number;
+}
+
 export function SelectField({
   id,
   label,
@@ -46,7 +71,7 @@ export function SelectField({
   value,
   validate = {},
   tabIndex,
-}) {
+}: ISelectField) {
   const [touched, setTouched] = useState(false);
   const onBlur = () => setTouched(true);
 
@@ -61,7 +86,6 @@ export function SelectField({
     <Field id={id} label={label} hint={hint} error={error}>
       <CustomizedSelect
         options={options}
-        id={id}
         name={id}
         defaultValue={defaultOption}
         onChange={onChange}
@@ -76,9 +100,16 @@ export function SelectField({
   );
 }
 
+interface ITextFieldProps extends Omit<IField, "children"> {
+  value: string;
+  validate?: TValidateConfig;
+  tabIndex: number;
+  onChange: React.ChangeEventHandler<HTMLInputElement>
+}
+
 function _TextField(
-  { id, label, value, hint, validate = {}, onChange, tabIndex },
-  ref,
+  { id, label, value, hint, validate = {}, onChange, tabIndex }: ITextFieldProps,
+  ref: React.LegacyRef<HTMLInputElement>,
 ) {
   const [touched, setTouched] = useState(false);
   const onBlur = () => setTouched(true);

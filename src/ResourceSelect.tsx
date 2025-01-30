@@ -2,8 +2,17 @@ import { useContext, useState } from "react";
 import useSelectOptions from "./hooks/useSelectOptions";
 import { SpawnerFormContext } from "./state";
 import { SelectField, TextField } from "./components/form/fields";
+import { IProfileOption } from "./types/config";
+import { ICustomOption } from "./types/fields";
 
-function ResourceSelect({ id, profile, config, customOptions = [] }) {
+interface IResourceSelect {
+  id: string;
+  profile: string;
+  config: IProfileOption;
+  customOptions: ICustomOption[];
+}
+
+function ResourceSelect({ id, profile, config, customOptions = [] }: IResourceSelect) {
   const { display_name, unlisted_choice } = config;
 
   const { setCustomOption } = useContext(SpawnerFormContext);
@@ -21,7 +30,7 @@ function ResourceSelect({ id, profile, config, customOptions = [] }) {
   );
   const [unlistedChoiceValue, setUnlistedChoiceValue] = useState("");
 
-  if (!options.length > 0) {
+  if (!(options.length > 0)) {
     return null;
   }
 
@@ -37,7 +46,7 @@ function ResourceSelect({ id, profile, config, customOptions = [] }) {
           defaultOption={defaultOption}
           value={value}
           onChange={(e) => setValue(e.value)}
-          tabIndex={isActive ? "0" : "-1"}
+          tabIndex={isActive ? 0 : -1}
           validate={
             isActive && {
               required: "Select a value.",
@@ -60,7 +69,7 @@ function ResourceSelect({ id, profile, config, customOptions = [] }) {
             }
           }
           onChange={(e) => setUnlistedChoiceValue(e.target.value)}
-          tabIndex={isActive ? "0" : "-1"}
+          tabIndex={isActive ? 0 : -1}
         />
       )}
       {!!selectedCustomOption && (

@@ -1,8 +1,14 @@
 import ResourceSelect from "./ResourceSelect";
 import { ImageBuilder } from "./ImageBuilder";
 import { hasDynamicImageBuilding } from "./utils";
+import { IProfileOptions } from "./types/config";
 
-export function ProfileOptions({ config, profile }) {
+interface IProfileOptionsProps {
+  profile: string;
+  config: IProfileOptions;
+}
+
+export function ProfileOptions({ config, profile }: IProfileOptionsProps) {
   return (
     <div className="form-grid">
       {Object.entries(config).map(([key, option]) => {
