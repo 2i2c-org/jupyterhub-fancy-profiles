@@ -44,7 +44,7 @@ export function CustomizedSelect({ options, hasError, ...props }: ICustomSelect)
     <Select
       options={options}
       formatOptionLabel={(option, meta) => {
-        let classNames = ["react-select-item-container"];
+        const classNames = ["react-select-item-container"];
         if (meta.selectValue[0].value === option.value) {
           // Check for the values, rather than the whole object, as react-select may make copies
           // We are rendering a value that is the current selection

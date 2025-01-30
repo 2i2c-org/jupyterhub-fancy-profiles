@@ -9,7 +9,7 @@
     "webpack": "webpack",
     "webpack:watch": "webpack --watch",
     "test": "jest",
-    "lint": "eslint 'src/**/*.js' 'src/**/*.jsx'"
+    "lint": "eslint 'src/**/*.js' 'src/**/*.jsx' 'src/**/*.ts' 'src/**/*.tsx'"
   },
   "dependencies": {
     "@jupyterhub/binderhub-client": "0.4.0",
@@ -57,6 +57,7 @@
     "style-loader": "^3.3.2",
     "ts-loader": "^9.5.2",
     "typescript": "^5.7.3",
+    "typescript-eslint": "^8.22.0",
     "webpack": "^5.6.0",
     "webpack-cli": "^4.10.0",
     "webpack-dev-server": "^4.9.3"

@@ -1,21 +1,11 @@
 import react from "eslint-plugin-react";
 import globals from "globals";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
 import js from "@eslint/js";
-import { FlatCompat } from "@eslint/eslintrc";
+import tseslint from "typescript-eslint";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const compat = new FlatCompat({
-  baseDirectory: __dirname,
-  recommendedConfig: js.configs.recommended,
-  allConfig: js.configs.all,
-});
-
-export default [
+export default tseslint.config(
   {
-    files: ["**/src/**/*.js", "**/src/**/*.jsx"],
+    files: ["**/src/**/*.{ts,tsx,js,jsx}"],
   },
   {
     ignores: [
@@ -24,12 +14,14 @@ export default [
       "**/babel.config.js",
     ],
   },
-  ...compat.extends("eslint:recommended", "plugin:react/recommended"),
   {
+    extends: [
+      js.configs.recommended,
+      ...tseslint.configs.recommended
+    ],
     plugins: {
-      react,
+      "react": react,
     },
-
     languageOptions: {
       globals: {
         ...globals.browser,
@@ -48,15 +40,8 @@ export default [
     rules: {
       "react/react-in-jsx-scope": "off",
       "react/jsx-uses-react": "off",
-      // Temporarily turn off prop-types
-      "react/prop-types": "off",
-
-      "no-unused-vars": [
-        "error",
-        {
-          args: "after-used",
-        },
-      ],
+      "no-unused-vars": "off",
+      "@typescript-eslint/no-unused-vars": ["error"]
     },
   },
-];
+)
