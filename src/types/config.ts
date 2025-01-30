@@ -23,6 +23,9 @@ interface IUnlistedChoice {
 export interface IProfileOption {
   display_name: string;
   unlisted_choice?: IUnlistedChoice;
+  dynamic_image_building?: {
+    enabled: boolean;
+  };
   choices: {
     [key: string]: IChoice;
   };
