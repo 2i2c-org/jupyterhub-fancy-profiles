@@ -1,5 +1,20 @@
-import { useState } from "react";
-import Select from "react-select";
+import { FocusEventHandler, useState } from "react";
+import Select, { ActionMeta } from "react-select";
+import { SelectOption } from "../../types/fields";
+
+interface ICustomSelect {
+  name: string;
+  hasError?: boolean;
+  options: SelectOption[];
+  defaultValue: SelectOption;
+  value: SelectOption;
+  onChange?: (option: SelectOption, meta: ActionMeta<SelectOption>) => void;
+  onBlur: FocusEventHandler<HTMLInputElement>;
+  tabIndex: number;
+  required: boolean;
+  "aria-invalid": boolean;
+  "aria-label": string;
+}
 
 /**
  * Customized react-select with a few extra options
@@ -23,13 +38,17 @@ import Select from "react-select";
  * @param {Props} props
  * @returns
  */
-export function CustomizedSelect({ options, hasError, ...props }) {
+export function CustomizedSelect({
+  options,
+  hasError,
+  ...props
+}: ICustomSelect) {
   const [lastSelectedChoice, setLastSelectedChoice] = useState(null);
   return (
     <Select
       options={options}
       formatOptionLabel={(option, meta) => {
-        let classNames = ["react-select-item-container"];
+        const classNames = ["react-select-item-container"];
         if (meta.selectValue[0].value === option.value) {
           // Check for the values, rather than the whole object, as react-select may make copies
           // We are rendering a value that is the current selection
@@ -51,7 +70,6 @@ export function CustomizedSelect({ options, hasError, ...props }) {
         );
       }}
       onChange={(option, meta) => {
-        console.log(meta);
         if (
           lastSelectedChoice !== null &&
           option !== lastSelectedChoice &&

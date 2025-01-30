@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useState } from "react";
+import { ChangeEventHandler, useCallback, useEffect, useState } from "react";
 
-function extractOrgAndRepo(value) {
+function extractOrgAndRepo(value: string) {
   let orgRepoString;
   const orgRepoMatch = /^[^/]+\/[^/]+$/.exec(value);
 
@@ -19,10 +19,10 @@ function extractOrgAndRepo(value) {
   return orgRepoString;
 }
 
-export default function useRepositoryField(defaultValue) {
-  const [value, setValue] = useState(defaultValue || "");
-  const [error, setError] = useState();
-  const [repoId, setRepoId] = useState();
+export default function useRepositoryField(defaultValue: string) {
+  const [value, setValue] = useState<string>(defaultValue || "");
+  const [error, setError] = useState<string>();
+  const [repoId, setRepoId] = useState<string>();
 
   useEffect(() => {
     if (defaultValue) {
@@ -32,7 +32,7 @@ export default function useRepositoryField(defaultValue) {
   }, [defaultValue]);
 
   const validate = () => {
-    setError();
+    setError(undefined);
     const orgRepoString = extractOrgAndRepo(value);
 
     if (!orgRepoString) {
@@ -40,12 +40,12 @@ export default function useRepositoryField(defaultValue) {
     }
   };
 
-  const onChange = useCallback((e) => {
+  const onChange: ChangeEventHandler<HTMLInputElement> = useCallback((e) => {
     setValue(e.target.value);
   }, []);
 
   const onBlur = useCallback(() => {
-    setRepoId();
+    setRepoId(undefined);
     const err = validate();
     if (err) {
       setError(err);

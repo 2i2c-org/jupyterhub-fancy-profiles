@@ -37,7 +37,7 @@ test("TextField renders", async () => {
   );
 
   const field = screen.getByRole("textbox", { name: "Text field" });
-  expect(field.required).toBeTruthy();
+  expect((field as HTMLInputElement).required).toBeTruthy();
   expect(screen.queryByText("Enter a value.")).not.toBeInTheDocument();
 
   await user.click(field);
@@ -112,6 +112,7 @@ test("SelectField renders", async () => {
       id="select"
       label="Select field"
       options={options}
+      value=""
       onChange={onChange}
       defaultOption={options[1]}
     />,

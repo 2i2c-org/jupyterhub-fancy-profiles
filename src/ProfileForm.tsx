@@ -1,4 +1,9 @@
-import { useContext, useState } from "react";
+import {
+  ChangeEventHandler,
+  MouseEventHandler,
+  useContext,
+  useState,
+} from "react";
 import "../node_modules/xterm/css/xterm.css";
 
 import "./form.css";
@@ -21,9 +26,9 @@ function Form() {
   } = useContext(SpawnerFormContext);
   const [formError, setFormError] = useState("");
 
-  const handleSubmit = (e) => {
+  const handleSubmit: MouseEventHandler<HTMLButtonElement> = (e) => {
     setFormError("");
-    const form = e.target.closest("form");
+    const form = (e.target as HTMLElement).closest("form");
 
     // validate the form
     const formIsValid = form.checkValidity();
@@ -35,7 +40,7 @@ function Form() {
     }
   };
 
-  const handleProfileSelect = (e) => {
+  const handleProfileSelect: ChangeEventHandler<HTMLInputElement> = (e) => {
     const slug = e.target.value;
     setProfile(slug);
     setFormError("");

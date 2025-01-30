@@ -1,6 +1,17 @@
 import { useMemo } from "react";
+import { IProfileOption } from "../types/config";
+import { ICustomOption, SelectOption } from "../types/fields";
 
-function useSelectOptions(config, customOptions = []) {
+type SelectOptions = {
+  options: SelectOption[];
+  defaultOption: SelectOption;
+  hasDefaultChoices: boolean;
+};
+
+function useSelectOptions(
+  config: IProfileOption,
+  customOptions: ICustomOption[] = [],
+): SelectOptions {
   const { choices, unlisted_choice } = config;
   const hasDefaultChoices = Object.keys(choices).length > 0;
   const options = useMemo(() => {
