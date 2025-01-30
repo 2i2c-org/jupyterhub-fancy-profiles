@@ -9,9 +9,13 @@ type TValidateConfig = {
     value: string;
     message: string;
   };
-}
+};
 
-function validateField(value: string, validateConfig: TValidateConfig, touched: boolean) {
+function validateField(
+  value: string,
+  validateConfig: TValidateConfig,
+  touched: boolean,
+) {
   if (!touched) return;
 
   if (validateConfig.required && !value) {
@@ -56,7 +60,7 @@ interface ISelectField extends Omit<IField, "children"> {
   options: SelectOption[];
   defaultOption: SelectOption;
   value: string;
-  onChange: (e: {value: string}) => void;
+  onChange: (e: { value: string }) => void;
   validate?: TValidateConfig;
   tabIndex?: number;
 }
@@ -104,11 +108,19 @@ interface ITextFieldProps extends Omit<IField, "children"> {
   value: string;
   validate?: TValidateConfig;
   tabIndex?: number;
-  onChange: React.ChangeEventHandler<HTMLInputElement>
+  onChange: React.ChangeEventHandler<HTMLInputElement>;
 }
 
 function _TextField(
-  { id, label, value, hint, validate = {}, onChange, tabIndex }: ITextFieldProps,
+  {
+    id,
+    label,
+    value,
+    hint,
+    validate = {},
+    onChange,
+    tabIndex,
+  }: ITextFieldProps,
   ref: React.LegacyRef<HTMLInputElement>,
 ) {
   const [touched, setTouched] = useState(false);

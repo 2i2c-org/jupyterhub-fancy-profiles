@@ -5,7 +5,7 @@ interface IChoice {
   slug?: string;
   kubespawner_overwrite: {
     [key: string]: string;
-  }
+  };
 }
 
 interface IUnlistedChoice {
@@ -15,7 +15,7 @@ interface IUnlistedChoice {
   description_in_choices?: string;
   validation_regex: string;
   validation_message?: string;
-  kubespawner_override:  {
+  kubespawner_override: {
     [key: string]: string;
   };
 }
@@ -25,7 +25,7 @@ export interface IProfileOption {
   unlisted_choice?: IUnlistedChoice;
   choices: {
     [key: string]: IChoice;
-  }
+  };
 }
 
 export interface IProfileOptions {
@@ -41,9 +41,10 @@ export interface IProfile {
   profile_options?: IProfileOptions;
 }
 
-export type IJupytherHubWindowObject =  Window & typeof globalThis & {
-  profileList: IProfile[]
-}
+export type IJupytherHubWindowObject = Window &
+  typeof globalThis & {
+    profileList: IProfile[];
+  };
 
 export interface ISearchParams {
   binderProvider?: string;

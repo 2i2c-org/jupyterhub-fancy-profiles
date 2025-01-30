@@ -231,8 +231,12 @@ describe("Profile form with URL Params", () => {
     });
     expect((radio as HTMLInputElement).checked).toBeTruthy();
 
-    expect((screen.getByLabelText("Repository") as HTMLInputElement).value).toEqual("org/repo");
-    expect((screen.getByLabelText("Git Ref") as HTMLInputElement).value).toEqual("v1.0");
+    expect(
+      (screen.getByLabelText("Repository") as HTMLInputElement).value,
+    ).toEqual("org/repo");
+    expect(
+      (screen.getByLabelText("Git Ref") as HTMLInputElement).value,
+    ).toEqual("v1.0");
   });
 
   test("no-option profiles are rendered", () => {

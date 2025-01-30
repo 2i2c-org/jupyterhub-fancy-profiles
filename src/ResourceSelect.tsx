@@ -12,7 +12,12 @@ interface IResourceSelect {
   customOptions: ICustomOption[];
 }
 
-function ResourceSelect({ id, profile, config, customOptions = [] }: IResourceSelect) {
+function ResourceSelect({
+  id,
+  profile,
+  config,
+  customOptions = [],
+}: IResourceSelect) {
   const { display_name, unlisted_choice } = config;
 
   const { setCustomOption } = useContext(SpawnerFormContext);

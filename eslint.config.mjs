@@ -15,12 +15,9 @@ export default tseslint.config(
     ],
   },
   {
-    extends: [
-      js.configs.recommended,
-      ...tseslint.configs.recommended
-    ],
+    extends: [js.configs.recommended, ...tseslint.configs.recommended],
     plugins: {
-      "react": react,
+      react: react,
     },
     languageOptions: {
       globals: {
@@ -41,7 +38,7 @@ export default tseslint.config(
       "react/react-in-jsx-scope": "off",
       "react/jsx-uses-react": "off",
       "no-unused-vars": "off",
-      "@typescript-eslint/no-unused-vars": ["error"]
+      "@typescript-eslint/no-unused-vars": ["error"],
     },
   },
-)
+);

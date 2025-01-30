@@ -1,6 +1,16 @@
-import { createContext, PropsWithChildren, useEffect, useMemo, useState } from "react";
+import {
+  createContext,
+  PropsWithChildren,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { hasDynamicImageBuilding } from "./utils";
-import { IJupytherHubWindowObject, IProfile, ISearchParams } from "./types/config";
+import {
+  IJupytherHubWindowObject,
+  IProfile,
+  ISearchParams,
+} from "./types/config";
 
 interface ISpawnerFormContext {
   profileList: IProfile[];
@@ -35,12 +45,10 @@ export const SpawnerFormProvider = ({ children }: PropsWithChildren) => {
     return profileList.find(({ slug }) => slug === selectedProfile);
   }, [selectedProfile]);
 
-  const params = new Proxy(
-    new URLSearchParams(window.location.search),
-    {
-      get: (searchParams: URLSearchParams, prop: string) => searchParams.get(prop),
-    }
-  );
+  const params = new Proxy(new URLSearchParams(window.location.search), {
+    get: (searchParams: URLSearchParams, prop: string) =>
+      searchParams.get(prop),
+  });
   const { binderProvider, binderRepo, ref } = params as ISearchParams;
 
   const paramsError = useMemo(() => {

@@ -38,7 +38,11 @@ interface ICustomSelect {
  * @param {Props} props
  * @returns
  */
-export function CustomizedSelect({ options, hasError, ...props }: ICustomSelect) {
+export function CustomizedSelect({
+  options,
+  hasError,
+  ...props
+}: ICustomSelect) {
   const [lastSelectedChoice, setLastSelectedChoice] = useState(null);
   return (
     <Select

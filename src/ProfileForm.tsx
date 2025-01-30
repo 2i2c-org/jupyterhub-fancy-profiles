@@ -1,4 +1,9 @@
-import { ChangeEventHandler, MouseEventHandler, useContext, useState } from "react";
+import {
+  ChangeEventHandler,
+  MouseEventHandler,
+  useContext,
+  useState,
+} from "react";
 import "../node_modules/xterm/css/xterm.css";
 
 import "./form.css";
