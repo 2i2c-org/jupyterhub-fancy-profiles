@@ -1,21 +1,11 @@
 import react from "eslint-plugin-react";
 import globals from "globals";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
 import js from "@eslint/js";
-import { FlatCompat } from "@eslint/eslintrc";
+import tseslint from "typescript-eslint";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const compat = new FlatCompat({
-  baseDirectory: __dirname,
-  recommendedConfig: js.configs.recommended,
-  allConfig: js.configs.all,
-});
-
-export default [
+export default tseslint.config(
   {
-    files: ["**/src/**/*.js", "**/src/**/*.jsx"],
+    files: ["**/src/**/*.{ts,tsx,js,jsx}"],
   },
   {
     ignores: [
@@ -24,12 +14,11 @@ export default [
       "**/babel.config.js",
     ],
   },
-  ...compat.extends("eslint:recommended", "plugin:react/recommended"),
   {
+    extends: [js.configs.recommended, ...tseslint.configs.recommended],
     plugins: {
-      react,
+      react: react,
     },
-
     languageOptions: {
       globals: {
         ...globals.browser,
@@ -48,15 +37,45 @@ export default [
     rules: {
       "react/react-in-jsx-scope": "off",
       "react/jsx-uses-react": "off",
-      // Temporarily turn off prop-types
-      "react/prop-types": "off",
-
-      "no-unused-vars": [
-        "error",
-        {
-          args: "after-used",
-        },
+      "no-unused-vars": "off",
+      "@typescript-eslint/no-unused-vars": ["error"],
+      "indent": ["error", 2, { "SwitchCase": 1 }],
+      "quotes": ["error", "double"],
+      "jsx-quotes": ["error", "prefer-double"],
+      "semi": [2, "always"],
+      "eol-last": ["error", "always"],
+      "no-console": 1,
+      "no-extra-semi": 2,
+      "semi-spacing": [2, { "before": false, "after": true }],
+      "no-dupe-else-if": 0,
+      "no-setter-return": 0,
+      "prefer-promise-reject-errors": 0,
+      "react/button-has-type": 2,
+      "react/default-props-match-prop-types": 2,
+      "react/jsx-closing-bracket-location": 2,
+      "react/jsx-closing-tag-location": 2,
+      "react/jsx-curly-spacing": 2,
+      "react/jsx-curly-newline": 2,
+      "react/jsx-equals-spacing": 2,
+      "react/jsx-max-props-per-line": [2, { "maximum": 1, "when": "multiline" }],
+      "react/jsx-first-prop-new-line": 2,
+      "react/jsx-curly-brace-presence": [
+        2,
+        { "props": "never", "children": "never" }
       ],
+      "react/jsx-pascal-case": 2,
+      "react/jsx-props-no-multi-spaces": 2,
+      "react/jsx-tag-spacing": [2, { "beforeClosing": "never" }],
+      "react/jsx-wrap-multilines": 2,
+      "react/no-array-index-key": 2,
+      "react/no-typos": 2,
+      "react/no-unsafe": 2,
+      "react/no-unused-prop-types": 2,
+      "react/no-unused-state": 2,
+      "react/self-closing-comp": 2,
+      "react/sort-comp": 2,
+      "react/style-prop-object": 2,
+      "react/void-dom-elements-no-children": 2,
     },
   },
-];
+);

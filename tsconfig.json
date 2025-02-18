@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "outDir": "./jupyterhub_fancy_profiles/static/dist/",
+    "noImplicitAny": true,
+    "module": "esnext",
+    "target": "es5",
+    "jsx": "react-jsx",
+    "allowJs": true,
+    "moduleResolution": "node",
+    "types": ["node", "jest", "@testing-library/jest-dom"]
+  }
+}
