@@ -5,6 +5,7 @@ import { type FitAddon } from "xterm-addon-fit";
 import { TextField } from "./components/form/fields";
 import { SpawnerFormContext } from "./state";
 import useRepositoryField from "./hooks/useRepositoryField";
+import useRepositoryCache from "./hooks/useRepositoryCache";
 
 async function buildImage(
   repo: string,
@@ -122,6 +123,8 @@ export function ImageBuilder({ name, isActive }: IImageBuilder) {
   } = useContext(SpawnerFormContext);
   const { repo, repoId, repoFieldProps, repoError } =
     useRepositoryField(binderRepo);
+  const { cacheRepositorySelection } = useRepositoryCache(name);
+
   const [ref, setRef] = useState<string>(repoRef || "HEAD");
   const repoFieldRef = useRef<HTMLInputElement>();
   const branchFieldRef = useRef<HTMLInputElement>();
@@ -157,6 +160,7 @@ export function ImageBuilder({ name, isActive }: IImageBuilder) {
       return;
     }
 
+    cacheRepositorySelection(repoId, ref);
     setIsBuildingImage(true);
     buildImage(repoId, ref, term, fitAddon)
       .then((imageName) => {
