@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 const DB_NAME = "jupytherhub-imagebuild";
 const STORE_NAME = "repositories";
@@ -23,9 +23,12 @@ function initDb() {
 function useRepositoryCache(fieldName: string) {
   const [db, setDb] = useState<IDBDatabase>();
 
-  initDb().then(setDb);
+  useEffect(() => {
+    initDb().then(setDb);
+  }, []);
 
-  const cacheRepositorySelection = (repository: string, ref: string) => {
+
+  const cacheRepositorySelection = useCallback((repository: string, ref: string) => {
     const transaction = db.transaction(["repositories"], "readwrite");
     const objectStore = transaction.objectStore("repositories");
 
@@ -56,7 +59,7 @@ function useRepositoryCache(fieldName: string) {
         };
       }
     };
-  };
+  }, []);
 
   return {
     cacheRepositorySelection,
