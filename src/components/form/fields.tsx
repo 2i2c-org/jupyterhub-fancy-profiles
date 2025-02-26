@@ -39,7 +39,7 @@ interface IField extends PropsWithChildren {
   error?: string;
 }
 
-function Field({ id, label, hint, children, error }: IField) {
+export function Field({ id, label, hint, children, error }: IField) {
   return (
     <div className="profile-option-container">
       <div className="profile-option-label-container">
