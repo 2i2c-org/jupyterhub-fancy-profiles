@@ -8,6 +8,7 @@ interface ICombobox {
   error: string;
   value: string;
   onChange: React.ChangeEventHandler<HTMLInputElement>;
+  onBlur: React.FocusEventHandler<HTMLInputElement>;
   options: string[];
 }
 
@@ -35,6 +36,7 @@ function Combobox(
     error,
     value,
     onChange,
+    onBlur,
     options,
   }: ICombobox,
   ref: React.MutableRefObject<HTMLInputElement>
@@ -48,7 +50,8 @@ function Combobox(
     ? options.filter((o) => o.toLocaleLowerCase().startsWith(value.toLocaleLowerCase()))
     : options;
 
-  const onBlur = () => {
+  const handleBlur: React.FocusEventHandler<HTMLInputElement> = (event) => {
+    onBlur(event);
     setListBoxExpanded(false);
     setTouched(true);
   };
@@ -136,7 +139,7 @@ function Combobox(
           name={id}
           value={value}
           onChange={onChange}
-          onBlur={onBlur}
+          onBlur={handleBlur}
           onKeyDown={onKeyDown}
           ref={ref}
         />

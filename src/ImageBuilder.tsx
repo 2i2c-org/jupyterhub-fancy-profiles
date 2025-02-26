@@ -6,6 +6,7 @@ import { TextField } from "./components/form/fields";
 import { SpawnerFormContext } from "./state";
 import useRepositoryField from "./hooks/useRepositoryField";
 import useRepositoryCache from "./hooks/useRepositoryCache";
+import Combobox from "./components/form/Combobox";
 
 async function buildImage(
   repo: string,
@@ -123,7 +124,7 @@ export function ImageBuilder({ name, isActive }: IImageBuilder) {
   } = useContext(SpawnerFormContext);
   const { repo, repoId, repoFieldProps, repoError } =
     useRepositoryField(binderRepo);
-  const { cacheRepositorySelection } = useRepositoryCache(name);
+  const { cacheRepositorySelection, repositoryOptions } = useRepositoryCache(name);
 
   const [ref, setRef] = useState<string>(repoRef || "HEAD");
   const repoFieldRef = useRef<HTMLInputElement>();
@@ -184,7 +185,7 @@ export function ImageBuilder({ name, isActive }: IImageBuilder) {
         <div className="profile-option-control-container">GitHub</div>
       </div>
 
-      <div className="profile-option-container">
+      {/* <div className="profile-option-container">
         <div className="profile-option-label-container">
           <label htmlFor="repo" className="form-label">
             Repository
@@ -201,7 +202,16 @@ export function ImageBuilder({ name, isActive }: IImageBuilder) {
           />
           {repoError && <div className="invalid-feedback">{repoError}</div>}
         </div>
-      </div>
+      </div> */}
+
+      <Combobox
+        id="repo"
+        label="Repository"
+        ref={repoFieldRef}
+        {...repoFieldProps}
+        error={repoError}
+        options={repositoryOptions}
+      />
 
       <TextField
         ref={branchFieldRef}

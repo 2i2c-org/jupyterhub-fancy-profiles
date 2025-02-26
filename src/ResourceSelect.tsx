@@ -40,7 +40,6 @@ function ResourceSelect({
   }
 
   const selectedCustomOption = customOptions.find((opt) => opt.value === value);
-
   return (
     <>
       {(options.length > 1 || hasDefaultChoices) && (

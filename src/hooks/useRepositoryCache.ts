@@ -20,13 +20,47 @@ function initDb() {
   });
 }
 
+type TRepositoryEntry = {
+  id: string;
+  field_name: string;
+  repository: string;
+  ref: string;
+  last_used: string;
+  num_used: string;
+}
+
 function useRepositoryCache(fieldName: string) {
   const [db, setDb] = useState<IDBDatabase>();
+  const [repositoryOptions, setRepositoryOptions] = useState<string[]>([]);
 
-  useEffect(() => {
-    initDb().then(setDb);
-  }, []);
+  const getRepositoryOptions = () => {
+    const transaction = db.transaction(["repositories"], "readonly");
+    const objectStore = transaction.objectStore("repositories");
 
+    const dbReq = objectStore.getAll();
+    dbReq.onsuccess = (event) => {
+      const result: TRepositoryEntry[] = (event.target as IDBRequest).result;
+
+      const options = result
+        .filter(({ field_name }) => field_name === fieldName)
+        .reduce((acc, { repository, num_used }) => {
+          const repo = acc.find(([repoName]) => repository === repoName);
+          if (repo) {
+            return [
+              ...acc.filter(([repoName]) => repository !== repoName),
+              {
+                ...repo,
+                num_used: repo.num_used + num_used
+              }
+            ];
+          } else {
+            return [...acc, [repository, num_used]];
+          }
+        }, [])
+        .map(([repository]) => repository);
+      setRepositoryOptions(options);
+    };
+  };
 
   const cacheRepositorySelection = useCallback((repository: string, ref: string) => {
     const transaction = db.transaction(["repositories"], "readwrite");
@@ -59,10 +93,21 @@ function useRepositoryCache(fieldName: string) {
         };
       }
     };
+  }, [db]);
+
+  useEffect(() => {
+    initDb().then(setDb);
   }, []);
+
+  useEffect(() => {
+    if (db) {
+      getRepositoryOptions();
+    }
+  }, [db]);
 
   return {
     cacheRepositorySelection,
+    repositoryOptions
   };
 }
 
