@@ -14,14 +14,14 @@ export function ProfileOptions({ config, profile }: IProfileOptionsProps) {
       {Object.entries(config).map(([key, option]) => {
         const customOptions = hasDynamicImageBuilding(key, option)
           ? [
-            {
-              value: "--extra-selectable-item",
-              label: "Build your own image",
-              description:
+              {
+                value: "--extra-selectable-item",
+                label: "Build your own image",
+                description:
                   "Use a mybinder.org compatible GitHub repo to build your own image",
-              component: ImageBuilder,
-            },
-          ]
+                component: ImageBuilder,
+              },
+            ]
           : [];
 
         return (

@@ -12,10 +12,10 @@ interface ICombobox {
   options: string[];
 }
 
-function setInputValue(input: HTMLInputElement, value: string){
+function setInputValue(input: HTMLInputElement, value: string) {
   const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
     window.HTMLInputElement.prototype,
-    "value"
+    "value",
   ).set;
   nativeInputValueSetter.call(input, value);
 
@@ -29,31 +29,22 @@ function setInputValue(input: HTMLInputElement, value: string){
  */
 
 function Combobox(
-  {
-    id,
-    label,
-    hint,
-    error,
-    value,
-    onChange,
-    onBlur,
-    options,
-  }: ICombobox,
-  ref: React.MutableRefObject<HTMLInputElement>
+  { id, label, hint, error, value, onChange, onBlur, options }: ICombobox,
+  ref: React.MutableRefObject<HTMLInputElement>,
 ) {
-  const [touched, setTouched] = useState<boolean>(false);
   const [listBoxExpanded, setListBoxExpanded] = useState<boolean>(false);
   const [selectedOptionIdx, setSelectedOptionIdx] = useState<number>();
   const [inputHasVisualFocus, setInputHasVisualFocus] = useState<boolean>(true);
 
   const displayOptions = value
-    ? options.filter((o) => o.toLocaleLowerCase().startsWith(value.toLocaleLowerCase()))
+    ? options.filter((o) =>
+        o.toLocaleLowerCase().startsWith(value.toLocaleLowerCase()),
+      )
     : options;
 
   const handleBlur: React.FocusEventHandler<HTMLInputElement> = (event) => {
     onBlur(event);
     setListBoxExpanded(false);
-    setTouched(true);
   };
 
   const onKeyDown: KeyboardEventHandler<HTMLInputElement> = (event) => {
@@ -63,7 +54,9 @@ function Combobox(
         setInputHasVisualFocus(false);
         setListBoxExpanded(true);
         if (selectedOptionIdx !== undefined) {
-          setSelectedOptionIdx(prev => prev + 1 < displayOptions.length ? prev + 1 : 0);
+          setSelectedOptionIdx((prev) =>
+            prev + 1 < displayOptions.length ? prev + 1 : 0,
+          );
         } else {
           if (!event.altKey) {
             setSelectedOptionIdx(0);
@@ -75,7 +68,9 @@ function Combobox(
         setInputHasVisualFocus(false);
         setListBoxExpanded(true);
         if (selectedOptionIdx !== undefined) {
-          setSelectedOptionIdx(prev => prev - 1 >= 0 ? prev - 1 : displayOptions.length - 1);
+          setSelectedOptionIdx((prev) =>
+            prev - 1 >= 0 ? prev - 1 : displayOptions.length - 1,
+          );
         } else {
           setSelectedOptionIdx(displayOptions.length - 1);
         }
@@ -119,7 +114,6 @@ function Combobox(
         setSelectedOptionIdx(undefined);
         return;
     }
-
   };
 
   const listboxId = `${id}-listbox`;

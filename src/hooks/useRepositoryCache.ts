@@ -15,7 +15,11 @@ function initDb() {
     request.onupgradeneeded = (event) => {
       const db = (event.target as IDBOpenDBRequest).result;
       const objectStore = db.createObjectStore(STORE_NAME, { keyPath: "id" });
-      objectStore.createIndex("field_name, repository, ref", ["field_name", "repository", "ref"], { unique: true });
+      objectStore.createIndex(
+        "field_name, repository, ref",
+        ["field_name", "repository", "ref"],
+        { unique: true },
+      );
     };
   });
 }
@@ -27,7 +31,7 @@ type TRepositoryEntry = {
   ref: string;
   last_used: string;
   num_used: string;
-}
+};
 
 function useRepositoryCache(fieldName: string) {
   const [db, setDb] = useState<IDBDatabase>();
@@ -50,8 +54,8 @@ function useRepositoryCache(fieldName: string) {
               ...acc.filter(([repoName]) => repository !== repoName),
               {
                 ...repo,
-                num_used: repo.num_used + num_used
-              }
+                num_used: repo.num_used + num_used,
+              },
             ];
           } else {
             return [...acc, [repository, num_used]];
@@ -62,38 +66,41 @@ function useRepositoryCache(fieldName: string) {
     };
   };
 
-  const cacheRepositorySelection = useCallback((repository: string, ref: string) => {
-    const transaction = db.transaction(["repositories"], "readwrite");
-    const objectStore = transaction.objectStore("repositories");
+  const cacheRepositorySelection = useCallback(
+    (repository: string, ref: string) => {
+      const transaction = db.transaction(["repositories"], "readwrite");
+      const objectStore = transaction.objectStore("repositories");
 
-    const index = objectStore.index("field_name, repository, ref");
-    const dbReq = index.get([fieldName, repository, ref]);
-    dbReq.onsuccess = (event) => {
-      const result = (event.target as IDBRequest).result;
-      if (result) {
-        // update the record
-        result.num_used = result.num_used + 1;
-        result.last_used = new Date().toISOString();
-        const r = objectStore.put(result);
-        r.onerror = (event) => {
-          console.error((event.target as IDBRequest).error);
-        };
-      } else {
-        // create the record
-        const r = objectStore.add({
-          id: crypto.randomUUID(),
-          field_name: fieldName,
-          repository,
-          ref,
-          num_used: 1,
-          last_used: new Date().toISOString()
-        });
-        r.onerror = (event) => {
-          console.error((event.target as IDBRequest).error);
-        };
-      }
-    };
-  }, [db]);
+      const index = objectStore.index("field_name, repository, ref");
+      const dbReq = index.get([fieldName, repository, ref]);
+      dbReq.onsuccess = (event) => {
+        const result = (event.target as IDBRequest).result;
+        if (result) {
+          // update the record
+          result.num_used = result.num_used + 1;
+          result.last_used = new Date().toISOString();
+          const r = objectStore.put(result);
+          r.onerror = (event) => {
+            console.error((event.target as IDBRequest).error);
+          };
+        } else {
+          // create the record
+          const r = objectStore.add({
+            id: crypto.randomUUID(),
+            field_name: fieldName,
+            repository,
+            ref,
+            num_used: 1,
+            last_used: new Date().toISOString(),
+          });
+          r.onerror = (event) => {
+            console.error((event.target as IDBRequest).error);
+          };
+        }
+      };
+    },
+    [db],
+  );
 
   useEffect(() => {
     initDb().then(setDb);
@@ -107,7 +114,7 @@ function useRepositoryCache(fieldName: string) {
 
   return {
     cacheRepositorySelection,
-    repositoryOptions
+    repositoryOptions,
   };
 }
 

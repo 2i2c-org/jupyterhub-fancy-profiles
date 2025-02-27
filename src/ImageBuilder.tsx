@@ -12,7 +12,7 @@ async function buildImage(
   repo: string,
   ref: string,
   term: Terminal,
-  fitAddon: FitAddon
+  fitAddon: FitAddon,
 ) {
   const { BinderRepository } = await import("@jupyterhub/binderhub-client");
   const providerSpec = "gh/" + repo + "/" + ref;
@@ -124,7 +124,8 @@ export function ImageBuilder({ name, isActive }: IImageBuilder) {
   } = useContext(SpawnerFormContext);
   const { repo, repoId, repoFieldProps, repoError } =
     useRepositoryField(binderRepo);
-  const { cacheRepositorySelection, repositoryOptions } = useRepositoryCache(name);
+  const { cacheRepositorySelection, repositoryOptions } =
+    useRepositoryCache(name);
 
   const [ref, setRef] = useState<string>(repoRef || "HEAD");
   const repoFieldRef = useRef<HTMLInputElement>();
@@ -247,7 +248,8 @@ export function ImageBuilder({ name, isActive }: IImageBuilder) {
         aria-hidden="true"
         style={{ display: "none" }}
         onInvalid={() =>
-          setCustomImageError("Wait for the image build to complete.")}
+          setCustomImageError("Wait for the image build to complete.")
+        }
         onChange={() => {}} // Hack to prevent a console error, while at the same time allowing for this field to be validatable, ie. not making it read-only
       />
       <div className="profile-option-container">
