@@ -1,15 +1,17 @@
 import { forwardRef, KeyboardEventHandler, useState } from "react";
-import { Field } from "./fields";
+import { Field, TValidateConfig, validateField } from "./fields";
 
 interface ICombobox {
   id: string;
   label: string;
   hint?: string;
-  error: string;
+  error?: string;
   value: string;
+  tabIndex?: number;
   onChange: React.ChangeEventHandler<HTMLInputElement>;
-  onBlur: React.FocusEventHandler<HTMLInputElement>;
+  onBlur?: React.FocusEventHandler<HTMLInputElement>;
   options: string[];
+  validate?: TValidateConfig;
 }
 
 function setInputValue(input: HTMLInputElement, value: string) {
@@ -29,12 +31,25 @@ function setInputValue(input: HTMLInputElement, value: string) {
  */
 
 function Combobox(
-  { id, label, hint, error, value, onChange, onBlur, options }: ICombobox,
+  {
+    id,
+    label,
+    hint,
+    error,
+    value,
+    onChange,
+    onBlur,
+    options,
+    tabIndex,
+    validate = {},
+  }: ICombobox,
   ref: React.MutableRefObject<HTMLInputElement>,
 ) {
   const [listBoxExpanded, setListBoxExpanded] = useState<boolean>(false);
   const [selectedOptionIdx, setSelectedOptionIdx] = useState<number>();
   const [inputHasVisualFocus, setInputHasVisualFocus] = useState<boolean>(true);
+
+  const [touched, setTouched] = useState(false);
 
   const displayOptions = value
     ? options.filter((o) =>
@@ -43,7 +58,8 @@ function Combobox(
     : options;
 
   const handleBlur: React.FocusEventHandler<HTMLInputElement> = (event) => {
-    onBlur(event);
+    if (onBlur) onBlur(event);
+    setTouched(true);
     setListBoxExpanded(false);
   };
 
@@ -117,12 +133,14 @@ function Combobox(
   };
 
   const listboxId = `${id}-listbox`;
+  const required = !!validate.required;
+  const validateError = validateField(value, validate, touched);
 
   return (
     <div style={{ position: "relative" }}>
-      <Field id={id} label={label} hint={hint} error={error}>
+      <Field id={id} label={label} hint={hint} error={validateError || error}>
         <input
-          className={`form-control ${!inputHasVisualFocus ? "shadow-none" : ""} ${error ? "is-invalid" : ""}`}
+          className={`form-control ${!inputHasVisualFocus ? "shadow-none" : ""} ${validateError || error ? "is-invalid" : ""}`}
           type="text"
           role="combobox"
           aria-invalid={!!error}
@@ -135,6 +153,8 @@ function Combobox(
           onChange={onChange}
           onBlur={handleBlur}
           onKeyDown={onKeyDown}
+          tabIndex={tabIndex}
+          required={required}
           ref={ref}
         />
         <ul
@@ -146,6 +166,7 @@ function Combobox(
             display: listBoxExpanded ? "block" : "none",
             position: "absolute",
             top: "2.5rem",
+            zIndex: 1,
           }}
         >
           {displayOptions.map((option, index) => (

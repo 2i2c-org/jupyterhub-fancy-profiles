@@ -3,7 +3,7 @@ import { forwardRef, PropsWithChildren, useState } from "react";
 import { CustomizedSelect } from "./CustomSelect";
 import { SelectOption } from "../../types/fields";
 
-type TValidateConfig = {
+export type TValidateConfig = {
   required?: string;
   pattern?: {
     value: string;
@@ -11,7 +11,7 @@ type TValidateConfig = {
   };
 };
 
-function validateField(
+export function validateField(
   value: string,
   validateConfig: TValidateConfig,
   touched: boolean,
