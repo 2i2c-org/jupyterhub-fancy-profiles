@@ -1,4 +1,4 @@
-import { forwardRef, KeyboardEventHandler, useState } from "react";
+import { forwardRef, KeyboardEventHandler, useRef, useState } from "react";
 import { Field, TValidateConfig, validateField } from "./fields";
 
 interface ICombobox {
@@ -43,8 +43,11 @@ function Combobox(
     tabIndex,
     validate = {},
   }: ICombobox,
-  ref: React.MutableRefObject<HTMLInputElement>,
+  ref?: React.MutableRefObject<HTMLInputElement>,
 ) {
+  const fieldRefInternal = useRef();
+  const fieldRef = ref || fieldRefInternal;
+
   const [listBoxExpanded, setListBoxExpanded] = useState<boolean>(false);
   const [selectedOptionIdx, setSelectedOptionIdx] = useState<number>();
   const [inputHasVisualFocus, setInputHasVisualFocus] = useState<boolean>(true);
@@ -93,7 +96,7 @@ function Combobox(
         break;
       case "Enter":
         if (selectedOptionIdx !== undefined) {
-          setInputValue(ref.current, displayOptions[selectedOptionIdx]);
+          setInputValue(fieldRef.current, displayOptions[selectedOptionIdx]);
         }
         setInputHasVisualFocus(true);
         setListBoxExpanded(false);
@@ -106,21 +109,21 @@ function Combobox(
           setListBoxExpanded(false);
           setSelectedOptionIdx(undefined);
         } else {
-          setInputValue(ref.current, "");
+          setInputValue(fieldRef.current, "");
         }
         break;
       case "Home":
         setInputHasVisualFocus(true);
-        ref.current.selectionStart = 0;
-        ref.current.selectionEnd = 0;
+        fieldRef.current.selectionStart = 0;
+        fieldRef.current.selectionEnd = 0;
         setSelectedOptionIdx(undefined);
         event.preventDefault();
         event.stopPropagation();
         break;
       case "End":
         setInputHasVisualFocus(true);
-        ref.current.selectionStart = value.length;
-        ref.current.selectionEnd = value.length;
+        fieldRef.current.selectionStart = value.length;
+        fieldRef.current.selectionEnd = value.length;
         setSelectedOptionIdx(undefined);
         event.preventDefault();
         event.stopPropagation();
@@ -147,6 +150,7 @@ function Combobox(
           aria-autocomplete="list"
           aria-expanded={listBoxExpanded}
           aria-controls={listboxId}
+          aria-activedescendant={selectedOptionIdx !== undefined ? `${listboxId}-${selectedOptionIdx}` : undefined}
           id={id}
           name={id}
           value={value}
@@ -155,7 +159,7 @@ function Combobox(
           onKeyDown={onKeyDown}
           tabIndex={tabIndex}
           required={required}
-          ref={ref}
+          ref={fieldRef}
         />
         <ul
           id={listboxId}
@@ -171,7 +175,8 @@ function Combobox(
         >
           {displayOptions.map((option, index) => (
             <li
-              key={`${id}-${option}`}
+              key={`${listboxId}-${option}`}
+              id={`${listboxId}-${index}`}
               role="option"
               className={`list-group-item ${index === selectedOptionIdx ? "active" : ""}`}
             >
