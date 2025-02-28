@@ -66,6 +66,16 @@ function Combobox(
     setListBoxExpanded(false);
   };
 
+  const handleFocus: React.FocusEventHandler<HTMLInputElement> = () => {
+    setListBoxExpanded(true);
+  };
+
+  const handleOptionClick = (selectedOption: string) => {
+    setInputValue(fieldRef.current, selectedOption);
+    setListBoxExpanded(false);
+    setSelectedOptionIdx(undefined);
+  };
+
   const onKeyDown: KeyboardEventHandler<HTMLInputElement> = (event) => {
     switch (event.key) {
       case "Down":
@@ -150,11 +160,16 @@ function Combobox(
           aria-autocomplete="list"
           aria-expanded={listBoxExpanded}
           aria-controls={listboxId}
-          aria-activedescendant={selectedOptionIdx !== undefined ? `${listboxId}-${selectedOptionIdx}` : undefined}
+          aria-activedescendant={
+            selectedOptionIdx !== undefined
+              ? `${listboxId}-${selectedOptionIdx}`
+              : undefined
+          }
           id={id}
           name={id}
           value={value}
           onChange={onChange}
+          onFocus={handleFocus}
           onBlur={handleBlur}
           onKeyDown={onKeyDown}
           tabIndex={tabIndex}
@@ -178,7 +193,12 @@ function Combobox(
               key={`${listboxId}-${option}`}
               id={`${listboxId}-${index}`}
               role="option"
-              className={`list-group-item ${index === selectedOptionIdx ? "active" : ""}`}
+              className={`list-group-item list-group-item-action ${index === selectedOptionIdx ? "active" : ""}`}
+              onClick={() => handleOptionClick(option)}
+              onMouseDown={(e) => e.preventDefault()} // Preventing default so the input doesn't loose focus
+              style={{
+                cursor: "pointer",
+              }}
             >
               {option}
             </li>
