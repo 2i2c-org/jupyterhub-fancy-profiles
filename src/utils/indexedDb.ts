@@ -1,18 +1,25 @@
 const DB_NAME = "jupytherhub-imagebuild";
 
-const STORES = [{
-  name: "repositories",
-  indexes: [{
-    config: { unique: true },
-    fields: ["field_name", "repository", "ref"]
-  }]
-}, {
-  name: "choices",
-  indexes: [{
-    config: { unique: true },
-    fields: ["field_name", "choice"]
-  }]
-}];
+const STORES = [
+  {
+    name: "repositories",
+    indexes: [
+      {
+        config: { unique: true },
+        fields: ["field_name", "repository", "ref"],
+      },
+    ],
+  },
+  {
+    name: "choices",
+    indexes: [
+      {
+        config: { unique: true },
+        fields: ["field_name", "choice"],
+      },
+    ],
+  },
+];
 
 export function initDb() {
   return new Promise((resolve, reject) => {
@@ -32,7 +39,6 @@ export function initDb() {
           objectStore.createIndex(fields.join(", "), fields, config);
         });
       });
-
     };
   });
 }

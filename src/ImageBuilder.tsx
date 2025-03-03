@@ -4,8 +4,8 @@ import { type FitAddon } from "xterm-addon-fit";
 
 import { SpawnerFormContext } from "./state";
 import useRepositoryField from "./hooks/useRepositoryField";
-import useRepositoryCache from "./hooks/useRepositoryCache";
 import Combobox from "./components/form/Combobox";
+import useFormCache from "./hooks/useFormCache";
 
 async function buildImage(
   repo: string,
@@ -123,8 +123,8 @@ export function ImageBuilder({ name, isActive }: IImageBuilder) {
   } = useContext(SpawnerFormContext);
   const { repo, repoId, repoFieldProps, repoError } =
     useRepositoryField(binderRepo);
-  const { cacheRepositorySelection, repositoryOptions, getRefOptions } =
-    useRepositoryCache(name);
+  const { getRepositoryOptions, getRefOptions, cacheRepositorySelection } =
+    useFormCache();
 
   const [ref, setRef] = useState<string>(repoRef || "HEAD");
   const repoFieldRef = useRef<HTMLInputElement>();
@@ -138,8 +138,9 @@ export function ImageBuilder({ name, isActive }: IImageBuilder) {
 
   const [isBuildingImage, setIsBuildingImage] = useState<boolean>(false);
 
+  const repositoryOptions = getRepositoryOptions(name);
   const refOptions = useMemo(() => {
-    return getRefOptions(repoId);
+    return getRefOptions(name, repoId);
   }, [repoId]);
 
   useEffect(() => {
@@ -165,7 +166,7 @@ export function ImageBuilder({ name, isActive }: IImageBuilder) {
       return;
     }
 
-    cacheRepositorySelection(repoId, ref);
+    cacheRepositorySelection(name, repoId, ref);
     setIsBuildingImage(true);
     buildImage(repoId, ref, term, fitAddon)
       .then((imageName) => {
