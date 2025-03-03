@@ -9,6 +9,7 @@ import "../node_modules/xterm/css/xterm.css";
 import "./form.css";
 import { SpawnerFormContext } from "./state";
 import { ProfileOptions } from "./ProfileOptions";
+import useFormCache from "./hooks/useFormCache";
 
 /**
  * Generates the *contents* of the form shown in the profile selection page
@@ -25,6 +26,7 @@ function Form() {
     paramsError,
   } = useContext(SpawnerFormContext);
   const [formError, setFormError] = useState("");
+  const { cacheChoiceOption } = useFormCache();
 
   const handleSubmit: MouseEventHandler<HTMLButtonElement> = (e) => {
     setFormError("");
@@ -38,6 +40,13 @@ function Form() {
       setFormError(!selectedProfile ? "Select a container profile" : "");
       e.preventDefault();
     }
+
+    const cacheElements = form.getElementsByClassName("cache-unlisted-choice");
+    Array.from(cacheElements).forEach((el) => {
+      const { id, value } = el as HTMLInputElement;
+      cacheChoiceOption(id, value);
+    });
+    e.preventDefault();
   };
 
   const handleProfileSelect: ChangeEventHandler<HTMLInputElement> = (e) => {

@@ -1,7 +1,7 @@
 import { forwardRef, KeyboardEventHandler, useRef, useState } from "react";
 import { Field, TValidateConfig, validateField } from "./fields";
 
-interface ICombobox {
+interface ICombobox extends React.InputHTMLAttributes<HTMLInputElement> {
   id: string;
   label: string;
   hint?: string;
@@ -42,6 +42,8 @@ function Combobox(
     options,
     tabIndex,
     validate = {},
+    className = "",
+    ...restProps
   }: ICombobox,
   ref?: React.MutableRefObject<HTMLInputElement>,
 ) {
@@ -105,6 +107,7 @@ function Combobox(
         }
         break;
       case "Enter":
+        event.preventDefault(); // Prevent form submit
         if (selectedOptionIdx !== undefined) {
           setInputValue(fieldRef.current, displayOptions[selectedOptionIdx]);
         }
@@ -153,7 +156,8 @@ function Combobox(
     <div style={{ position: "relative" }}>
       <Field id={id} label={label} hint={hint} error={validateError || error}>
         <input
-          className={`form-control ${!inputHasVisualFocus ? "shadow-none" : ""} ${validateError || error ? "is-invalid" : ""}`}
+          {...restProps}
+          className={`form-control ${!inputHasVisualFocus ? "shadow-none" : ""} ${validateError || error ? "is-invalid" : ""} ${className}`}
           type="text"
           role="combobox"
           aria-invalid={!!error}

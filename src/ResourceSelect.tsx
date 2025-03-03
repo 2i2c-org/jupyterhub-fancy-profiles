@@ -1,9 +1,11 @@
 import { useContext, useState } from "react";
 import useSelectOptions from "./hooks/useSelectOptions";
 import { SpawnerFormContext } from "./state";
-import { SelectField, TextField } from "./components/form/fields";
+import { SelectField } from "./components/form/fields";
 import { IProfileOption } from "./types/config";
 import { ICustomOption } from "./types/fields";
+import Combobox from "./components/form/Combobox";
+import useFormCache from "./hooks/useFormCache";
 
 interface IResourceSelect {
   id: string;
@@ -26,6 +28,7 @@ function ResourceSelect({
     customOptions,
   );
   const { profile: selectedProfile } = useContext(SpawnerFormContext);
+  const { getChoiceOptions } = useFormCache();
   const FIELD_ID = `profile-option-${profile}--${id}`;
   const FIELD_ID_UNLISTED = `${FIELD_ID}--unlisted-choice`;
 
@@ -40,6 +43,7 @@ function ResourceSelect({
   }
 
   const selectedCustomOption = customOptions.find((opt) => opt.value === value);
+  const choiceOptions = getChoiceOptions(FIELD_ID_UNLISTED);
   return (
     <>
       {(options.length > 1 || hasDefaultChoices) && (
@@ -59,8 +63,9 @@ function ResourceSelect({
         />
       )}
       {value === "unlisted_choice" && (
-        <TextField
+        <Combobox
           id={FIELD_ID_UNLISTED}
+          className={isActive ? "cache-unlisted-choice" : ""}
           label={unlisted_choice.display_name}
           value={unlistedChoiceValue}
           validate={
@@ -74,6 +79,7 @@ function ResourceSelect({
           }
           onChange={(e) => setUnlistedChoiceValue(e.target.value)}
           tabIndex={isActive ? 0 : -1}
+          options={choiceOptions}
         />
       )}
       {!!selectedCustomOption && (

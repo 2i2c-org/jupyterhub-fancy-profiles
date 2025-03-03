@@ -1,28 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-
-const DB_NAME = "jupytherhub-imagebuild";
-const STORE_NAME = "repositories";
-
-function initDb() {
-  return new Promise((resolve, reject) => {
-    const request = indexedDB.open(DB_NAME, 3);
-    request.onerror = (event) => {
-      reject((event.target as IDBOpenDBRequest).error);
-    };
-    request.onsuccess = (event) => {
-      resolve((event.target as IDBOpenDBRequest).result);
-    };
-    request.onupgradeneeded = (event) => {
-      const db = (event.target as IDBOpenDBRequest).result;
-      const objectStore = db.createObjectStore(STORE_NAME, { keyPath: "id" });
-      objectStore.createIndex(
-        "field_name, repository, ref",
-        ["field_name", "repository", "ref"],
-        { unique: true },
-      );
-    };
-  });
-}
+import { initDb } from "../utils/indexedDb";
 
 type TRepositoryEntry = {
   id: string;
