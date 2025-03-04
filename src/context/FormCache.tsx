@@ -59,7 +59,7 @@ export const FormCacheProvider = ({ children }: PropsWithChildren) => {
         field_name: fieldName,
         choice,
       }
-    );
+    ).then(loadPreviousChoices);
   };
 
   const cacheRepositorySelection = (fieldName: string, repository: string, ref: string) => {
@@ -70,7 +70,7 @@ export const FormCacheProvider = ({ children }: PropsWithChildren) => {
         repository,
         ref,
       }
-    );
+    ).then(loadPreviousRepositories);
   };
 
   const getChoiceOptions = (fieldName: string) => {
