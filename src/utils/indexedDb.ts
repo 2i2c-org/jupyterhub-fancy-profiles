@@ -1,27 +1,21 @@
 const DB_NAME = "jupytherhub-imagebuild";
 
-const STORES = [
-  {
-    name: "repositories",
-    indexes: [
-      {
-        config: { unique: true },
-        fields: ["field_name", "repository", "ref"],
-      },
-    ],
+const STORES = {
+  "repositories": {
+    index: {
+      config: { unique: true },
+      fields: ["field_name", "repository", "ref"],
+    },
   },
-  {
-    name: "choices",
-    indexes: [
-      {
-        config: { unique: true },
-        fields: ["field_name", "choice"],
-      },
-    ],
-  },
-];
+  "choices": {
+    index: {
+      config: { unique: true },
+      fields: ["field_name", "choice"],
+    },
+  }
+};
 
-export function initDb() {
+function initDb(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
     const request = indexedDB.open(DB_NAME, 3);
     request.onerror = (event) => {
@@ -33,12 +27,66 @@ export function initDb() {
     request.onupgradeneeded = (event) => {
       const db = (event.target as IDBOpenDBRequest).result;
 
-      STORES.forEach(({ name, indexes }) => {
+      Object.keys(STORES).forEach((name) => {
         const objectStore = db.createObjectStore(name, { keyPath: "id" });
-        indexes.forEach(({ config, fields }) => {
-          objectStore.createIndex(fields.join(", "), fields, config);
-        });
+        const { config, fields } = STORES[name as keyof typeof STORES].index;
+        objectStore.createIndex(fields.join(", "), fields, config);
       });
     };
+  });
+}
+
+export function getRecords(store: keyof typeof STORES) {
+  return new Promise((resolve, reject) => {
+    initDb().then((db) => {
+      const transaction = db.transaction([store], "readonly");
+
+      const objectStore = transaction.objectStore(store);
+      const dbReq = objectStore.getAll();
+      dbReq.onsuccess = (event) => {
+        const result = (event.target as IDBRequest).result;
+        resolve(result);
+      };
+      dbReq.onerror = (event) => reject((event.target as IDBRequest).error);
+      db.close();
+    });
+  });
+}
+
+export function cacheOption(
+  store: keyof typeof STORES,
+  record: {[key: string]: string}
+): Promise<void> {
+  return new Promise((resolve, reject) => {
+    initDb().then((db) => {
+      const transaction = db.transaction([store], "readwrite");
+      const objectStore = transaction.objectStore(store);
+
+      const fields = STORES[store].index.fields;
+      const index = objectStore.index(fields.join(", "));
+      const dbReq = index.get(Object.keys(record).map(key => record[key]));
+
+      dbReq.onsuccess = (event) => {
+        const result = (event.target as IDBRequest).result;
+
+        if (result) {
+          // update the record if the choice combination has been used before
+          result.num_used = result.num_used + 1;
+          result.last_used = new Date().toISOString();
+          const r = objectStore.put(result);
+          r.onsuccess = () => resolve();
+          r.onerror = (event) => reject((event.target as IDBRequest).error);
+        } else {
+          const r = objectStore.add({
+            ...record,
+            id: crypto.randomUUID(),
+            num_used: 1,
+            last_used: new Date().toISOString(),
+          });
+          r.onsuccess = () => resolve();
+          r.onerror = (event) => reject((event.target as IDBRequest).error);
+        }
+      };
+    });
   });
 }
