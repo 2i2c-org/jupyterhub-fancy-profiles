@@ -233,8 +233,7 @@ export function ImageBuilder({ name, isActive }: IImageBuilder) {
         aria-hidden="true"
         style={{ display: "none" }}
         onInvalid={() =>
-          setCustomImageError("Wait for the image build to complete.")
-        }
+          setCustomImageError("Wait for the image build to complete.")}
         onChange={() => {}} // Hack to prevent a console error, while at the same time allowing for this field to be validatable, ie. not making it read-only
       />
       <div className="profile-option-container">

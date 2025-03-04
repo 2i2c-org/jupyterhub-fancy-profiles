@@ -58,8 +58,8 @@ function Combobox(
 
   const displayOptions = value
     ? options.filter((o) =>
-        o.toLocaleLowerCase().startsWith(value.toLocaleLowerCase()),
-      )
+      o.toLocaleLowerCase().startsWith(value.toLocaleLowerCase()),
+    )
     : options;
 
   const handleBlur: React.FocusEventHandler<HTMLInputElement> = (event) => {
