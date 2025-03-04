@@ -123,8 +123,7 @@ export function ImageBuilder({ name, isActive }: IImageBuilder) {
   } = useContext(SpawnerFormContext);
   const { repo, repoId, repoFieldProps, repoError } =
     useRepositoryField(binderRepo);
-  const { getRepositoryOptions, getRefOptions, cacheRepositorySelection } =
-    useFormCache();
+  const { getRepositoryOptions, getRefOptions } = useFormCache();
 
   const [ref, setRef] = useState<string>(repoRef || "HEAD");
   const repoFieldRef = useRef<HTMLInputElement>();
@@ -166,7 +165,6 @@ export function ImageBuilder({ name, isActive }: IImageBuilder) {
       return;
     }
 
-    cacheRepositorySelection(name, repoId, ref);
     setIsBuildingImage(true);
     buildImage(repoId, ref, term, fitAddon)
       .then((imageName) => {
@@ -192,6 +190,7 @@ export function ImageBuilder({ name, isActive }: IImageBuilder) {
 
       <Combobox
         id={`${name}--repo`}
+        className={isActive ? "cache-repository" : undefined}
         label="Repository"
         ref={repoFieldRef}
         {...repoFieldProps}
