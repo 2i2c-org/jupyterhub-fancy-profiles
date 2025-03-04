@@ -46,7 +46,6 @@ function Form() {
       const { id, value } = el as HTMLInputElement;
       cacheChoiceOption(id, value);
     });
-    e.preventDefault();
   };
 
   const handleProfileSelect: ChangeEventHandler<HTMLInputElement> = (e) => {
