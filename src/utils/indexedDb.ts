@@ -13,7 +13,7 @@ const STORES = {
       fields: ["field_name", "choice"],
     },
   }
-};
+} as const;
 
 function initDb(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
@@ -30,7 +30,7 @@ function initDb(): Promise<IDBDatabase> {
       Object.keys(STORES).forEach((name) => {
         const objectStore = db.createObjectStore(name, { keyPath: "id" });
         const { config, fields } = STORES[name as keyof typeof STORES].index;
-        objectStore.createIndex(fields.join(", "), fields, config);
+        objectStore.createIndex(fields.join(", "), fields.map(f => f), config);
       });
     };
   });
@@ -53,9 +53,9 @@ export function getRecords(store: keyof typeof STORES) {
   });
 }
 
-export function cacheOption(
-  store: keyof typeof STORES,
-  record: {[key: string]: string}
+export function cacheOption<StoreName extends keyof typeof STORES>(
+  store: StoreName,
+  record: Record<typeof STORES[StoreName]["index"]["fields"][number], string>
 ): Promise<void> {
   return new Promise((resolve, reject) => {
     initDb().then((db) => {
@@ -64,7 +64,7 @@ export function cacheOption(
 
       const fields = STORES[store].index.fields;
       const index = objectStore.index(fields.join(", "));
-      const dbReq = index.get(Object.keys(record).map(key => record[key]));
+      const dbReq = index.get(fields.map((key) => record[key as keyof typeof record]));
 
       dbReq.onsuccess = (event) => {
         const result = (event.target as IDBRequest).result;
@@ -87,6 +87,7 @@ export function cacheOption(
           r.onerror = (event) => reject((event.target as IDBRequest).error);
         }
       };
+      db.close();
     });
   });
 }
