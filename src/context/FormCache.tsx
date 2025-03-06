@@ -123,7 +123,7 @@ export const FormCacheProvider = ({ children }: PropsWithChildren) => {
     // Retrieve previously used choices
     loadPreviousChoices();
     loadPreviousRepositories();
-  });
+  }, []);
 
   const contextValue = {
     getChoiceOptions,
