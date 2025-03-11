@@ -196,6 +196,7 @@ export function ImageBuilder({ name, isActive }: IImageBuilder) {
         {...repoFieldProps}
         error={repoError}
         options={repositoryOptions}
+        autoComplete="off"
       />
 
       <Combobox
@@ -212,6 +213,7 @@ export function ImageBuilder({ name, isActive }: IImageBuilder) {
         onChange={(e) => setRef(e.target.value)}
         tabIndex={isActive ? 0 : -1}
         options={refOptions}
+        autoComplete="off"
       />
 
       <div className="right-button">

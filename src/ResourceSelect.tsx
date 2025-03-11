@@ -80,6 +80,7 @@ function ResourceSelect({
           onChange={(e) => setUnlistedChoiceValue(e.target.value)}
           tabIndex={isActive ? 0 : -1}
           options={choiceOptions}
+          autoComplete="off"
         />
       )}
       {!!selectedCustomOption && (
