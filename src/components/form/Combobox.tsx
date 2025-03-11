@@ -188,7 +188,7 @@ function Combobox(
           style={{
             display: listBoxExpanded ? "block" : "none",
             position: "absolute",
-            top: "2.5rem",
+            top: "2.7rem",
             zIndex: 1,
           }}
         >
