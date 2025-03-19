@@ -153,63 +153,61 @@ function Combobox(
   const validateError = validateField(value, validate, touched);
 
   return (
-    <div style={{ position: "relative" }}>
-      <Field id={id} label={label} hint={hint} error={validateError || error}>
-        <input
-          {...restProps}
-          className={`form-control ${!inputHasVisualFocus ? "shadow-none" : ""} ${validateError || error ? "is-invalid" : ""} ${className}`}
-          type="text"
-          role="combobox"
-          aria-invalid={!!error}
-          aria-autocomplete="list"
-          aria-expanded={listBoxExpanded}
-          aria-controls={listboxId}
-          aria-activedescendant={
-            selectedOptionIdx !== undefined
-              ? `${listboxId}-${selectedOptionIdx}`
-              : undefined
-          }
-          id={id}
-          name={id}
-          value={value}
-          onChange={onChange}
-          onFocus={handleFocus}
-          onBlur={handleBlur}
-          onKeyDown={onKeyDown}
-          tabIndex={tabIndex}
-          required={required}
-          ref={fieldRef}
-        />
-        <ul
-          id={listboxId}
-          role="listbox"
-          aria-label={`${label} Options`}
-          className="list-group"
-          style={{
-            display: listBoxExpanded ? "block" : "none",
-            position: "absolute",
-            top: "2.7rem",
-            zIndex: 1,
-          }}
-        >
-          {displayOptions.map((option, index) => (
-            <li
-              key={`${listboxId}-${option}`}
-              id={`${listboxId}-${index}`}
-              role="option"
-              className={`list-group-item list-group-item-action ${index === selectedOptionIdx ? "active" : ""}`}
-              onClick={() => handleOptionClick(option)}
-              onMouseDown={(e) => e.preventDefault()} // Preventing default so the input doesn't loose focus
-              style={{
-                cursor: "pointer",
-              }}
-            >
-              {option}
-            </li>
-          ))}
-        </ul>
-      </Field>
-    </div>
+    <Field id={id} label={label} hint={hint} error={validateError || error}>
+      <input
+        {...restProps}
+        className={`form-control ${!inputHasVisualFocus ? "shadow-none" : ""} ${validateError || error ? "is-invalid" : ""} ${className}`}
+        type="text"
+        role="combobox"
+        aria-invalid={!!error}
+        aria-autocomplete="list"
+        aria-expanded={listBoxExpanded}
+        aria-controls={listboxId}
+        aria-activedescendant={
+          selectedOptionIdx !== undefined
+            ? `${listboxId}-${selectedOptionIdx}`
+            : undefined
+        }
+        id={id}
+        name={id}
+        value={value}
+        onChange={onChange}
+        onFocus={handleFocus}
+        onBlur={handleBlur}
+        onKeyDown={onKeyDown}
+        tabIndex={tabIndex}
+        required={required}
+        ref={fieldRef}
+        style={{ position: "relative" }}
+      />
+      <ul
+        id={listboxId}
+        role="listbox"
+        aria-label={`${label} Options`}
+        className="list-group"
+        style={{
+          display: listBoxExpanded ? "block" : "none",
+          position: "absolute",
+          zIndex: 1,
+        }}
+      >
+        {displayOptions.map((option, index) => (
+          <li
+            key={`${listboxId}-${option}`}
+            id={`${listboxId}-${index}`}
+            role="option"
+            className={`list-group-item list-group-item-action ${index === selectedOptionIdx ? "active" : ""}`}
+            onClick={() => handleOptionClick(option)}
+            onMouseDown={(e) => e.preventDefault()} // Preventing default so the input doesn't loose focus
+            style={{
+              cursor: "pointer",
+            }}
+          >
+            {option}
+          </li>
+        ))}
+      </ul>
+    </Field>
   );
 }
 

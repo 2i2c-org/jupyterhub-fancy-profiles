@@ -47,7 +47,7 @@ export function Field({ id, label, hint, children, error }: IField) {
           {label}
         </label>
       </div>
-      <div className="profile-option-control-container">
+      <div className="profile-option-control-container" style={{ position: "relative" }}>
         {children}
         {error && <div className="invalid-feedback">{error}</div>}
         {hint && <div className="profile-option-control-hint">{hint}</div>}
