@@ -3,7 +3,7 @@ import { forwardRef, PropsWithChildren, useState } from "react";
 import { CustomizedSelect } from "./CustomSelect";
 import { SelectOption } from "../../types/fields";
 
-type TValidateConfig = {
+export type TValidateConfig = {
   required?: string;
   pattern?: {
     value: string;
@@ -11,7 +11,7 @@ type TValidateConfig = {
   };
 };
 
-function validateField(
+export function validateField(
   value: string,
   validateConfig: TValidateConfig,
   touched: boolean,
@@ -39,7 +39,7 @@ interface IField extends PropsWithChildren {
   error?: string;
 }
 
-function Field({ id, label, hint, children, error }: IField) {
+export function Field({ id, label, hint, children, error }: IField) {
   return (
     <div className="profile-option-container">
       <div className="profile-option-label-container">
@@ -47,7 +47,7 @@ function Field({ id, label, hint, children, error }: IField) {
           {label}
         </label>
       </div>
-      <div className="profile-option-control-container">
+      <div className="profile-option-control-container" style={{ position: "relative" }}>
         {children}
         {error && <div className="invalid-feedback">{error}</div>}
         {hint && <div className="profile-option-control-hint">{hint}</div>}

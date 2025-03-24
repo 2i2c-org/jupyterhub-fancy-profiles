@@ -4,13 +4,16 @@ import userEvent from "@testing-library/user-event";
 
 import ProfileForm from "./ProfileForm";
 import { SpawnerFormProvider } from "./state";
+import { FormCacheProvider } from "./context/FormCache";
 
 test("select repository by org/repo", async () => {
   const user = userEvent.setup();
 
   render(
     <SpawnerFormProvider>
-      <ProfileForm />
+      <FormCacheProvider>
+        <ProfileForm />
+      </FormCacheProvider>
     </SpawnerFormProvider>,
   );
   const radio = screen.getByRole("radio", {
@@ -39,7 +42,9 @@ test("select repository by https://github.com/org/repo", async () => {
 
   render(
     <SpawnerFormProvider>
-      <ProfileForm />
+      <FormCacheProvider>
+        <ProfileForm />
+      </FormCacheProvider>
     </SpawnerFormProvider>,
   );
   const radio = screen.getByRole("radio", {
@@ -68,7 +73,9 @@ test("select repository by https://www.github.com/org/repo", async () => {
 
   render(
     <SpawnerFormProvider>
-      <ProfileForm />
+      <FormCacheProvider>
+        <ProfileForm />
+      </FormCacheProvider>
     </SpawnerFormProvider>,
   );
   const radio = screen.getByRole("radio", {
@@ -97,7 +104,9 @@ test("select repository by github.com/org/repo", async () => {
 
   render(
     <SpawnerFormProvider>
-      <ProfileForm />
+      <FormCacheProvider>
+        <ProfileForm />
+      </FormCacheProvider>
     </SpawnerFormProvider>,
   );
   const radio = screen.getByRole("radio", {
@@ -126,7 +135,9 @@ test("select repository by www.github.com/org/repo", async () => {
 
   render(
     <SpawnerFormProvider>
-      <ProfileForm />
+      <FormCacheProvider>
+        <ProfileForm />
+      </FormCacheProvider>
     </SpawnerFormProvider>,
   );
   const radio = screen.getByRole("radio", {
@@ -154,7 +165,9 @@ test("invalid org/repo string (not matching pattern)", async () => {
 
   render(
     <SpawnerFormProvider>
-      <ProfileForm />
+      <FormCacheProvider>
+        <ProfileForm />
+      </FormCacheProvider>
     </SpawnerFormProvider>,
   );
   const radio = screen.getByRole("radio", {
@@ -183,7 +196,9 @@ test("invalid org/repo string (wrong base URL)", async () => {
 
   render(
     <SpawnerFormProvider>
-      <ProfileForm />
+      <FormCacheProvider>
+        <ProfileForm />
+      </FormCacheProvider>
     </SpawnerFormProvider>,
   );
   const radio = screen.getByRole("radio", {
@@ -212,7 +227,9 @@ test("no org/repo provided", async () => {
 
   render(
     <SpawnerFormProvider>
-      <ProfileForm />
+      <FormCacheProvider>
+        <ProfileForm />
+      </FormCacheProvider>
     </SpawnerFormProvider>,
   );
   const radio = screen.getByRole("radio", {
@@ -238,7 +255,9 @@ test("no branch selected", async () => {
 
   render(
     <SpawnerFormProvider>
-      <ProfileForm />
+      <FormCacheProvider>
+        <ProfileForm />
+      </FormCacheProvider>
     </SpawnerFormProvider>,
   );
   const radio = screen.getByRole("radio", {

@@ -1,16 +1,17 @@
-import { useEffect, useState, useRef, useContext } from "react";
+import { useEffect, useState, useRef, useContext, useMemo } from "react";
 import { type Terminal } from "xterm";
 import { type FitAddon } from "xterm-addon-fit";
 
-import { TextField } from "./components/form/fields";
 import { SpawnerFormContext } from "./state";
 import useRepositoryField from "./hooks/useRepositoryField";
+import Combobox from "./components/form/Combobox";
+import useFormCache from "./hooks/useFormCache";
 
 async function buildImage(
   repo: string,
   ref: string,
   term: Terminal,
-  fitAddon: FitAddon
+  fitAddon: FitAddon,
 ) {
   const { BinderRepository } = await import("@jupyterhub/binderhub-client");
   const providerSpec = "gh/" + repo + "/" + ref;
@@ -122,6 +123,8 @@ export function ImageBuilder({ name, isActive }: IImageBuilder) {
   } = useContext(SpawnerFormContext);
   const { repo, repoId, repoFieldProps, repoError } =
     useRepositoryField(binderRepo);
+  const { getRepositoryOptions, getRefOptions } = useFormCache();
+
   const [ref, setRef] = useState<string>(repoRef || "HEAD");
   const repoFieldRef = useRef<HTMLInputElement>();
   const branchFieldRef = useRef<HTMLInputElement>();
@@ -133,6 +136,11 @@ export function ImageBuilder({ name, isActive }: IImageBuilder) {
   const [fitAddon, setFitAddon] = useState<FitAddon>(null);
 
   const [isBuildingImage, setIsBuildingImage] = useState<boolean>(false);
+
+  const repositoryOptions = getRepositoryOptions(name);
+  const refOptions = useMemo(() => {
+    return getRefOptions(name, repoId);
+  }, [repoId]);
 
   useEffect(() => {
     if (!isActive) setCustomImageError("");
@@ -180,29 +188,21 @@ export function ImageBuilder({ name, isActive }: IImageBuilder) {
         <div className="profile-option-control-container">GitHub</div>
       </div>
 
-      <div className="profile-option-container">
-        <div className="profile-option-label-container">
-          <label htmlFor="repo" className="form-label">
-            Repository
-          </label>
-        </div>
-        <div className="profile-option-control-container">
-          <input
-            className={`form-control ${repoError ? "is-invalid" : ""}`}
-            id="repo"
-            type="text"
-            ref={repoFieldRef}
-            {...repoFieldProps}
-            aria-invalid={!!repoError}
-          />
-          {repoError && <div className="invalid-feedback">{repoError}</div>}
-        </div>
-      </div>
+      <Combobox
+        id={`${name}--repo`}
+        className={isActive ? "cache-repository" : undefined}
+        label="Repository"
+        ref={repoFieldRef}
+        {...repoFieldProps}
+        error={repoError}
+        options={repositoryOptions}
+        autoComplete="off"
+      />
 
-      <TextField
-        ref={branchFieldRef}
+      <Combobox
         id={`${name}--ref`}
         label="Git Ref"
+        ref={branchFieldRef}
         hint="Branch, Tag or Commit to use. HEAD will use the default branch"
         value={ref}
         validate={
@@ -212,6 +212,8 @@ export function ImageBuilder({ name, isActive }: IImageBuilder) {
         }
         onChange={(e) => setRef(e.target.value)}
         tabIndex={isActive ? 0 : -1}
+        options={refOptions}
+        autoComplete="off"
       />
 
       <div className="right-button">

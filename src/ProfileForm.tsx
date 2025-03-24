@@ -9,6 +9,7 @@ import "../node_modules/xterm/css/xterm.css";
 import "./form.css";
 import { SpawnerFormContext } from "./state";
 import { ProfileOptions } from "./ProfileOptions";
+import useFormCache from "./hooks/useFormCache";
 
 /**
  * Generates the *contents* of the form shown in the profile selection page
@@ -25,6 +26,7 @@ function Form() {
     paramsError,
   } = useContext(SpawnerFormContext);
   const [formError, setFormError] = useState("");
+  const { cacheChoiceOption, cacheRepositorySelection } = useFormCache();
 
   const handleSubmit: MouseEventHandler<HTMLButtonElement> = (e) => {
     setFormError("");
@@ -37,7 +39,26 @@ function Form() {
     if (!formIsValid) {
       setFormError(!selectedProfile ? "Select a container profile" : "");
       e.preventDefault();
+      return;
     }
+
+    // Cache active unlisted-choice values
+    const cacheUnlistedChoices = form.getElementsByClassName("cache-unlisted-choice");
+    Array.from(cacheUnlistedChoices).forEach((el) => {
+      const { id, value } = el as HTMLInputElement;
+      cacheChoiceOption(id, value);
+    });
+
+    // Cache active repository/ref values
+    const cacheRepositories = form.getElementsByClassName("cache-repository");
+    Array.from(cacheRepositories).forEach((el) => {
+      const { id, value } = el as HTMLInputElement;
+      if (id.endsWith("--repo")) {
+        const fieldName = id.slice(0, -6);
+        const refField = document.getElementById(`${fieldName}--ref`);
+        cacheRepositorySelection(fieldName, value, (refField as HTMLInputElement).value);
+      }
+    });
   };
 
   const handleProfileSelect: ChangeEventHandler<HTMLInputElement> = (e) => {

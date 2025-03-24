@@ -4,12 +4,15 @@ import userEvent from "@testing-library/user-event";
 
 import ProfileForm from "./ProfileForm";
 import { SpawnerFormProvider } from "./state";
+import { FormCacheProvider } from "./context/FormCache";
 
 describe("Profile form", () => {
   test("image and resource fields initially not tabable", async () => {
     render(
       <SpawnerFormProvider>
-        <ProfileForm />
+        <FormCacheProvider>
+          <ProfileForm />
+        </FormCacheProvider>
       </SpawnerFormProvider>,
     );
 
@@ -25,7 +28,9 @@ describe("Profile form", () => {
 
     render(
       <SpawnerFormProvider>
-        <ProfileForm />
+        <FormCacheProvider>
+          <ProfileForm />
+        </FormCacheProvider>
       </SpawnerFormProvider>,
     );
 
@@ -46,7 +51,9 @@ describe("Profile form", () => {
 
     render(
       <SpawnerFormProvider>
-        <ProfileForm />
+        <FormCacheProvider>
+          <ProfileForm />
+        </FormCacheProvider>
       </SpawnerFormProvider>,
     );
 
@@ -71,7 +78,9 @@ describe("Profile form", () => {
 
     render(
       <SpawnerFormProvider>
-        <ProfileForm />
+        <FormCacheProvider>
+          <ProfileForm />
+        </FormCacheProvider>
       </SpawnerFormProvider>,
     );
 
@@ -100,7 +109,9 @@ describe("Profile form", () => {
 
     render(
       <SpawnerFormProvider>
-        <ProfileForm />
+        <FormCacheProvider>
+          <ProfileForm />
+        </FormCacheProvider>
       </SpawnerFormProvider>,
     );
 
@@ -130,7 +141,9 @@ describe("Profile form", () => {
 
     render(
       <SpawnerFormProvider>
-        <ProfileForm />
+        <FormCacheProvider>
+          <ProfileForm />
+        </FormCacheProvider>
       </SpawnerFormProvider>,
     );
 
@@ -166,7 +179,9 @@ describe("Profile form", () => {
   test("select with no options should not render", () => {
     render(
       <SpawnerFormProvider>
-        <ProfileForm />
+        <FormCacheProvider>
+          <ProfileForm />
+        </FormCacheProvider>
       </SpawnerFormProvider>,
     );
     expect(
@@ -177,7 +192,9 @@ describe("Profile form", () => {
   test("profile marked as default is selected by default", () => {
     const { container } = render(
       <SpawnerFormProvider>
-        <ProfileForm />
+        <FormCacheProvider>
+          <ProfileForm />
+        </FormCacheProvider>
       </SpawnerFormProvider>,
     );
     const hiddenRadio = container.querySelector("[name='profile']");
@@ -197,7 +214,9 @@ describe("Profile form", () => {
 
     render(
       <SpawnerFormProvider>
-        <ProfileForm />
+        <FormCacheProvider>
+          <ProfileForm />
+        </FormCacheProvider>
       </SpawnerFormProvider>,
     );
     const select = screen.getByLabelText("Image - dynamic image building");
@@ -222,7 +241,9 @@ describe("Profile form with URL Params", () => {
   test("preselects values", async () => {
     render(
       <SpawnerFormProvider>
-        <ProfileForm />
+        <FormCacheProvider>
+          <ProfileForm />
+        </FormCacheProvider>
       </SpawnerFormProvider>,
     );
 
@@ -242,7 +263,9 @@ describe("Profile form with URL Params", () => {
   test("no-option profiles are rendered", () => {
     render(
       <SpawnerFormProvider>
-        <ProfileForm />
+        <FormCacheProvider>
+          <ProfileForm />
+        </FormCacheProvider>
       </SpawnerFormProvider>,
     );
 

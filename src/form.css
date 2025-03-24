@@ -72,8 +72,8 @@
   /* 8px here, even though we only use 4px for .react-select-item-container.
        Achieves similar visual effect.
     */
-  padding: 8px;
   border-radius: 4px;
+  padding: inherit 8px;
 }
 
 .profile-option-control-container input[type="text"]:not(.is-invalid) {
