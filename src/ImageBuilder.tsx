@@ -197,6 +197,11 @@ export function ImageBuilder({ name, isActive }: IImageBuilder) {
         error={repoError}
         options={repositoryOptions}
         autoComplete="off"
+        validate={
+          isActive && {
+            required: "Provide the repository as the format 'organization/repository'.",
+          }
+        }
       />
 
       <Combobox
@@ -245,7 +250,7 @@ export function ImageBuilder({ name, isActive }: IImageBuilder) {
         <div className="profile-option-control-container">
           <ImageLogs setFitAddon={setFitAddon} setTerm={setTerm} name={name} />
           {customImageError && (
-            <div className="profile-option-control-error">
+            <div className="invalid-feedback d-block">
               {customImageError}
             </div>
           )}

@@ -110,6 +110,17 @@
   margin-bottom: 2rem;
 }
 
+.form-errors {
+  border: 2px solid var(--bs-form-invalid-color);
+  margin: 1rem 0;
+  padding: 1rem;
+  border-radius: 5px;
+}
+
+.form-errors li {
+  margin-left: 1rem;
+}
+
 /* react-select styling */
 .react-select-item-container.react-select-item-menu-display.react-select-item-selected
   .react-select-item-description {
