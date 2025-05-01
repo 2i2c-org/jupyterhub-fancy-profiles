@@ -91,3 +91,29 @@ export function cacheOption<StoreName extends keyof typeof STORES>(
     });
   });
 }
+
+export function removeOption<StoreName extends keyof typeof STORES>(
+  store: StoreName,
+  record: Record<typeof STORES[StoreName]["index"]["fields"][number], string>
+): Promise<void> {
+  return new Promise((resolve, reject) => {
+    initDb().then((db) => {
+      const transaction = db.transaction([store], "readwrite");
+      const objectStore = transaction.objectStore(store);
+
+      const fields = STORES[store].index.fields;
+      const index = objectStore.index(fields.join(", "));
+      const dbReq = index.get(fields.map((key) => record[key as keyof typeof record]));
+
+      dbReq.onsuccess = (event) => {
+        const result = (event.target as IDBRequest).result;
+        const r = objectStore.delete(result.id);
+        r.onsuccess = () => resolve();
+        r.onerror = (event) => reject((event.target as IDBRequest).error);
+      };
+      dbReq.onerror = (event) => reject((event.target as IDBRequest).error);
+
+      db.close();
+    });
+  });
+}
