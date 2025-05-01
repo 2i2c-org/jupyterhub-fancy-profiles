@@ -97,9 +97,11 @@ describe("Profile form", () => {
 
     const submitButton = screen.getByRole("button", { "name": "Start" });
     await user.click(submitButton);
-    expect(screen.getByText("Enter a value.")).toBeInTheDocument();
     await waitFor(() => expect(screen.getByText("Unable to start the server. The form is incomplete.")).toBeInTheDocument());
-    await waitFor(() => expect(screen.getByRole("link", {"name": "Enter a value."})).toBeInTheDocument());
+    expect(screen.queryAllByText("Enter a value.").length).toEqual(2);
+
+    // Check that one of the errors is the link in the error summary.
+    expect(screen.getByRole("link", {"name": "Enter a value."})).toBeInTheDocument();
   });
 
   test("custom image field needs specific format", async () => {
