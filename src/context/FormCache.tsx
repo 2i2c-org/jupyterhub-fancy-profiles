@@ -5,7 +5,7 @@ import {
   useEffect,
   useState,
 } from "react";
-import { cacheOption, getRecords, removeOption } from "../utils/indexedDb";
+import { cacheOption, getRecords, removeOption, removeRepository } from "../utils/indexedDb";
 
 export interface IFormCache {
   getChoiceOptions: (fieldName: string) => string[];
@@ -13,6 +13,7 @@ export interface IFormCache {
   removeChoiceOption: (fieldName: string, choice: string) => void;
   getRepositoryOptions: (fieldName: string) => string[];
   getRefOptions: (fieldName: string, repoName?: string) => string[];
+  removeRepositoryOption: (fieldName: string, repository: string) => void;
   removeRefOption: (fieldName: string, repository: string, ref: string) => void;
   cacheRepositorySelection: (
     fieldName: string,
@@ -142,6 +143,10 @@ export const FormCacheProvider = ({ children }: PropsWithChildren) => {
     ).then(loadPreviousRepositories);
   };
 
+  const removeRepositoryOption = (fieldName: string, repository: string) => {
+    removeRepository(fieldName, repository).then(loadPreviousRepositories);
+  };
+
   useEffect(() => {
     // Retrieve previously used choices
     loadPreviousChoices();
@@ -155,6 +160,7 @@ export const FormCacheProvider = ({ children }: PropsWithChildren) => {
     getRefOptions,
     cacheRepositorySelection,
     removeChoiceOption,
+    removeRepositoryOption,
     removeRefOption
   };
 

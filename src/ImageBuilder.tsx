@@ -123,7 +123,7 @@ export function ImageBuilder({ name, isActive }: IImageBuilder) {
   } = useContext(SpawnerFormContext);
   const { repo, repoId, repoFieldProps, repoError } =
     useRepositoryField(binderRepo);
-  const { getRepositoryOptions, getRefOptions, removeRefOption } = useFormCache();
+  const { getRepositoryOptions, getRefOptions, removeRefOption, removeRepositoryOption } = useFormCache();
 
   const [ref, setRef] = useState<string>(repoRef || "HEAD");
   const repoFieldRef = useRef<HTMLInputElement>();
@@ -197,6 +197,7 @@ export function ImageBuilder({ name, isActive }: IImageBuilder) {
         error={repoError}
         options={repositoryOptions}
         autoComplete="off"
+        onRemoveOption={(option) => removeRepositoryOption(name, option)}
       />
 
       <Combobox
