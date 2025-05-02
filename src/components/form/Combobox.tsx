@@ -199,11 +199,11 @@ function Combobox(
             id={`${listboxId}-${index}`}
             role="option"
             className={`d-flex gap-4 align-items-center list-group-item list-group-item-action ${index === selectedOptionIdx ? "active" : ""}`}
+            onMouseDown={(e) => e.preventDefault()} // Preventing default so the input doesn't loose focus
           >
             <span
               className="flex-grow-1"
               onClick={() => handleOptionClick(option)}
-              onMouseDown={(e) => e.preventDefault()} // Preventing default so the input doesn't loose focus
               style={{
                 cursor: "pointer",
               }}

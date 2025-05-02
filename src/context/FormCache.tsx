@@ -13,6 +13,7 @@ export interface IFormCache {
   removeChoiceOption: (fieldName: string, choice: string) => void;
   getRepositoryOptions: (fieldName: string) => string[];
   getRefOptions: (fieldName: string, repoName?: string) => string[];
+  removeRefOption: (fieldName: string, repository: string, ref: string) => void;
   cacheRepositorySelection: (
     fieldName: string,
     repository: string,
@@ -81,7 +82,6 @@ export const FormCacheProvider = ({ children }: PropsWithChildren) => {
   };
 
   const removeChoiceOption = (fieldName: string, choice: string) => {
-    console.log(fieldName, choice);
     removeOption(
       "choices",
       {
@@ -131,6 +131,17 @@ export const FormCacheProvider = ({ children }: PropsWithChildren) => {
     [previousRepositories],
   );
 
+  const removeRefOption = (fieldName: string, repository: string, ref: string) => {
+    removeOption(
+      "repositories",
+      {
+        field_name: fieldName,
+        repository,
+        ref,
+      }
+    ).then(loadPreviousRepositories);
+  };
+
   useEffect(() => {
     // Retrieve previously used choices
     loadPreviousChoices();
@@ -143,7 +154,8 @@ export const FormCacheProvider = ({ children }: PropsWithChildren) => {
     getRepositoryOptions,
     getRefOptions,
     cacheRepositorySelection,
-    removeChoiceOption
+    removeChoiceOption,
+    removeRefOption
   };
 
   return (
