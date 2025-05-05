@@ -39,6 +39,7 @@ function Combobox(
     value,
     onChange,
     onBlur,
+    onKeyDown,
     options,
     tabIndex,
     validate = {},
@@ -78,7 +79,7 @@ function Combobox(
     setSelectedOptionIdx(undefined);
   };
 
-  const onKeyDown: KeyboardEventHandler<HTMLInputElement> = (event) => {
+  const handleKeyDown: KeyboardEventHandler<HTMLInputElement> = (event) => {
     switch (event.key) {
       case "Down":
       case "ArrowDown":
@@ -110,6 +111,9 @@ function Combobox(
         event.preventDefault(); // Prevent form submit
         if (selectedOptionIdx !== undefined) {
           setInputValue(fieldRef.current, displayOptions[selectedOptionIdx]);
+        }
+        if (listBoxExpanded && inputHasVisualFocus) {
+          onKeyDown(event);
         }
         setInputHasVisualFocus(true);
         setListBoxExpanded(false);
@@ -174,7 +178,7 @@ function Combobox(
         onChange={onChange}
         onFocus={handleFocus}
         onBlur={handleBlur}
-        onKeyDown={onKeyDown}
+        onKeyDown={handleKeyDown}
         onInvalid={() => setTouched(true)}
         tabIndex={tabIndex}
         required={required}

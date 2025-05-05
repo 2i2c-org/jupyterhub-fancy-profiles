@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef, useContext, useMemo } from "react";
+import { useEffect, useState, useRef, useContext, useMemo, KeyboardEventHandler } from "react";
 import { type Terminal } from "xterm";
 import { type FitAddon } from "xterm-addon-fit";
 
@@ -177,6 +177,14 @@ export function ImageBuilder({ name, isActive }: IImageBuilder) {
       .finally(() => setIsBuildingImage(false));
   };
 
+  const handleKeyDown: KeyboardEventHandler<HTMLInputElement> = (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      (e.target as HTMLInputElement).blur();
+      handleBuildStart();
+    }
+  };
+
   // We render everything, but only toggle visibility based on wether we are being
   // shown or hidden. This provides for more DOM stability, and also allows the image
   // to continue being built evn if the user moves away elsewhere. When hidden, we just
@@ -202,6 +210,7 @@ export function ImageBuilder({ name, isActive }: IImageBuilder) {
             required: "Provide the repository as the format 'organization/repository'.",
           }
         }
+        onKeyDown={handleKeyDown}
       />
 
       <Combobox
