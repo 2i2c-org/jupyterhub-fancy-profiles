@@ -20,10 +20,10 @@ async function buildImage(
     "/services/binder/build/",
     window.location.origin,
   );
-  // Pass JupyterHub authentication token to Binderhub
-  const headers = {
-    Authorization: `token ${window.jupyter.token}`
-  };
+  const headers: Record<string, string> = {};
+  if (window.jupyter?.token && window.jupyter.token.length > 0) {
+    headers.Authorization = `token ${window.jupyter.token}`;
+  }
   const image = new BinderRepository(
     providerSpec,
     buildEndPointURL,
