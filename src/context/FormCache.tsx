@@ -5,13 +5,16 @@ import {
   useEffect,
   useState,
 } from "react";
-import { cacheOption, getRecords } from "../utils/indexedDb";
+import { cacheOption, getRecords, removeOption, removeRepository } from "../utils/indexedDb";
 
 export interface IFormCache {
   getChoiceOptions: (fieldName: string) => string[];
   cacheChoiceOption: (fieldName: string, choice: string) => void;
+  removeChoiceOption: (fieldName: string, choice: string) => void;
   getRepositoryOptions: (fieldName: string) => string[];
   getRefOptions: (fieldName: string, repoName?: string) => string[];
+  removeRepositoryOption: (fieldName: string, repository: string) => void;
+  removeRefOption: (fieldName: string, repository: string, ref: string) => void;
   cacheRepositorySelection: (
     fieldName: string,
     repository: string,
@@ -79,6 +82,16 @@ export const FormCacheProvider = ({ children }: PropsWithChildren) => {
       .map(({ choice }) => choice);
   };
 
+  const removeChoiceOption = (fieldName: string, choice: string) => {
+    removeOption(
+      "choices",
+      {
+        field_name: fieldName,
+        choice,
+      }
+    ).then(loadPreviousChoices);
+  };
+
   const getRepositoryOptions = useCallback(
     (fieldName: string) => {
       const options = previousRepositories
@@ -119,6 +132,21 @@ export const FormCacheProvider = ({ children }: PropsWithChildren) => {
     [previousRepositories],
   );
 
+  const removeRefOption = (fieldName: string, repository: string, ref: string) => {
+    removeOption(
+      "repositories",
+      {
+        field_name: fieldName,
+        repository,
+        ref,
+      }
+    ).then(loadPreviousRepositories);
+  };
+
+  const removeRepositoryOption = (fieldName: string, repository: string) => {
+    removeRepository(fieldName, repository).then(loadPreviousRepositories);
+  };
+
   useEffect(() => {
     // Retrieve previously used choices
     loadPreviousChoices();
@@ -131,6 +159,9 @@ export const FormCacheProvider = ({ children }: PropsWithChildren) => {
     getRepositoryOptions,
     getRefOptions,
     cacheRepositorySelection,
+    removeChoiceOption,
+    removeRepositoryOption,
+    removeRefOption
   };
 
   return (

@@ -8,6 +8,9 @@ function useFormCache(): IFormCache {
     getRepositoryOptions,
     getRefOptions,
     cacheRepositorySelection,
+    removeChoiceOption,
+    removeRepositoryOption,
+    removeRefOption,
   } = useContext(FormCacheContext) as IFormCache;
 
   return useMemo(
@@ -17,6 +20,9 @@ function useFormCache(): IFormCache {
       getRepositoryOptions,
       getRefOptions,
       cacheRepositorySelection,
+      removeChoiceOption,
+      removeRepositoryOption,
+      removeRefOption,
     }),
     [
       getChoiceOptions,
@@ -24,6 +30,9 @@ function useFormCache(): IFormCache {
       getRepositoryOptions,
       getRefOptions,
       cacheRepositorySelection,
+      removeChoiceOption,
+      removeRepositoryOption,
+      removeRefOption,
     ],
   );
 }

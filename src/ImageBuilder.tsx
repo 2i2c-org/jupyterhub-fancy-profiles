@@ -123,7 +123,7 @@ export function ImageBuilder({ name, isActive }: IImageBuilder) {
   } = useContext(SpawnerFormContext);
   const { repo, repoId, repoFieldProps, repoError } =
     useRepositoryField(binderRepo);
-  const { getRepositoryOptions, getRefOptions } = useFormCache();
+  const { getRepositoryOptions, getRefOptions, removeRefOption, removeRepositoryOption } = useFormCache();
 
   const [ref, setRef] = useState<string>(repoRef || "HEAD");
   const repoFieldRef = useRef<HTMLInputElement>();
@@ -197,6 +197,7 @@ export function ImageBuilder({ name, isActive }: IImageBuilder) {
         error={repoError}
         options={repositoryOptions}
         autoComplete="off"
+        onRemoveOption={(option) => removeRepositoryOption(name, option)}
         validate={
           isActive && {
             required: "Provide the repository as the format 'organization/repository'.",
@@ -219,6 +220,9 @@ export function ImageBuilder({ name, isActive }: IImageBuilder) {
         tabIndex={isActive ? 0 : -1}
         options={refOptions}
         autoComplete="off"
+        onRemoveOption={(option) => {
+          removeRefOption(name, repoFieldProps.value, option);
+        }}
       />
 
       <div className="right-button">

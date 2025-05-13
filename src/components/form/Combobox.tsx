@@ -12,6 +12,7 @@ interface ICombobox extends React.InputHTMLAttributes<HTMLInputElement> {
   onBlur?: React.FocusEventHandler<HTMLInputElement>;
   options: string[];
   validate?: TValidateConfig;
+  onRemoveOption?: (option: string) => void;
 }
 
 function setInputValue(input: HTMLInputElement, value: string) {
@@ -43,6 +44,7 @@ function Combobox(
     tabIndex,
     validate = {},
     className = "",
+    onRemoveOption,
     ...restProps
   }: ICombobox,
   ref?: React.MutableRefObject<HTMLInputElement>,
@@ -197,14 +199,30 @@ function Combobox(
             key={`${listboxId}-${option}`}
             id={`${listboxId}-${index}`}
             role="option"
-            className={`list-group-item list-group-item-action ${index === selectedOptionIdx ? "active" : ""}`}
-            onClick={() => handleOptionClick(option)}
+            className={`d-flex gap-4 align-items-center list-group-item list-group-item-action ${index === selectedOptionIdx ? "active" : ""}`}
             onMouseDown={(e) => e.preventDefault()} // Preventing default so the input doesn't loose focus
-            style={{
-              cursor: "pointer",
-            }}
           >
-            {option}
+            <span
+              className="flex-grow-1"
+              onClick={() => handleOptionClick(option)}
+              style={{
+                cursor: "pointer",
+              }}
+            >
+              {option}
+            </span>
+            {onRemoveOption && (
+              <button
+                type="button"
+                className={`btn btn-link p-0 btn-sm ${index === selectedOptionIdx ? "text-white" : ""}`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  onRemoveOption(option);
+                }}
+              >
+                Remove
+              </button>
+            )}
           </li>
         ))}
       </ul>

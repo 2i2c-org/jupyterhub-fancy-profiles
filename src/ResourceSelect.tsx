@@ -28,7 +28,7 @@ function ResourceSelect({
     customOptions,
   );
   const { profile: selectedProfile } = useContext(SpawnerFormContext);
-  const { getChoiceOptions } = useFormCache();
+  const { getChoiceOptions, removeChoiceOption } = useFormCache();
   const FIELD_ID = `profile-option-${profile}--${id}`;
   const FIELD_ID_UNLISTED = `${FIELD_ID}--unlisted-choice`;
 
@@ -81,6 +81,7 @@ function ResourceSelect({
           tabIndex={isActive ? 0 : -1}
           options={choiceOptions}
           autoComplete="off"
+          onRemoveOption={(option) => removeChoiceOption(FIELD_ID_UNLISTED, option)}
         />
       )}
       {!!selectedCustomOption && (
