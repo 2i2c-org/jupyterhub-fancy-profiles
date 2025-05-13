@@ -56,6 +56,7 @@ export const SpawnerFormProvider = ({ children }: PropsWithChildren) => {
       const profilesWithDynamicImageBuilding = profileList.filter(
         isDynamicImageProfile,
       );
+
       if (profilesWithDynamicImageBuilding.length > 1) {
         return "Unable to pre-select dynamic image building.";
       }

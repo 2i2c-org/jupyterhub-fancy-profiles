@@ -25,11 +25,13 @@ function Form() {
     profileList,
     paramsError,
   } = useContext(SpawnerFormContext);
-  const [formError, setFormError] = useState("");
+  const [profileError, setProfileError] = useState("");
+  const [formErrors, setFormErrors] = useState<Element[]>([]);
   const { cacheChoiceOption, cacheRepositorySelection } = useFormCache();
 
   const handleSubmit: MouseEventHandler<HTMLButtonElement> = (e) => {
-    setFormError("");
+    setProfileError("");
+    setFormErrors([]);
     const form = (e.target as HTMLElement).closest("form");
 
     // validate the form
@@ -37,7 +39,19 @@ function Form() {
 
     // prevent form submit
     if (!formIsValid) {
-      setFormError(!selectedProfile ? "Select a container profile" : "");
+
+      setTimeout(() => {
+        // Timeout here so we can collect the errors after the errors are rendered on the page
+        const errors = form.getElementsByClassName("invalid-feedback");
+        setFormErrors(Array.from(errors));
+      }, 10);
+
+      setTimeout(() => {
+        // Need to wait for the error summary to render
+        window.scrollTo(0, document.body.scrollHeight);
+      }, 100);
+
+      setProfileError(!selectedProfile ? "Select a container profile" : "");
       e.preventDefault();
       return;
     }
@@ -64,7 +78,7 @@ function Form() {
   const handleProfileSelect: ChangeEventHandler<HTMLInputElement> = (e) => {
     const slug = e.target.value;
     setProfile(slug);
-    setFormError("");
+    setProfileError("");
   };
 
   return (
@@ -72,7 +86,6 @@ function Form() {
       aria-label="Select profile"
       aria-description="First, select the profile; second, configure the options for the selected profile."
     >
-      {formError && <div className="profile-form-error">{formError}</div>}
       {paramsError && <div className="profile-form-warning">{paramsError}</div>}
       <input
         type="radio"
@@ -123,6 +136,31 @@ function Form() {
           </div>
         );
       })}
+
+      {(formErrors.length > 0 || profileError) && (
+        <div
+          className={`form-errors ${formErrors.length > 0 || profileError ? "d-block" : "d-none"}`}
+        >
+          <p><b>Unable to start the server. The form is incomplete.</b></p>
+          <ul>
+            {profileError && <li>{profileError}</li>}
+            {formErrors.map(err => (
+              <li>
+                <a
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    err.parentElement.scrollIntoView();
+                  }}
+                >
+                  {err.textContent}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
       <button
         className="btn btn-jupyter form-control"
         type="submit"

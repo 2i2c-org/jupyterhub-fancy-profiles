@@ -161,7 +161,7 @@ function Combobox(
         className={`form-control ${!inputHasVisualFocus ? "shadow-none" : ""} ${validateError || error ? "is-invalid" : ""} ${className}`}
         type="text"
         role="combobox"
-        aria-invalid={!!error}
+        aria-invalid={!!(validateError || error)}
         aria-autocomplete="list"
         aria-expanded={listBoxExpanded}
         aria-controls={listboxId}
@@ -177,6 +177,7 @@ function Combobox(
         onFocus={handleFocus}
         onBlur={handleBlur}
         onKeyDown={onKeyDown}
+        onInvalid={() => setTouched(true)}
         tabIndex={tabIndex}
         required={required}
         ref={fieldRef}

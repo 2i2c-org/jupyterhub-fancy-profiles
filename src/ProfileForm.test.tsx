@@ -1,5 +1,5 @@
 import { describe, expect, test, beforeEach } from "@jest/globals";
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import ProfileForm from "./ProfileForm";
@@ -71,6 +71,37 @@ describe("Profile form", () => {
     await user.click(document.body);
 
     expect(screen.getByText("Enter a value.")).toBeInTheDocument();
+  });
+
+  test("shows error summary", async () => {
+    const user = userEvent.setup();
+
+    render(
+      <SpawnerFormProvider>
+        <FormCacheProvider>
+          <form>
+            <ProfileForm />
+          </form>
+        </FormCacheProvider>
+      </SpawnerFormProvider>,
+    );
+
+    const radio = screen.getByRole("radio", {
+      name: "CPU only No GPU, only CPU",
+    });
+    await user.click(radio);
+
+    const imageField = screen.getByLabelText("Image");
+    await user.click(imageField);
+    await user.click(screen.getByText("Specify an existing docker image"));
+
+    const submitButton = screen.getByRole("button", { "name": "Start" });
+    await user.click(submitButton);
+    await waitFor(() => expect(screen.getByText("Unable to start the server. The form is incomplete.")).toBeInTheDocument());
+    expect(screen.queryAllByText("Enter a value.").length).toEqual(2);
+
+    // Check that one of the errors is the link in the error summary.
+    expect(screen.getByRole("link", {"name": "Enter a value."})).toBeInTheDocument();
   });
 
   test("custom image field needs specific format", async () => {

@@ -198,6 +198,11 @@ export function ImageBuilder({ name, isActive }: IImageBuilder) {
         options={repositoryOptions}
         autoComplete="off"
         onRemoveOption={(option) => removeRepositoryOption(name, option)}
+        validate={
+          isActive && {
+            required: "Provide the repository as the format 'organization/repository'.",
+          }
+        }
       />
 
       <Combobox
@@ -249,7 +254,7 @@ export function ImageBuilder({ name, isActive }: IImageBuilder) {
         <div className="profile-option-control-container">
           <ImageLogs setFitAddon={setFitAddon} setTerm={setTerm} name={name} />
           {customImageError && (
-            <div className="profile-option-control-error">
+            <div className="invalid-feedback d-block">
               {customImageError}
             </div>
           )}
