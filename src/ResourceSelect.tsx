@@ -22,21 +22,20 @@ function ResourceSelect({
 }: IResourceSelect) {
   const { display_name, unlisted_choice } = config;
 
-  const { setCustomOption } = useContext(SpawnerFormContext);
   const { options, defaultOption, hasDefaultChoices } = useSelectOptions(
     config,
     customOptions,
   );
-  const { profile: selectedProfile } = useContext(SpawnerFormContext);
+  const { profile: selectedProfile, urlSearchParams } = useContext(SpawnerFormContext);
   const { getChoiceOptions, removeChoiceOption } = useFormCache();
   const FIELD_ID = `profile-option-${profile}--${id}`;
   const FIELD_ID_UNLISTED = `${FIELD_ID}--unlisted-choice`;
 
   const isActive = selectedProfile?.slug === profile;
-  const [value, setValue] = useState(
-    setCustomOption ? "--extra-selectable-item" : defaultOption?.value,
-  );
-  const [unlistedChoiceValue, setUnlistedChoiceValue] = useState("");
+  const setVal = isActive && urlSearchParams["profile"] === selectedProfile.slug;
+
+  const [value, setValue] = useState((setVal && urlSearchParams[id]) || defaultOption?.value);
+  const [unlistedChoiceValue, setUnlistedChoiceValue] = useState((setVal && urlSearchParams["unlisted_choice"]) || "");
 
   if (!(options.length > 0)) {
     return null;
