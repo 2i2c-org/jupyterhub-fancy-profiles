@@ -116,11 +116,8 @@ interface IImageBuilder {
 }
 
 export function ImageBuilder({ name, isActive }: IImageBuilder) {
-  const {
-    binderRepo,
-    ref: repoRef,
-    setCustomOption,
-  } = useContext(SpawnerFormContext);
+  const { urlSearchParams } = useContext(SpawnerFormContext);
+  const { binderRepo, ref: repoRef } = urlSearchParams;
   const { repo, repoId, repoFieldProps, repoError } =
     useRepositoryField(binderRepo);
   const { getRepositoryOptions, getRefOptions, removeRefOption, removeRepositoryOption } = useFormCache();
@@ -145,12 +142,6 @@ export function ImageBuilder({ name, isActive }: IImageBuilder) {
   useEffect(() => {
     if (!isActive) setCustomImageError("");
   }, [isActive]);
-
-  useEffect(() => {
-    if (setCustomOption) {
-      repoFieldRef.current.setAttribute("value", binderRepo);
-    }
-  }, [binderRepo, repoRef, setCustomOption]);
 
   const handleBuildStart = async () => {
     if (repoFieldRef.current && !repo) {
