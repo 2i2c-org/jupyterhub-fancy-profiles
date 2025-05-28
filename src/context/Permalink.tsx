@@ -2,7 +2,7 @@ import { createContext, PropsWithChildren, useContext } from "react";
 import { SpawnerFormContext } from "../state";
 
 interface IPermalink {
-  copyPermalink: () => void;
+  copyPermalink: () => Promise<void>;
   setPermalinkValue: (key: string, value: string) => void;
 }
 
@@ -34,14 +34,7 @@ export const PermalinkProvider = ({ children }: PropsWithChildren) => {
 
   const copyPermalink = () => {
     const link = `${location.origin}${location.pathname}?${urlParams.toString()}`;
-    navigator.clipboard.writeText(link).then(
-      () => {
-        console.log("Copied", link);
-      },
-      () => {
-        console.log("Error");
-      },
-    );
+    return navigator.clipboard.writeText(link);
   };
 
   const contextValue = {

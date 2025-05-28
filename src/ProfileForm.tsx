@@ -11,6 +11,7 @@ import { SpawnerFormContext } from "./state";
 import { ProfileOptions } from "./ProfileOptions";
 import useFormCache from "./hooks/useFormCache";
 import { PermalinkContext } from "./context/Permalink";
+import Permalink from "./components/Permalink";
 
 /**
  * Generates the *contents* of the form shown in the profile selection page
@@ -25,7 +26,7 @@ function Form() {
     setProfile,
     profileList
   } = useContext(SpawnerFormContext);
-  const { copyPermalink, setPermalinkValue } = useContext(PermalinkContext);
+  const { setPermalinkValue } = useContext(PermalinkContext);
   const [profileError, setProfileError] = useState("");
   const [formErrors, setFormErrors] = useState<Element[]>([]);
   const { cacheChoiceOption, cacheRepositorySelection } = useFormCache();
@@ -129,11 +130,7 @@ function Form() {
                   <h2>{display_name}</h2>
                   <p>{description}</p>
                 </div>
-                {selectedProfile?.slug === slug && (
-                  <button type="button" className="btn btn-link p-0" onClick={copyPermalink}>
-                    Permalink
-                  </button>
-                )}
+                {selectedProfile?.slug === slug && <Permalink />}
               </div>
 
               {profile_options && (
