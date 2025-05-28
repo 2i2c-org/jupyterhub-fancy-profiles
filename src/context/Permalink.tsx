@@ -8,6 +8,7 @@ interface IPermalink {
 
 const urlParams = new URLSearchParams(location.search);
 const resettableParams = [
+  "binderProvider",
   "binderRepo",
   "ref",
   "unlisted_choice"
