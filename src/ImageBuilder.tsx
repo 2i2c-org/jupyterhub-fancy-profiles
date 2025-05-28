@@ -6,6 +6,7 @@ import { SpawnerFormContext } from "./state";
 import useRepositoryField from "./hooks/useRepositoryField";
 import Combobox from "./components/form/Combobox";
 import useFormCache from "./hooks/useFormCache";
+import { PermalinkContext } from "./context/Permalink";
 
 async function buildImage(
   repo: string,
@@ -116,11 +117,10 @@ interface IImageBuilder {
 }
 
 export function ImageBuilder({ name, isActive }: IImageBuilder) {
-  const {
-    binderRepo,
-    ref: repoRef,
-    setCustomOption,
-  } = useContext(SpawnerFormContext);
+  const { urlSearchParams } = useContext(SpawnerFormContext);
+  const { setPermalinkValue } = useContext(PermalinkContext);
+
+  const { binderRepo, ref: repoRef } = urlSearchParams;
   const { repo, repoId, repoFieldProps, repoError } =
     useRepositoryField(binderRepo);
   const { getRepositoryOptions, getRefOptions, removeRefOption, removeRepositoryOption } = useFormCache();
@@ -146,11 +146,11 @@ export function ImageBuilder({ name, isActive }: IImageBuilder) {
     if (!isActive) setCustomImageError("");
   }, [isActive]);
 
-  useEffect(() => {
-    if (setCustomOption) {
-      repoFieldRef.current.setAttribute("value", binderRepo);
-    }
-  }, [binderRepo, repoRef, setCustomOption]);
+  if (isActive) {
+    setPermalinkValue("binderProvider", "gh");
+    setPermalinkValue("binderRepo", repoId);
+    setPermalinkValue("ref", ref);
+  }
 
   const handleBuildStart = async () => {
     if (repoFieldRef.current && !repo) {

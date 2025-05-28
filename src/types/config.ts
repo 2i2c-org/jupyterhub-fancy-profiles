@@ -50,7 +50,9 @@ export type IJupytherHubWindowObject = Window &
   };
 
 export interface ISearchParams {
+  profile?: string;
   binderProvider?: string;
   binderRepo?: string;
   ref?: string;
+  [key: string]: string;
 }
