@@ -6,6 +6,7 @@ import { SpawnerFormContext } from "./state";
 import useRepositoryField from "./hooks/useRepositoryField";
 import Combobox from "./components/form/Combobox";
 import useFormCache from "./hooks/useFormCache";
+import { PermalinkContext } from "./context/Permalink";
 
 async function buildImage(
   repo: string,
@@ -117,6 +118,8 @@ interface IImageBuilder {
 
 export function ImageBuilder({ name, isActive }: IImageBuilder) {
   const { urlSearchParams } = useContext(SpawnerFormContext);
+  const { setPermalinkValue } = useContext(PermalinkContext);
+
   const { binderRepo, ref: repoRef } = urlSearchParams;
   const { repo, repoId, repoFieldProps, repoError } =
     useRepositoryField(binderRepo);
@@ -142,6 +145,12 @@ export function ImageBuilder({ name, isActive }: IImageBuilder) {
   useEffect(() => {
     if (!isActive) setCustomImageError("");
   }, [isActive]);
+
+  if (isActive) {
+    setPermalinkValue("binderProvider", "gh");
+    setPermalinkValue("binderRepo", repoId);
+    setPermalinkValue("ref", ref);
+  }
 
   const handleBuildStart = async () => {
     if (repoFieldRef.current && !repo) {

@@ -10,6 +10,7 @@ import "./form.css";
 import { SpawnerFormContext } from "./state";
 import { ProfileOptions } from "./ProfileOptions";
 import useFormCache from "./hooks/useFormCache";
+import { PermalinkContext } from "./context/Permalink";
 
 /**
  * Generates the *contents* of the form shown in the profile selection page
@@ -24,6 +25,7 @@ function Form() {
     setProfile,
     profileList
   } = useContext(SpawnerFormContext);
+  const { copyPermalink, setPermalinkValue } = useContext(PermalinkContext);
   const [profileError, setProfileError] = useState("");
   const [formErrors, setFormErrors] = useState<Element[]>([]);
   const { cacheChoiceOption, cacheRepositorySelection } = useFormCache();
@@ -38,7 +40,6 @@ function Form() {
 
     // prevent form submit
     if (!formIsValid) {
-
       setTimeout(() => {
         // Timeout here so we can collect the errors after the errors are rendered on the page
         const errors = form.getElementsByClassName("invalid-feedback");
@@ -104,6 +105,7 @@ function Form() {
             }`}
             onClick={() => {
               setProfile(slug);
+              setPermalinkValue("profile", slug);
             }}
           >
             {profileList.length > 1 && (
@@ -119,12 +121,19 @@ function Form() {
               />
             )}
             <div className="profile-select-body">
-              <div
-                id={`profile-option-${slug}-label`}
-                className="profile-select-label"
-              >
-                <h2>{display_name}</h2>
-                <p>{description}</p>
+              <div className="d-flex align-items-start">
+                <div
+                  id={`profile-option-${slug}-label`}
+                  className="profile-select-label flex-grow-1"
+                >
+                  <h2>{display_name}</h2>
+                  <p>{description}</p>
+                </div>
+                {selectedProfile?.slug === slug && (
+                  <button type="button" className="btn btn-link p-0" onClick={copyPermalink}>
+                    Permalink
+                  </button>
+                )}
               </div>
 
               {profile_options && (

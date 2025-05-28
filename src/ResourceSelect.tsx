@@ -6,6 +6,7 @@ import { IProfileOption } from "./types/config";
 import { ICustomOption } from "./types/fields";
 import Combobox from "./components/form/Combobox";
 import useFormCache from "./hooks/useFormCache";
+import { PermalinkContext } from "./context/Permalink";
 
 interface IResourceSelect {
   id: string;
@@ -27,6 +28,7 @@ function ResourceSelect({
     customOptions,
   );
   const { profile: selectedProfile, urlSearchParams } = useContext(SpawnerFormContext);
+  const { setPermalinkValue } = useContext(PermalinkContext);
   const { getChoiceOptions, removeChoiceOption } = useFormCache();
   const FIELD_ID = `profile-option-${profile}--${id}`;
   const FIELD_ID_UNLISTED = `${FIELD_ID}--unlisted-choice`;
@@ -39,6 +41,11 @@ function ResourceSelect({
 
   if (!(options.length > 0)) {
     return null;
+  }
+
+  if (isActive) {
+    setPermalinkValue(id, value);
+    setPermalinkValue("unlisted_choice", unlistedChoiceValue);
   }
 
   const selectedCustomOption = customOptions.find((opt) => opt.value === value);
