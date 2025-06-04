@@ -79,6 +79,7 @@ function Form() {
   const handleProfileSelect: ChangeEventHandler<HTMLInputElement> = (e) => {
     const slug = e.target.value;
     setProfile(slug);
+    setPermalinkValue("profile", slug);
     setProfileError("");
   };
 

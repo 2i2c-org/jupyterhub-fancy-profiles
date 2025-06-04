@@ -6,11 +6,11 @@ import { PermalinkProvider } from "./context/Permalink";
 
 const root = createRoot(document.getElementById("form"));
 root.render(
-  <SpawnerFormProvider>
-    <FormCacheProvider>
-      <PermalinkProvider>
+  <PermalinkProvider>
+    <SpawnerFormProvider>
+      <FormCacheProvider>
         <Form />
-      </PermalinkProvider>
-    </FormCacheProvider>
-  </SpawnerFormProvider>,
+      </FormCacheProvider>
+    </SpawnerFormProvider>,
+  </PermalinkProvider>
 );

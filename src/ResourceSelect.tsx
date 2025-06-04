@@ -27,17 +27,17 @@ function ResourceSelect({
     config,
     customOptions,
   );
-  const { profile: selectedProfile, urlSearchParams } = useContext(SpawnerFormContext);
-  const { setPermalinkValue } = useContext(PermalinkContext);
+  const { profile: selectedProfile } = useContext(SpawnerFormContext);
+  const { setPermalinkValue, permalinkValues } = useContext(PermalinkContext);
   const { getChoiceOptions, removeChoiceOption } = useFormCache();
   const FIELD_ID = `profile-option-${profile}--${id}`;
   const FIELD_ID_UNLISTED = `${FIELD_ID}--unlisted-choice`;
 
   const isActive = selectedProfile?.slug === profile;
-  const setVal = isActive && urlSearchParams["profile"] === selectedProfile.slug;
+  const setVal = isActive && permalinkValues["profile"] === selectedProfile.slug;
 
-  const [value, setValue] = useState((setVal && urlSearchParams[id]) || defaultOption?.value);
-  const [unlistedChoiceValue, setUnlistedChoiceValue] = useState((setVal && urlSearchParams["unlisted_choice"]) || "");
+  const [value, setValue] = useState((setVal && permalinkValues[id]) || defaultOption?.value);
+  const [unlistedChoiceValue, setUnlistedChoiceValue] = useState((setVal && permalinkValues[`${id}:unlisted_choice`]) || "");
 
   if (!(options.length > 0)) {
     return null;
@@ -45,7 +45,7 @@ function ResourceSelect({
 
   if (isActive) {
     setPermalinkValue(id, value);
-    setPermalinkValue("unlisted_choice", unlistedChoiceValue);
+    setPermalinkValue(`${id}:unlisted_choice`, unlistedChoiceValue);
   }
 
   const selectedCustomOption = customOptions.find((opt) => opt.value === value);
@@ -94,6 +94,7 @@ function ResourceSelect({
         <selectedCustomOption.component
           name={FIELD_ID_UNLISTED}
           isActive={isActive}
+          optionKey={id}
         />
       )}
     </>

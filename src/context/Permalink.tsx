@@ -1,44 +1,40 @@
-import { createContext, PropsWithChildren, useContext } from "react";
-import { SpawnerFormContext } from "../state";
+import { createContext, PropsWithChildren } from "react";
+
+type TPermalinkValues = { [key: string]: string }
 
 interface IPermalink {
+  permalinkValues: TPermalinkValues;
   copyPermalink: () => Promise<void>;
   setPermalinkValue: (key: string, value: string) => void;
 }
 
-const urlParams = new URLSearchParams(location.search);
-const resettableParams = [
-  "binderProvider",
-  "binderRepo",
-  "ref",
-  "unlisted_choice"
-];
+const queryParamName = "fancy-forms-config";
+
+const params = new URLSearchParams(location.search);
+const urlParams: TPermalinkValues = JSON.parse(params.get(queryParamName)) || {};
 
 export const PermalinkContext = createContext<IPermalink>(null);
 export const PermalinkProvider = ({ children }: PropsWithChildren) => {
-  const { profile } = useContext(SpawnerFormContext);
   const resetParams = () => {
-    const resetFields = [
-      ...resettableParams,
-      ...Object.keys(profile.profile_options)
-    ];
-
-    for (const i in resetFields) {
-      urlParams.delete(resetFields[i]);
+    for (const key of Object.keys(urlParams)) {
+      delete urlParams[key];
     }
   };
 
   const setPermalinkValue = (key: string, value: string) => {
-    urlParams.set(key, value);
-    if (key === "profile") resetParams();
+    if (key === "profile" && value !== urlParams["profile"]) resetParams();
+    urlParams[key] = value;
   };
 
   const copyPermalink = () => {
-    const link = `${location.origin}${location.pathname}?${urlParams.toString()}`;
+    const params = new URLSearchParams(location.search);
+    params.set(queryParamName, JSON.stringify(urlParams));
+    const link = `${location.origin}${location.pathname}?${params.toString()}`;
     return navigator.clipboard.writeText(link);
   };
 
   const contextValue = {
+    permalinkValues: urlParams,
     setPermalinkValue,
     copyPermalink
   };
