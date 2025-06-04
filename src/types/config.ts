@@ -48,9 +48,3 @@ export type IJupytherHubWindowObject = Window &
   typeof globalThis & {
     profileList: IProfile[];
   };
-
-export interface ISearchParams {
-  binderProvider?: string;
-  binderRepo?: string;
-  ref?: string;
-}

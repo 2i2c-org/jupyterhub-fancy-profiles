@@ -2,10 +2,11 @@ import { useEffect, useState, useRef, useContext, useMemo, KeyboardEventHandler 
 import { type Terminal } from "xterm";
 import { type FitAddon } from "xterm-addon-fit";
 
-import { SpawnerFormContext } from "./state";
 import useRepositoryField from "./hooks/useRepositoryField";
 import Combobox from "./components/form/Combobox";
 import useFormCache from "./hooks/useFormCache";
+import { PermalinkContext } from "./context/Permalink";
+import { ICustomOptionProps } from "./types/fields";
 
 async function buildImage(
   repo: string,
@@ -110,17 +111,11 @@ function ImageLogs({ setTerm, setFitAddon, name }: IImageLogs) {
   );
 }
 
-interface IImageBuilder {
-  name: string;
-  isActive: boolean;
-}
+export function ImageBuilder({ name, isActive, optionKey }: ICustomOptionProps) {
+  const { setPermalinkValue, permalinkValues } = useContext(PermalinkContext);
 
-export function ImageBuilder({ name, isActive }: IImageBuilder) {
-  const {
-    binderRepo,
-    ref: repoRef,
-    setCustomOption,
-  } = useContext(SpawnerFormContext);
+  const repoRef = permalinkValues[`${optionKey}:ref`];
+  const binderRepo= permalinkValues[`${optionKey}:binderRepo`];
   const { repo, repoId, repoFieldProps, repoError } =
     useRepositoryField(binderRepo);
   const { getRepositoryOptions, getRefOptions, removeRefOption, removeRepositoryOption } = useFormCache();
@@ -146,11 +141,11 @@ export function ImageBuilder({ name, isActive }: IImageBuilder) {
     if (!isActive) setCustomImageError("");
   }, [isActive]);
 
-  useEffect(() => {
-    if (setCustomOption) {
-      repoFieldRef.current.setAttribute("value", binderRepo);
-    }
-  }, [binderRepo, repoRef, setCustomOption]);
+  if (isActive) {
+    setPermalinkValue(`${optionKey}:binderProvider`, "gh");
+    setPermalinkValue(`${optionKey}:binderRepo`, repoId);
+    setPermalinkValue(`${optionKey}:ref`, ref);
+  }
 
   const handleBuildStart = async () => {
     if (repoFieldRef.current && !repo) {
