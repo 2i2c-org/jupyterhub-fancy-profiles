@@ -197,6 +197,21 @@ describe("Profile form", () => {
     expect(screen.getByText("Build your own image")).toBeInTheDocument();
     expect(screen.getAllByText("Other...").length).toEqual(2); // There are two selects with the "Other..." label defined
   });
+
+  test("copy permalink to clipboard", async () => {
+    const user = userEvent.setup();
+
+    renderWithContext(<ProfileForm />);
+    const radio = screen.getByRole("radio", {
+      name: "GPU Nvidia Tesla T4 GPU",
+    });
+    await user.click(radio);
+    await user.click(screen.getByRole("button", {name: "Permalink"}));
+
+    const clipboardText = await navigator.clipboard.readText();
+
+    expect(clipboardText).toBe("http://localhost/?fancy-forms-config=%7B%22profile%22%3A%22gpu%22%2C%22image%22%3A%22geospatial%22%2C%22image%3Aunlisted_choice%22%3A%22%22%2C%22resources%22%3A%22mem_2_7%22%2C%22resources%3Aunlisted_choice%22%3A%22%22%7D");
+  });
 });
 
 describe("Profile form with URL Params", () => {
