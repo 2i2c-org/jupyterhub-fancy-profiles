@@ -2,6 +2,7 @@ import {
   ChangeEventHandler,
   MouseEventHandler,
   useContext,
+  useEffect,
   useState,
 } from "react";
 import "../node_modules/xterm/css/xterm.css";
@@ -26,7 +27,7 @@ function Form() {
     setProfile,
     profileList
   } = useContext(SpawnerFormContext);
-  const { setPermalinkValue } = useContext(PermalinkContext);
+  const { permalinkValues, setPermalinkValue } = useContext(PermalinkContext);
   const [profileError, setProfileError] = useState("");
   const [formErrors, setFormErrors] = useState<Element[]>([]);
   const { cacheChoiceOption, cacheRepositorySelection } = useFormCache();
@@ -83,6 +84,26 @@ function Form() {
     setProfileError("");
   };
 
+  useEffect(() => {
+    // scroll the selected profile into view
+    if (permalinkValues.profile) {
+      const targetElement = document.getElementById(`profile-${permalinkValues.profile}`);
+      const observer = new IntersectionObserver((e) => {
+        if (e.length > 0 && !e[0].isIntersecting) {
+          // scroll the element into if not fully visible
+          targetElement.scrollIntoView();
+        }
+        // Disconnecting the oberserver, we only want to scroll once
+        observer.disconnect();
+      }, {
+        root: null,
+        rootMargin: "0px",
+        threshold: 1, // we want the element to be fully visible
+      });
+      observer.observe(targetElement);
+    }
+  }, [permalinkValues.profile]);
+
   return (
     <fieldset
       aria-label="Select profile"
@@ -101,6 +122,7 @@ function Form() {
 
         return (
           <div
+            id={`profile-${slug}`}
             key={slug}
             className={`profile-select ${
               selectedProfile?.slug === slug ? "selected-profile" : ""
