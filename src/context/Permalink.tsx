@@ -1,4 +1,4 @@
-import { createContext, PropsWithChildren } from "react";
+import { createContext, PropsWithChildren, useMemo } from "react";
 
 type TPermalinkValues = { [key: string]: string }
 
@@ -10,11 +10,13 @@ interface IPermalink {
 
 const queryParamName = "fancy-forms-config";
 
-const params = new URLSearchParams(location.search);
-const urlParams: TPermalinkValues = JSON.parse(params.get(queryParamName)) || {};
-
 export const PermalinkContext = createContext<IPermalink>(null);
 export const PermalinkProvider = ({ children }: PropsWithChildren) => {
+  const urlParams: TPermalinkValues = useMemo(() => {
+    const params = new URLSearchParams(window.location.search);
+    return JSON.parse(params.get(queryParamName)) || {};
+  }, []);
+
   const resetParams = () => {
     for (const key of Object.keys(urlParams)) {
       delete urlParams[key];
