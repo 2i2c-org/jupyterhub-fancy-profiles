@@ -2,6 +2,7 @@ import {
   ChangeEventHandler,
   MouseEventHandler,
   useContext,
+  useEffect,
   useState,
 } from "react";
 import "../node_modules/xterm/css/xterm.css";
@@ -10,6 +11,8 @@ import "./form.css";
 import { SpawnerFormContext } from "./state";
 import { ProfileOptions } from "./ProfileOptions";
 import useFormCache from "./hooks/useFormCache";
+import { PermalinkContext } from "./context/Permalink";
+import Permalink from "./components/Permalink";
 
 /**
  * Generates the *contents* of the form shown in the profile selection page
@@ -22,9 +25,9 @@ function Form() {
   const {
     profile: selectedProfile,
     setProfile,
-    profileList,
-    paramsError,
+    profileList
   } = useContext(SpawnerFormContext);
+  const { permalinkValues, setPermalinkValue, permalinkParseError } = useContext(PermalinkContext);
   const [profileError, setProfileError] = useState("");
   const [formErrors, setFormErrors] = useState<Element[]>([]);
   const { cacheChoiceOption, cacheRepositorySelection } = useFormCache();
@@ -39,7 +42,6 @@ function Form() {
 
     // prevent form submit
     if (!formIsValid) {
-
       setTimeout(() => {
         // Timeout here so we can collect the errors after the errors are rendered on the page
         const errors = form.getElementsByClassName("invalid-feedback");
@@ -78,15 +80,36 @@ function Form() {
   const handleProfileSelect: ChangeEventHandler<HTMLInputElement> = (e) => {
     const slug = e.target.value;
     setProfile(slug);
+    setPermalinkValue("profile", slug);
     setProfileError("");
   };
+
+  useEffect(() => {
+    // scroll the selected profile into view
+    if (permalinkValues.profile) {
+      const targetElement = document.getElementById(`profile-${permalinkValues.profile}`);
+      const observer = new IntersectionObserver((e) => {
+        if (e.length > 0 && !e[0].isIntersecting) {
+          // scroll the element into if not fully visible
+          targetElement.scrollIntoView();
+        }
+        // Disconnecting the oberserver, we only want to scroll once
+        observer.disconnect();
+      }, {
+        root: null,
+        rootMargin: "0px",
+        threshold: 1, // we want the element to be fully visible
+      });
+      observer.observe(targetElement);
+    }
+  }, [permalinkValues.profile]);
 
   return (
     <fieldset
       aria-label="Select profile"
       aria-description="First, select the profile; second, configure the options for the selected profile."
     >
-      {paramsError && <div className="profile-form-warning">{paramsError}</div>}
+      {permalinkParseError && <div className="alert alert-warning">Unable to parse permalink configuration.</div>}
       <input
         type="radio"
         className="hidden"
@@ -100,12 +123,14 @@ function Form() {
 
         return (
           <div
+            id={`profile-${slug}`}
             key={slug}
             className={`profile-select ${
               selectedProfile?.slug === slug ? "selected-profile" : ""
             }`}
             onClick={() => {
               setProfile(slug);
+              setPermalinkValue("profile", slug);
             }}
           >
             {profileList.length > 1 && (
@@ -121,12 +146,15 @@ function Form() {
               />
             )}
             <div className="profile-select-body">
-              <div
-                id={`profile-option-${slug}-label`}
-                className="profile-select-label"
-              >
-                <h2>{display_name}</h2>
-                <p>{description}</p>
+              <div className="d-flex align-items-start">
+                <div
+                  id={`profile-option-${slug}-label`}
+                  className="profile-select-label flex-grow-1"
+                >
+                  <h2>{display_name}</h2>
+                  <p>{description}</p>
+                </div>
+                {selectedProfile?.slug === slug && <Permalink />}
               </div>
 
               {profile_options && (

@@ -1,21 +1,14 @@
 import { expect, test } from "@jest/globals";
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import ProfileForm from "./ProfileForm";
-import { SpawnerFormProvider } from "./state";
-import { FormCacheProvider } from "./context/FormCache";
+import renderWithContext from "./test/renderWithContext";
 
 test("select repository by org/repo", async () => {
   const user = userEvent.setup();
 
-  render(
-    <SpawnerFormProvider>
-      <FormCacheProvider>
-        <ProfileForm />
-      </FormCacheProvider>
-    </SpawnerFormProvider>,
-  );
+  renderWithContext(<ProfileForm />);
   const radio = screen.getByRole("radio", {
     name: "CPU only No GPU, only CPU",
   });
@@ -40,13 +33,7 @@ test("select repository by org/repo", async () => {
 test("select repository by https://github.com/org/repo", async () => {
   const user = userEvent.setup();
 
-  render(
-    <SpawnerFormProvider>
-      <FormCacheProvider>
-        <ProfileForm />
-      </FormCacheProvider>
-    </SpawnerFormProvider>,
-  );
+  renderWithContext(<ProfileForm />);
   const radio = screen.getByRole("radio", {
     name: "CPU only No GPU, only CPU",
   });
@@ -71,13 +58,7 @@ test("select repository by https://github.com/org/repo", async () => {
 test("select repository by https://www.github.com/org/repo", async () => {
   const user = userEvent.setup();
 
-  render(
-    <SpawnerFormProvider>
-      <FormCacheProvider>
-        <ProfileForm />
-      </FormCacheProvider>
-    </SpawnerFormProvider>,
-  );
+  renderWithContext(<ProfileForm />);
   const radio = screen.getByRole("radio", {
     name: "CPU only No GPU, only CPU",
   });
@@ -102,13 +83,7 @@ test("select repository by https://www.github.com/org/repo", async () => {
 test("select repository by github.com/org/repo", async () => {
   const user = userEvent.setup();
 
-  render(
-    <SpawnerFormProvider>
-      <FormCacheProvider>
-        <ProfileForm />
-      </FormCacheProvider>
-    </SpawnerFormProvider>,
-  );
+  renderWithContext(<ProfileForm />);
   const radio = screen.getByRole("radio", {
     name: "CPU only No GPU, only CPU",
   });
@@ -133,13 +108,7 @@ test("select repository by github.com/org/repo", async () => {
 test("select repository by www.github.com/org/repo", async () => {
   const user = userEvent.setup();
 
-  render(
-    <SpawnerFormProvider>
-      <FormCacheProvider>
-        <ProfileForm />
-      </FormCacheProvider>
-    </SpawnerFormProvider>,
-  );
+  renderWithContext(<ProfileForm />);
   const radio = screen.getByRole("radio", {
     name: "CPU only No GPU, only CPU",
   });
@@ -163,13 +132,7 @@ test("select repository by www.github.com/org/repo", async () => {
 test("invalid org/repo string (not matching pattern)", async () => {
   const user = userEvent.setup();
 
-  render(
-    <SpawnerFormProvider>
-      <FormCacheProvider>
-        <ProfileForm />
-      </FormCacheProvider>
-    </SpawnerFormProvider>,
-  );
+  renderWithContext(<ProfileForm />);
   const radio = screen.getByRole("radio", {
     name: "CPU only No GPU, only CPU",
   });
@@ -194,13 +157,7 @@ test("invalid org/repo string (not matching pattern)", async () => {
 test("invalid org/repo string (wrong base URL)", async () => {
   const user = userEvent.setup();
 
-  render(
-    <SpawnerFormProvider>
-      <FormCacheProvider>
-        <ProfileForm />
-      </FormCacheProvider>
-    </SpawnerFormProvider>,
-  );
+  renderWithContext(<ProfileForm />);
   const radio = screen.getByRole("radio", {
     name: "CPU only No GPU, only CPU",
   });
@@ -225,13 +182,7 @@ test("invalid org/repo string (wrong base URL)", async () => {
 test("no org/repo provided", async () => {
   const user = userEvent.setup();
 
-  render(
-    <SpawnerFormProvider>
-      <FormCacheProvider>
-        <ProfileForm />
-      </FormCacheProvider>
-    </SpawnerFormProvider>,
-  );
+  renderWithContext(<ProfileForm />);
   const radio = screen.getByRole("radio", {
     name: "CPU only No GPU, only CPU",
   });
@@ -253,13 +204,7 @@ test("no org/repo provided", async () => {
 test("no branch selected", async () => {
   const user = userEvent.setup();
 
-  render(
-    <SpawnerFormProvider>
-      <FormCacheProvider>
-        <ProfileForm />
-      </FormCacheProvider>
-    </SpawnerFormProvider>,
-  );
+  renderWithContext(<ProfileForm />);
   const radio = screen.getByRole("radio", {
     name: "CPU only No GPU, only CPU",
   });
