@@ -27,7 +27,7 @@ function Form() {
     setProfile,
     profileList
   } = useContext(SpawnerFormContext);
-  const { permalinkValues, setPermalinkValue } = useContext(PermalinkContext);
+  const { permalinkValues, setPermalinkValue, permalinkParseError } = useContext(PermalinkContext);
   const [profileError, setProfileError] = useState("");
   const [formErrors, setFormErrors] = useState<Element[]>([]);
   const { cacheChoiceOption, cacheRepositorySelection } = useFormCache();
@@ -109,6 +109,7 @@ function Form() {
       aria-label="Select profile"
       aria-description="First, select the profile; second, configure the options for the selected profile."
     >
+      {permalinkParseError && <div className="alert alert-warning">Unable to parse permalink configuration.</div>}
       <input
         type="radio"
         className="hidden"

@@ -210,23 +210,60 @@ describe("Profile form", () => {
 
     const clipboardText = await navigator.clipboard.readText();
 
-    expect(clipboardText).toBe("http://localhost/?fancy-forms-config=%7B%22profile%22%3A%22gpu%22%2C%22image%22%3A%22geospatial%22%2C%22image%3Aunlisted_choice%22%3A%22%22%2C%22resources%22%3A%22mem_2_7%22%2C%22resources%3Aunlisted_choice%22%3A%22%22%7D");
+    expect(clipboardText).toBe("http://localhost/#fancy-forms-config=%7B%22profile%22%3A%22gpu%22%2C%22image%22%3A%22geospatial%22%2C%22image%3Aunlisted_choice%22%3A%22%22%2C%22resources%22%3A%22mem_2_7%22%2C%22resources%3Aunlisted_choice%22%3A%22%22%7D");
   });
 });
 
 describe("Profile form with URL Params", () => {
-  beforeEach(() => {
+  function setHash(hash: string) {
     const location = {
       ...window.location,
-      search: "?fancy-forms-config=%7B%22profile%22%3A%22build-custom-environment%22%2C%22image%22%3A%22--extra-selectable-item%22%2C%22image%3Aunlisted_choice%22%3A%22%22%2C%22image%3AbinderProvider%22%3A%22gh%22%2C%22image%3AbinderRepo%22%3A%22org%2Frepo%22%2C%22image%3Aref%22%3A%22v1.0%22%7D",
+      hash
     };
     Object.defineProperty(window, "location", {
       writable: true,
       value: location,
     });
+  }
+
+  test("ignores irrelevant params", () => {
+    setHash("#foo=bar");
+    const { container } = renderWithContext(<ProfileForm />);
+    const hiddenRadio = container.querySelector("[name='profile']");
+    expect((hiddenRadio as HTMLInputElement).value).toEqual("custom");
+    const defaultRadio = screen.getByRole("radio", {
+      name: "Bring your own image Specify your own docker image",
+    });
+    expect((defaultRadio as HTMLInputElement).checked).toBeTruthy();
+    expect(screen.queryByText("Unable to parse permalink configuration.")).not.toBeInTheDocument();
+  });
+
+  test("ignores empty config", () => {
+    setHash("#fancy-forms-config");
+    const { container } = renderWithContext(<ProfileForm />);
+    const hiddenRadio = container.querySelector("[name='profile']");
+    expect((hiddenRadio as HTMLInputElement).value).toEqual("custom");
+    const defaultRadio = screen.getByRole("radio", {
+      name: "Bring your own image Specify your own docker image",
+    });
+    expect((defaultRadio as HTMLInputElement).checked).toBeTruthy();
+    expect(screen.queryByText("Unable to parse permalink configuration.")).not.toBeInTheDocument();
+  });
+
+  test("shows error for malformed config", () => {
+    setHash("#fancy-forms-config=%7B%22profile%22%3A%22build-custom-environment%22%2C%22image%22%3A%22--extra-selectable-item%22%2C%22image%3Aunlisted_choice%22%3A%22%22%2C%22image%3AbinderProvider%22%3A%22gh%22%2C%22image%3AbinderRepo%22%3A%22org%2Fre");
+    const { container } = renderWithContext(<ProfileForm />);
+    const hiddenRadio = container.querySelector("[name='profile']");
+    expect((hiddenRadio as HTMLInputElement).value).toEqual("custom");
+    const defaultRadio = screen.getByRole("radio", {
+      name: "Bring your own image Specify your own docker image",
+    });
+    expect((defaultRadio as HTMLInputElement).checked).toBeTruthy();
+    expect(screen.queryByText("Unable to parse permalink configuration.")).toBeInTheDocument();
   });
 
   test("preselects values", async () => {
+    setHash("#fancy-forms-config=%7B%22profile%22%3A%22build-custom-environment%22%2C%22image%22%3A%22--extra-selectable-item%22%2C%22image%3Aunlisted_choice%22%3A%22%22%2C%22image%3AbinderProvider%22%3A%22gh%22%2C%22image%3AbinderRepo%22%3A%22org%2Frepo%22%2C%22image%3Aref%22%3A%22v1.0%22%7D");
     renderWithContext(<ProfileForm />);
 
     const radio = screen.getByRole("radio", {
@@ -243,6 +280,7 @@ describe("Profile form with URL Params", () => {
   });
 
   test("no-option profiles are rendered", () => {
+    setHash("#fancy-forms-config=%7B%22profile%22%3A%22build-custom-environment%22%2C%22image%22%3A%22--extra-selectable-item%22%2C%22image%3Aunlisted_choice%22%3A%22%22%2C%22image%3AbinderProvider%22%3A%22gh%22%2C%22image%3AbinderRepo%22%3A%22org%2Frepo%22%2C%22image%3Aref%22%3A%22v1.0%22%7D");
     renderWithContext(<ProfileForm />);
 
     const empty = screen.queryByRole("radio", {
