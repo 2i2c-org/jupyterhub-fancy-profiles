@@ -48,7 +48,7 @@ export const PermalinkProvider = ({ children }: PropsWithChildren) => {
   const copyPermalink = () => {
     const params = new URLSearchParams();
     params.set(queryParamName, JSON.stringify(urlParams));
-    const link = `${location.origin}${location.pathname}${location.search}#${params.toString()}`;
+    const link = `${location.origin}${location.pathname}${location.search ? location.search : ""}#${params.toString()}`;
     return navigator.clipboard.writeText(link);
   };
 
