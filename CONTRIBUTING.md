@@ -78,3 +78,29 @@ but can be adapted to work with any other local kubernetes setup.
    ```bash
    npm run webpack:watch
    ```
+
+## Make release notes
+
+Here are some steps you can take to create release notes for a new release.
+
+1. Install `github-activity`. It is the tool we'll use to generate release notes.
+
+   ```bash
+   pip install github-activity
+   ```
+2. Make the release and push to pypi. As part of this, a new GitHub tag should be created for the release.
+3. Generate release notes using GitHub Activity:
+
+   ```bash
+   github-activity 2i2c-org/jupyterhub-fancy-profiles -s <last-release-tag> -u <this-release-tag>
+   ```
+
+   For example, the release notes for v0.5.0 were generated with the following command:
+
+
+   ```bash
+   github-activity 2i2c-org/jupyterhub-fancy-profiles -s v0.4.0 -u v0.5.0
+   ```
+4. Copy the output, rearrange and categorize it as you wish. `github-activity` will automatically group PRs based on their tag (e.g. `enhancement`, `bug`) or prefix (e.g., `[ENH]`, `[BUG]`).
+5. [Make a release on GitHub](https://github.com/2i2c-org/jupyterhub-fancy-profiles/releases/new), use the tag as the title, paste in the release notes you generated above.
+6. Click `Publish Release`. That's it!
