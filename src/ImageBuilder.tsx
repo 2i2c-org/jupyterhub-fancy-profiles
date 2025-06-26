@@ -21,10 +21,30 @@ async function buildImage(
     "/services/binder/build/",
     window.location.origin,
   );
+
+  const xsrfToken = (`; ${document.cookie}`).split("; _xsrf=").pop().split(";")[0];
+  const userResponse = await fetch(`/hub/api/user?_xsrf=${xsrfToken}`);
+  const { name } = await userResponse.json();
+
+  const tokenResponse = await fetch(`/hub/api/users/${name}/tokens?_xsrf=${xsrfToken}`, {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+    },
+    body: JSON.stringify({
+      expires_in: 3600,
+      note: "Build-image token"
+    }),
+    credentials: "include"
+  });
+  const { token } = await tokenResponse.json();
+
   const image = new BinderRepository(
     providerSpec,
     buildEndPointURL,
-    null,
+    {
+      apiToken: token
+    },
     true,
   );
   // Clear the last line written, so we start from scratch
