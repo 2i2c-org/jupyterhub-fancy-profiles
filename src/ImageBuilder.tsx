@@ -8,24 +8,31 @@ import useFormCache from "./hooks/useFormCache";
 import { PermalinkContext } from "./context/Permalink";
 import { ICustomOptionProps } from "./types/fields";
 
-async function buildImage(
-  repo: string,
-  ref: string,
-  term: Terminal,
-  fitAddon: FitAddon,
-) {
-  const { BinderRepository } = await import("@jupyterhub/binderhub-client");
-  const providerSpec = "gh/" + repo + "/" + ref;
-  // FIXME: Assume the binder api is available in the same hostname, under /services/binder/
-  const buildEndPointURL = new URL(
-    "/services/binder/build/",
-    window.location.origin,
-  );
+const TOKEN_KEY = "jupytherhub-build-token";
 
+async function getApiToken () {
   const xsrfToken = (`; ${document.cookie}`).split("; _xsrf=").pop().split(";")[0];
   const userResponse = await fetch(`/hub/api/user?_xsrf=${xsrfToken}`);
   const { name } = await userResponse.json();
 
+  const exisitingToken = localStorage.getItem(TOKEN_KEY);
+  if (exisitingToken) {
+    const { id, expires_at, token } = JSON.parse(exisitingToken);
+    const expiryDate = Date.parse(expires_at);
+    const isExpired = expiryDate < new Date().getTime();
+
+    if (isExpired) {
+      // Token is expired, deleting from server and localStorage
+      localStorage.removeItem(TOKEN_KEY);
+      await fetch(`/hub/api/users/${name}/tokens/${id}?_xsrf=${xsrfToken}`, {
+        method: "DELETE"
+      });
+    } else {
+      return token;
+    }
+  }
+
+  // No token or token is expired, requesting a new token
   const tokenResponse = await fetch(`/hub/api/users/${name}/tokens?_xsrf=${xsrfToken}`, {
     method: "POST",
     headers: {
@@ -37,13 +44,32 @@ async function buildImage(
     }),
     credentials: "include"
   });
-  const { token } = await tokenResponse.json();
+  const res = await tokenResponse.json();
+  localStorage.setItem(TOKEN_KEY, JSON.stringify(res));
+  return res.token;
+}
+
+async function buildImage(
+  repo: string,
+  ref: string,
+  term: Terminal,
+  fitAddon: FitAddon,
+) {
+  const apiToken = await getApiToken();
+
+  const { BinderRepository } = await import("@jupyterhub/binderhub-client");
+  const providerSpec = "gh/" + repo + "/" + ref;
+  // FIXME: Assume the binder api is available in the same hostname, under /services/binder/
+  const buildEndPointURL = new URL(
+    "/services/binder/build/",
+    window.location.origin,
+  );
 
   const image = new BinderRepository(
     providerSpec,
     buildEndPointURL,
     {
-      apiToken: token
+      apiToken
     },
     true,
   );
