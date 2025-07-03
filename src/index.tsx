@@ -11,6 +11,6 @@ root.render(
       <FormCacheProvider>
         <Form />
       </FormCacheProvider>
-    </SpawnerFormProvider>,
+    </SpawnerFormProvider>
   </PermalinkProvider>
 );
