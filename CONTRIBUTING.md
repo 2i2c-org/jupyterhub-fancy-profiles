@@ -104,3 +104,19 @@ Here are some steps you can take to create release notes for a new release.
 4. Copy the output, rearrange and categorize it as you wish. `github-activity` will automatically group PRs based on their tag (e.g. `enhancement`, `bug`) or prefix (e.g., `[ENH]`, `[BUG]`).
 5. [Make a release on GitHub](https://github.com/2i2c-org/jupyterhub-fancy-profiles/releases/new), use the tag as the title, paste in the release notes you generated above.
 6. Click `Publish Release`. That's it!
+
+## Tests
+
+Tests for the front-end use [Jest](https://jestjs.io) to set up and specify tests and [React Testing Library](https://testing-library.com/docs/react-testing-library/intro/) for rendering components and asseting DOM state.
+
+To all tests:
+
+```sh
+npm test
+```
+
+To run a specific test suite, ie. the tests in `ProfileForm.test.tsx`
+
+```sh
+npm test ProfileForm
+```
