@@ -47,6 +47,7 @@ export function CustomizedSelect({
   return (
     <Select
       options={options}
+      maxMenuHeight={300}
       formatOptionLabel={(option, meta) => {
         const classNames = ["react-select-item-container"];
         if (meta.selectValue[0].value === option.value) {
