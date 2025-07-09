@@ -46,6 +46,7 @@ export function CustomizedSelect({
   const [lastSelectedChoice, setLastSelectedChoice] = useState(null);
   return (
     <Select
+      classNamePrefix="select"
       options={options}
       maxMenuHeight={300}
       formatOptionLabel={(option, meta) => {
