@@ -121,35 +121,45 @@
   margin-left: 1rem;
 }
 
-/* react-select styling */
+[data-bs-theme="dark"] .select__control {
+  background-color: var(--bs-body-bg);
+}
+
+[data-bs-theme="dark"] .select__single-value {
+  color: var(--bs-body-color);
+}
+
+[data-bs-theme="dark"] .select__menu {
+  color: var(--bs-body-color);
+  background-color: var(--bs-body-bg);
+}
+
+.react-select-item-description {
+  color: #666;
+}
+
+[data-bs-theme="dark"] .react-select-item-description {
+  color: #999;
+}
+
+[data-bs-theme="dark"] .select__option--is-focused .react-select-item-description {
+  color: #666;
+}
+
+[data-bs-theme="dark"] .select__option--is-focused:not(.select__option--is-selected) {
+  background-color: var(--bs-secondary-text-emphasis);
+  color: var(--bs-body-bg);
+}
+
+.react-select-item-container {
+  padding: 4px;
+}
+
+
 .react-select-item-container.react-select-item-menu-display.react-select-item-selected
   .react-select-item-description {
   /* When rendering an option in react select's *menu*, if it is the currently selected one, make the description much lighter.
      Otherwise, it gets unreadable in the blue;
     */
   color: #ddd;
-}
-
-.react-select-item-description {
-  color: #999;
-}
-
-[data-bs-theme="dark"]
-  .react-select-item-container.react-select-item-menu-display.react-select-item-selected
-  .react-select-item-description {
-  color: #222222;
-}
-
-[data-bs-theme="dark"] .react-select-item-container .react-select-item-title {
-  color: #000;
-}
-
-[data-bs-theme="dark"]
-  .react-select-item-container
-  .react-select-item-description {
-  color: #666;
-}
-
-.react-select-item-container {
-  padding: 4px;
 }

@@ -46,6 +46,7 @@ export function CustomizedSelect({
   const [lastSelectedChoice, setLastSelectedChoice] = useState(null);
   return (
     <Select
+      classNamePrefix="select"
       options={options}
       formatOptionLabel={(option, meta) => {
         const classNames = ["react-select-item-container"];
