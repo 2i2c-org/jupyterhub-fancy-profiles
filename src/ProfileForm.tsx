@@ -104,6 +104,18 @@ function Form() {
     }
   }, [permalinkValues.profile]);
 
+  useEffect(() => {
+    // Only auto-submit for non-build profiles
+    if (permalinkValues["autoStart"] === "true" && permalinkValues["image"] !== "--extra-selectable-item") {
+      const form = document.querySelector("form");
+      if (form) {
+        form.requestSubmit();
+      }
+    }
+  }, [permalinkValues]);
+
+  
+
   return (
     <fieldset
       aria-label="Select profile"

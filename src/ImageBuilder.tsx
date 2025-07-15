@@ -167,11 +167,11 @@ export function ImageBuilder({ name, isActive, optionKey }: ICustomOptionProps) 
     setIsBuildingImage(true);
     buildImage(repoId, ref, term, fitAddon)
       .then((imageName) => {
-        setCustomImage(imageName); // This triggers the input field update
-        setShouldAutoSubmit(true); // Signal to auto-submit
+        setCustomImage(imageName);
+        setShouldAutoSubmit(true);
         term.write("\nImage has been built! Starting your server...");
       })
-      .catch(() => console.log("Error building image."))
+      .catch((e) => console.log("Error building image: ", (e as Error).message))
       .finally(() => setIsBuildingImage(false));
   };
 
@@ -184,6 +184,13 @@ export function ImageBuilder({ name, isActive, optionKey }: ICustomOptionProps) 
       setShouldAutoSubmit(false);
     }
   }, [customImage, shouldAutoSubmit]);
+
+  useEffect(() => {
+    if (isActive && permalinkValues["autoStart"] === "true" && !isBuildingImage) {
+      console.log('autoStart detected, triggering build...');
+      handleBuildStart();
+    }
+  }, [isActive, permalinkValues, isBuildingImage]);
 
   const handleKeyDown: KeyboardEventHandler<HTMLInputElement> = (e) => {
     if (e.key === "Enter") {
