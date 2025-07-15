@@ -8,6 +8,8 @@ import useFormCache from "./hooks/useFormCache";
 import { PermalinkContext } from "./context/Permalink";
 import { ICustomOptionProps } from "./types/fields";
 
+
+
 async function buildImage(
   repo: string,
   ref: string,
@@ -131,7 +133,8 @@ export function ImageBuilder({ name, isActive, optionKey }: ICustomOptionProps) 
   const [fitAddon, setFitAddon] = useState<FitAddon>(null);
 
   const [isBuildingImage, setIsBuildingImage] = useState<boolean>(false);
-
+  const [shouldAutoSubmit, setShouldAutoSubmit] = useState(false);
+  
   const repositoryOptions = getRepositoryOptions(name);
   const refOptions = useMemo(() => {
     return getRefOptions(name, repoId);
@@ -140,6 +143,7 @@ export function ImageBuilder({ name, isActive, optionKey }: ICustomOptionProps) 
   useEffect(() => {
     if (!isActive) setCustomImageError("");
   }, [isActive]);
+  
 
   if (isActive) {
     setPermalinkValue(`${optionKey}:binderProvider`, "gh");
@@ -163,14 +167,23 @@ export function ImageBuilder({ name, isActive, optionKey }: ICustomOptionProps) 
     setIsBuildingImage(true);
     buildImage(repoId, ref, term, fitAddon)
       .then((imageName) => {
-        setCustomImage(imageName);
-        term.write(
-          "\nImage has been built! Click the start button to launch your server",
-        );
+        setCustomImage(imageName); // This triggers the input field update
+        setShouldAutoSubmit(true); // Signal to auto-submit
+        term.write("\nImage has been built! Starting your server...");
       })
       .catch(() => console.log("Error building image."))
       .finally(() => setIsBuildingImage(false));
   };
+
+  useEffect(() => {
+    if (customImage && shouldAutoSubmit) {
+      const form = document.querySelector("form");
+      if (form) {
+        form.requestSubmit();
+      }
+      setShouldAutoSubmit(false);
+    }
+  }, [customImage, shouldAutoSubmit]);
 
   const handleKeyDown: KeyboardEventHandler<HTMLInputElement> = (e) => {
     if (e.key === "Enter") {
@@ -236,7 +249,7 @@ export function ImageBuilder({ name, isActive, optionKey }: ICustomOptionProps) 
           onClick={handleBuildStart}
           disabled={isBuildingImage}
         >
-          Build image
+          Build and Start image
         </button>
       </div>
       <input
