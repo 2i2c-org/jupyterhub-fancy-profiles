@@ -68,9 +68,7 @@ async function buildImage(
   const image = new BinderRepository(
     providerSpec,
     buildEndPointURL,
-    {
-      apiToken
-    },
+    apiToken,
     true,
   );
   // Clear the last line written, so we start from scratch
