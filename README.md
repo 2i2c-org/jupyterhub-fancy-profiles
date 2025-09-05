@@ -130,6 +130,14 @@ We should release early and often!
 
 4. That's it! A new release should be on PyPI shortly.
 
+## Contribute to documentation
+
+Our documentation is located in the `docs/` folder.
+
+It is built with the [MyST Document Engine](https://mystmd.org).
+
+It is deployed with [a GitHub Action](./.github/workflows/docs.yml), and [we use ReadTheDocs](./readthedocs.yml) just for PR previews.
+
 ## Comparisons to the BinderHub UI
 
 The BinderHub project provides a frontend that also allows end users to
