@@ -1,0 +1,16 @@
+# See https://docs.readthedocs.io/en/stable/config-file/v2.html for details
+# Inspired by: https://github.com/jupyter-book/jupyter-book/blob/next/.readthedocs.yaml
+version: 2
+build:
+  os: ubuntu-24.04
+  tools:
+    # Specify the language and version your project requires,
+    # by uncommenting one of the following tools.
+    #
+    python: "3.13"
+    nodejs: "22"
+  commands:
+    - npm install -g mystmd
+    - mkdir -p $READTHEDOCS_OUTPUT/html/
+    - cd docs/ && BASE_URL="/$READTHEDOCS_LANGUAGE/$READTHEDOCS_VERSION" myst build --html
+    - cp -a docs/_build/html/. "$READTHEDOCS_OUTPUT/html" && rm -r docs/_build
