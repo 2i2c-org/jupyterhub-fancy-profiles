@@ -1,0 +1,19 @@
+# See MyST docs at: https://mystmd.org/guide/
+version: 1
+project:
+  id: 319f905e-b429-46b6-8f22-24e8800d75e7
+  title: JupyterHub Fancy Profiles
+  # description:
+  # keywords: []
+  # authors: []
+  github: https://github.com/2i2c-org/jupyterhub-fancy-profiles
+  toc:
+    - file: index.md
+    - file: page1.md
+site:
+  template: book-theme
+  options:
+    logo: images/logo.svg
+    logo_dark: images/logo-dark.svg
+  #   favicon: favicon.ico
+  #   logo: site_logo.png
