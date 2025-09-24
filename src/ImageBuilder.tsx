@@ -57,7 +57,8 @@ async function buildImage(
 ) {
   const apiToken = await getApiToken();
 
-  const { BinderRepository } = await import("@jupyterhub/binderhub-client");
+  // @ts-ignore - v0.5.0 client types not available
+  const { BinderRepository } = await import("@jupyterhub/binderhub-client/client.js");
   const providerSpec = "gh/" + repo + "/" + ref;
   // FIXME: Assume the binder api is available in the same hostname, under /services/binder/
   const buildEndPointURL = new URL(
@@ -65,11 +66,14 @@ async function buildImage(
     window.location.origin,
   );
 
+  // Use new v0.5.0 API with options object - only apiToken needed for auth
   const image = new BinderRepository(
     providerSpec,
     buildEndPointURL,
-    apiToken,
-    true,
+    {
+      apiToken,     // JupyterHub API token for Authorization header
+      buildOnly: true,
+    }
   );
   // Clear the last line written, so we start from scratch
   term.write("\x1b[2K\r");
