@@ -57,7 +57,7 @@ async function buildImage(
 ) {
   const apiToken = await getApiToken();
 
-  // @ts-ignore - v0.5.0 client types not available
+  // @ts-expect-error - v0.5.0 client types not available
   const { BinderRepository } = await import("@jupyterhub/binderhub-client/client.js");
   const providerSpec = "gh/" + repo + "/" + ref;
   // FIXME: Assume the binder api is available in the same hostname, under /services/binder/
