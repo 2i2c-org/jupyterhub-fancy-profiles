@@ -40,7 +40,7 @@ async function getApiToken () {
     },
     body: JSON.stringify({
       expires_in: 3600,
-      note: "Build-image token"
+      note: "Created by Fancy Profiles for Build your Own Image"
     }),
     credentials: "include"
   });
