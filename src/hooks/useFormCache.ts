@@ -11,6 +11,8 @@ function useFormCache(): IFormCache {
     removeChoiceOption,
     removeRepositoryOption,
     removeRefOption,
+    buildImageStart,
+    setBuildImageStart,
   } = useContext(FormCacheContext) as IFormCache;
 
   return useMemo(
@@ -23,6 +25,8 @@ function useFormCache(): IFormCache {
       removeChoiceOption,
       removeRepositoryOption,
       removeRefOption,
+      buildImageStart,
+      setBuildImageStart,
     }),
     [
       getChoiceOptions,
@@ -33,6 +37,8 @@ function useFormCache(): IFormCache {
       removeChoiceOption,
       removeRepositoryOption,
       removeRefOption,
+      buildImageStart,
+      setBuildImageStart,
     ],
   );
 }

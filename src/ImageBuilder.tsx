@@ -1,4 +1,6 @@
-import { useEffect, useState, useRef, useContext, useMemo, KeyboardEventHandler } from "react";
+import { useEffect, useState, useRef, useContext, useMemo, KeyboardEventHandler,
+  Dispatch, SetStateAction,
+ } from "react";
 import { type Terminal } from "xterm";
 import { type FitAddon } from "xterm-addon-fit";
 
@@ -7,7 +9,6 @@ import Combobox from "./components/form/Combobox";
 import useFormCache from "./hooks/useFormCache";
 import { PermalinkContext } from "./context/Permalink";
 import { ICustomOptionProps } from "./types/fields";
-
 
 
 async function buildImage(
@@ -120,7 +121,8 @@ export function ImageBuilder({ name, isActive, optionKey }: ICustomOptionProps) 
   const binderRepo= permalinkValues[`${optionKey}:binderRepo`];
   const { repo, repoId, repoFieldProps, repoError } =
     useRepositoryField(binderRepo);
-  const { getRepositoryOptions, getRefOptions, removeRefOption, removeRepositoryOption } = useFormCache();
+  const { getRepositoryOptions, getRefOptions, removeRefOption, removeRepositoryOption,
+          setBuildImageStart } = useFormCache();
 
   const [ref, setRef] = useState<string>(repoRef || "HEAD");
   const repoFieldRef = useRef<HTMLInputElement>();
@@ -133,7 +135,28 @@ export function ImageBuilder({ name, isActive, optionKey }: ICustomOptionProps) 
   const [fitAddon, setFitAddon] = useState<FitAddon>(null);
 
   const [isBuildingImage, setIsBuildingImage] = useState<boolean>(false);
-  const [shouldAutoSubmit, setShouldAutoSubmit] = useState(false);
+  //const [shouldAutoSubmit, setShouldAutoSubmit] = useState(false);
+
+  const hrefReop = useRef<string>(repo);
+  const hrefRef = useRef<string>(ref);
+  const hrefRepoId = useRef<string>(repoId);
+  const hrefTerm = useRef<Terminal>(term);
+  const hrefFitAddon = useRef<FitAddon>(fitAddon);
+  const hrefSetIsBuildingImage = useRef<Dispatch<SetStateAction<boolean>>>(setIsBuildingImage);
+  const hrefSetCustomImage = useRef<Dispatch<SetStateAction<string>>>(setCustomImage);
+  const hrefSetCustomImageError = useRef<Dispatch<SetStateAction<string>>>(setCustomImageError);
+
+  useEffect(() => {
+    hrefReop.current = repo;
+    hrefRef.current = ref;
+    hrefRepoId.current = repoId;
+    hrefTerm.current = term;
+    hrefFitAddon.current = fitAddon;
+    hrefSetIsBuildingImage.current = setIsBuildingImage;
+    hrefSetCustomImage.current = setCustomImage;
+    hrefSetCustomImageError.current = setCustomImageError;
+
+  }, [repo, ref, repoId, term, fitAddon, setIsBuildingImage, setCustomImage, setCustomImageError]);
   
   const repositoryOptions = getRepositoryOptions(name);
   const refOptions = useMemo(() => {
@@ -152,45 +175,41 @@ export function ImageBuilder({ name, isActive, optionKey }: ICustomOptionProps) 
   }
 
   const handleBuildStart = async () => {
-    if (repoFieldRef.current && !repo) {
+    
+    if (repoFieldRef.current && !hrefReop.current) {
       repoFieldRef.current.focus();
       repoFieldRef.current.blur();
       return;
     }
 
-    if (branchFieldRef.current && !ref) {
+    if (branchFieldRef.current && !hrefRef.current) {
       branchFieldRef.current.focus();
       branchFieldRef.current.blur();
       return;
     }
 
-    setIsBuildingImage(true);
-    buildImage(repoId, ref, term, fitAddon)
-      .then((imageName) => {
-        setCustomImage(imageName);
-        setShouldAutoSubmit(true);
-        term.write("\nImage has been built! Starting your server...");
-      })
-      .catch((e) => console.log("Error building image: ", (e as Error).message))
-      .finally(() => setIsBuildingImage(false));
+    try {
+      hrefSetIsBuildingImage.current(true);
+      const imageName = await buildImage(hrefRepoId.current, hrefRef.current, 
+                                        hrefTerm.current, hrefFitAddon.current);
+      //console.log("handleBuildStart: step 4", imageName);
+      hrefSetCustomImage.current(imageName);
+      hrefTerm.current.write("\nImage has been built! Starting your server...");
+      hrefSetCustomImageError.current("");
+    } catch (e) {
+      console.log("Error building image: ", (e as Error)?.message || e);
+
+    } finally {
+      hrefSetIsBuildingImage.current(false);
+    }
   };
 
   useEffect(() => {
-    if (customImage && shouldAutoSubmit) {
-      const form = document.querySelector("form");
-      if (form) {
-        form.requestSubmit();
-      }
-      setShouldAutoSubmit(false);
-    }
-  }, [customImage, shouldAutoSubmit]);
-
-  useEffect(() => {
-    if (isActive && permalinkValues["autoStart"] === "true" && !isBuildingImage) {
-      console.log('autoStart detected, triggering build...');
-      handleBuildStart();
-    }
-  }, [isActive, permalinkValues, isBuildingImage]);
+     setBuildImageStart(() => handleBuildStart);
+     return () => {
+       setBuildImageStart(null);
+     };
+   }, []);
 
   const handleKeyDown: KeyboardEventHandler<HTMLInputElement> = (e) => {
     if (e.key === "Enter") {
@@ -249,16 +268,6 @@ export function ImageBuilder({ name, isActive, optionKey }: ICustomOptionProps) 
         }}
       />
 
-      <div className="right-button">
-        <button
-          type="button"
-          className="btn btn-jupyter"
-          onClick={handleBuildStart}
-          disabled={isBuildingImage}
-        >
-          Build and Start image
-        </button>
-      </div>
       <input
         type="text"
         name={name}

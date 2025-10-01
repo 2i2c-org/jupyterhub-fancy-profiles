@@ -4,6 +4,8 @@ import {
   useCallback,
   useEffect,
   useState,
+  Dispatch,
+  SetStateAction
 } from "react";
 import { cacheOption, getRecords, removeOption, removeRepository } from "../utils/indexedDb";
 
@@ -20,6 +22,9 @@ export interface IFormCache {
     repository: string,
     ref: string,
   ) => void;
+
+  buildImageStart: (() => Promise<void>) | null;
+  setBuildImageStart: Dispatch<SetStateAction<(() => Promise<void>) | null>>;
 }
 
 type TChoiceEntry = {
@@ -153,6 +158,8 @@ export const FormCacheProvider = ({ children }: PropsWithChildren) => {
     loadPreviousRepositories();
   }, []);
 
+   const [buildImageStart, setBuildImageStart] = useState<(() => Promise<void>) | null>(null);
+
   const contextValue = {
     getChoiceOptions,
     cacheChoiceOption,
@@ -161,7 +168,9 @@ export const FormCacheProvider = ({ children }: PropsWithChildren) => {
     cacheRepositorySelection,
     removeChoiceOption,
     removeRepositoryOption,
-    removeRefOption
+    removeRefOption,
+    buildImageStart,
+    setBuildImageStart
   };
 
   return (

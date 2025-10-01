@@ -1,4 +1,5 @@
 import {
+  MouseEvent,
   ChangeEventHandler,
   MouseEventHandler,
   useContext,
@@ -30,9 +31,33 @@ function Form() {
   const { permalinkValues, setPermalinkValue, permalinkParseError } = useContext(PermalinkContext);
   const [profileError, setProfileError] = useState("");
   const [formErrors, setFormErrors] = useState<Element[]>([]);
-  const { cacheChoiceOption, cacheRepositorySelection } = useFormCache();
+  const { cacheChoiceOption, cacheRepositorySelection, buildImageStart } = useFormCache();
 
-  const handleSubmit: MouseEventHandler<HTMLButtonElement> = (e) => {
+  const [eventForSubmit, setEventForSubmit] = useState<MouseEvent<HTMLButtonElement>|null>(null);
+
+  useEffect(() => {
+    if (eventForSubmit) {
+      submitTheForm(eventForSubmit);
+      setEventForSubmit(null);
+      const form = document.querySelector("form");
+      if (form) {
+        form.requestSubmit();
+      }
+    }
+  }, [eventForSubmit]);
+
+
+  const handleSubmit: MouseEventHandler<HTMLButtonElement> =  async (e: MouseEvent<HTMLButtonElement>) => {
+
+    e.preventDefault();
+    if (buildImageStart){
+      await buildImageStart();
+    }
+    setEventForSubmit(e);
+  }
+
+  const submitTheForm =  (e: MouseEvent<HTMLButtonElement>) => {
+
     setProfileError("");
     setFormErrors([]);
     const form = (e.target as HTMLElement).closest("form");
@@ -206,7 +231,7 @@ function Form() {
         type="submit"
         onClick={handleSubmit}
       >
-        Start
+        { buildImageStart ? "Build Image and Start" : "Start" }
       </button>
     </fieldset>
   );
