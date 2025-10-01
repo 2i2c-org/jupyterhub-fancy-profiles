@@ -154,19 +154,15 @@ export function ImageBuilder({ name, isActive, optionKey }: ICustomOptionProps) 
     hrefFitAddon.current = fitAddon;
     hrefSetIsBuildingImage.current = setIsBuildingImage;
     hrefSetCustomImage.current = setCustomImage;
-    hrefSetCustomImageError.current = setCustomImageError;
 
-  }, [repo, ref, repoId, term, fitAddon, setIsBuildingImage, setCustomImage, setCustomImageError]);
+  }, [repo, ref, repoId, term, fitAddon, setIsBuildingImage, setCustomImage]);
   
   const repositoryOptions = getRepositoryOptions(name);
   const refOptions = useMemo(() => {
     return getRefOptions(name, repoId);
   }, [repoId]);
 
-  useEffect(() => {
-    if (!isActive) setCustomImageError("");
-  }, [isActive]);
-  
+
 
   if (isActive) {
     setPermalinkValue(`${optionKey}:binderProvider`, "gh");
@@ -276,8 +272,7 @@ export function ImageBuilder({ name, isActive, optionKey }: ICustomOptionProps) 
         required={isActive}
         aria-hidden="true"
         style={{ display: "none" }}
-        onInvalid={() =>
-          setCustomImageError("Wait for the image build to complete.")}
+        onInvalid={() => {}}
         onChange={() => {}} // Hack to prevent a console error, while at the same time allowing for this field to be validatable, ie. not making it read-only
       />
       <div className="profile-option-container">
