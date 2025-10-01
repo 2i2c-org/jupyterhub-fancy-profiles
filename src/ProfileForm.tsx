@@ -131,10 +131,15 @@ function Form() {
 
   useEffect(() => {
     // Only auto-submit for non-build profiles
-    if (permalinkValues["autoStart"] === "true" && permalinkValues["image"] !== "--extra-selectable-item") {
+    if (permalinkValues["autoStart"] === "true") {
       const form = document.querySelector("form");
       if (form) {
-        form.requestSubmit();
+        const button = form.querySelector('button[type="submit"]') as HTMLButtonElement | null;
+        if (button) {
+          setTimeout(() => {
+            button.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
+          }, 1000); // Give the form a second to render, and the profile to be selected, HACK but it works
+        }
       }
     }
   }, [permalinkValues]);
