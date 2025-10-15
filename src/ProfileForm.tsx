@@ -54,7 +54,7 @@ function Form() {
       await buildImageStart();
     }
     setShouldSubmit(true);
-  }
+  };
 
 
   const submitTheForm =  () => {
@@ -135,10 +135,10 @@ function Form() {
     if (permalinkValues["autoStart"] === "true") {
       const form = document.querySelector("form");
       if (form) {
-        const button = form.querySelector('button[type="submit"]') as HTMLButtonElement | null;
+        const button = form.querySelector("button[type=\"submit\"]") as HTMLButtonElement | null;
         if (button) {
           setTimeout(() => {
-            button.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
+            button.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true }));
           }, 1000); // Give the form a second to render, and the profile to be selected, HACK but it works
         }
       }

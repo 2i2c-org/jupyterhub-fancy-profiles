@@ -158,7 +158,7 @@ export const FormCacheProvider = ({ children }: PropsWithChildren) => {
     loadPreviousRepositories();
   }, []);
 
-   const [buildImageStart, setBuildImageStart] = useState<(() => Promise<void>) | null>(null);
+  const [buildImageStart, setBuildImageStart] = useState<(() => Promise<void>) | null>(null);
 
   const contextValue = {
     getChoiceOptions,

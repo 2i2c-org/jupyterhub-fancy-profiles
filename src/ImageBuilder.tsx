@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef, useContext, useMemo, KeyboardEventHandler,
   Dispatch, SetStateAction,
- } from "react";
+} from "react";
 import { type Terminal } from "xterm";
 import { type FitAddon } from "xterm-addon-fit";
 
@@ -122,19 +122,20 @@ export function ImageBuilder({ name, isActive, optionKey }: ICustomOptionProps) 
   const { repo, repoId, repoFieldProps, repoError } =
     useRepositoryField(binderRepo);
   const { getRepositoryOptions, getRefOptions, removeRefOption, removeRepositoryOption,
-          setBuildImageStart } = useFormCache();
+    setBuildImageStart } = useFormCache();
 
   const [ref, setRef] = useState<string>(repoRef || "HEAD");
   const repoFieldRef = useRef<HTMLInputElement>();
   const branchFieldRef = useRef<HTMLInputElement>();
 
   const [customImage, setCustomImage] = useState<string>("");
-  const [customImageError, setCustomImageError] = useState<string>(null);
+  const [customImageError] = useState<string>(null);
 
   const [term, setTerm] = useState<Terminal>(null);
   const [fitAddon, setFitAddon] = useState<FitAddon>(null);
 
-  const [isBuildingImage, setIsBuildingImage] = useState<boolean>(false);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [_isBuildingImage, setIsBuildingImage] = useState<boolean>(false);
 
   const hrefReop = useRef<string>(repo);
   const hrefRef = useRef<string>(ref);
@@ -170,7 +171,6 @@ export function ImageBuilder({ name, isActive, optionKey }: ICustomOptionProps) 
   }
 
   const handleBuildStart = async () => {
-    
     if (repoFieldRef.current && !hrefReop.current) {
       repoFieldRef.current.focus();
       repoFieldRef.current.blur();
@@ -186,7 +186,7 @@ export function ImageBuilder({ name, isActive, optionKey }: ICustomOptionProps) 
     try {
       hrefSetIsBuildingImage.current(true);
       const imageName = await buildImage(hrefRepoId.current, hrefRef.current, 
-                                        hrefTerm.current, hrefFitAddon.current);
+        hrefTerm.current, hrefFitAddon.current);
       //console.log("handleBuildStart: step 4", imageName);
       hrefSetCustomImage.current(imageName);
       hrefTerm.current.write("\nImage has been built! Starting your server...");
@@ -200,11 +200,11 @@ export function ImageBuilder({ name, isActive, optionKey }: ICustomOptionProps) 
   };
 
   useEffect(() => {
-     setBuildImageStart(() => handleBuildStart);
-     return () => {
-       setBuildImageStart(null);
-     };
-   }, []);
+    setBuildImageStart(() => handleBuildStart);
+    return () => {
+      setBuildImageStart(null);
+    };
+  }, []);
 
   const handleKeyDown: KeyboardEventHandler<HTMLInputElement> = (e) => {
     if (e.key === "Enter") {
