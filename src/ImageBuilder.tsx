@@ -135,16 +135,15 @@ export function ImageBuilder({ name, isActive, optionKey }: ICustomOptionProps) 
   const [fitAddon, setFitAddon] = useState<FitAddon>(null);
 
   const [isBuildingImage, setIsBuildingImage] = useState<boolean>(false);
-  //const [shouldAutoSubmit, setShouldAutoSubmit] = useState(false);
 
   const hrefReop = useRef<string>(repo);
   const hrefRef = useRef<string>(ref);
   const hrefRepoId = useRef<string>(repoId);
   const hrefTerm = useRef<Terminal>(term);
   const hrefFitAddon = useRef<FitAddon>(fitAddon);
-  const hrefSetIsBuildingImage = useRef<Dispatch<SetStateAction<boolean>>>(setIsBuildingImage);
-  const hrefSetCustomImage = useRef<Dispatch<SetStateAction<string>>>(setCustomImage);
-  const hrefSetCustomImageError = useRef<Dispatch<SetStateAction<string>>>(setCustomImageError);
+  const hrefSetCustomImage = useRef<Dispatch<SetStateAction<string>>>(null);
+  const hrefSetCustomImageError = useRef<Dispatch<SetStateAction<string>>>(null);
+  const hrefSetIsBuildingImage = useRef<Dispatch<SetStateAction<boolean>>>(null);
 
   useEffect(() => {
     hrefReop.current = repo;
@@ -152,8 +151,8 @@ export function ImageBuilder({ name, isActive, optionKey }: ICustomOptionProps) 
     hrefRepoId.current = repoId;
     hrefTerm.current = term;
     hrefFitAddon.current = fitAddon;
-    hrefSetIsBuildingImage.current = setIsBuildingImage;
     hrefSetCustomImage.current = setCustomImage;
+    hrefSetIsBuildingImage.current = setIsBuildingImage;
 
   }, [repo, ref, repoId, term, fitAddon, setIsBuildingImage, setCustomImage]);
   
