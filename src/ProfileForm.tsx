@@ -33,18 +33,18 @@ function Form() {
   const [formErrors, setFormErrors] = useState<Element[]>([]);
   const { cacheChoiceOption, cacheRepositorySelection, buildImageStart } = useFormCache();
 
-  const [eventForSubmit, setEventForSubmit] = useState<MouseEvent<HTMLButtonElement>|null>(null);
+  const [shouldSubmit, setShouldSubmit] = useState(false);
 
   useEffect(() => {
-    if (eventForSubmit) {
-      submitTheForm(eventForSubmit);
-      setEventForSubmit(null);
+    if (shouldSubmit) {
+      submitTheForm();
+      setShouldSubmit(false);
       const form = document.querySelector("form");
       if (form) {
         form.requestSubmit();
       }
     }
-  }, [eventForSubmit]);
+  }, [shouldSubmit]);
 
 
   const handleSubmit: MouseEventHandler<HTMLButtonElement> =  async (e: MouseEvent<HTMLButtonElement>) => {
@@ -53,17 +53,20 @@ function Form() {
     if (buildImageStart){
       await buildImageStart();
     }
-    setEventForSubmit(e);
+    setShouldSubmit(true);
   }
 
-  const submitTheForm =  (e: MouseEvent<HTMLButtonElement>) => {
+
+  const submitTheForm =  () => {
 
     setProfileError("");
     setFormErrors([]);
-    const form = (e.target as HTMLElement).closest("form");
 
-    // validate the form
+    const form = document.querySelector("form");
+
+
     const formIsValid = form.checkValidity();
+
 
     // prevent form submit
     if (!formIsValid) {
@@ -79,7 +82,6 @@ function Form() {
       }, 100);
 
       setProfileError(!selectedProfile ? "Select a container profile" : "");
-      e.preventDefault();
       return;
     }
 
@@ -130,7 +132,6 @@ function Form() {
   }, [permalinkValues.profile]);
 
   useEffect(() => {
-    // Only auto-submit for non-build profiles
     if (permalinkValues["autoStart"] === "true") {
       const form = document.querySelector("form");
       if (form) {
