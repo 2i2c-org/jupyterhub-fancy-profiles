@@ -1,6 +1,6 @@
 # When you upgrade this version, update the tag in `.github/workflows/docker-build.yaml`
 # as well.
-ARG Z2JH_VERSION=4.2.0
+ARG Z2JH_VERSION=4.3.1
 
 # We need node to build the package, but not to run it
 # Use the same base image but with nodejs installed as the builder,
