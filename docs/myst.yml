@@ -9,7 +9,12 @@ project:
   github: https://github.com/2i2c-org/jupyterhub-fancy-profiles
   toc:
     - file: index.md
-    - file: page1.md
+    - file: install.md
+    - file: guide.md
+    - file: image-building.md
+    - file: contribute/index.md
+      children:
+      - file: contribute/develop.md
 site:
   template: book-theme
   options:
