@@ -1,10 +1,10 @@
-# Developer Guide
+# Developer guide
 
 This guide is for contributors who want to understand the codebase, make changes, or help maintain the project.
 
-## Architecture Overview
+## Architecture overview
 
-### How It Works
+### How it works
 
 1. **Templates**: Jinja2 templates render the initial HTML structure for the profile selection form
 2. **React App**: JavaScript/React code handles the interactive UI, form state, and dynamic features
@@ -12,12 +12,12 @@ This guide is for contributors who want to understand the codebase, make changes
 4. **HTTP Handlers**: JupyterHub serves the static assets when the profile page loads
 5. **KubeSpawner Integration**: The `setup_ui()` function configures KubeSpawner to use these templates and handlers
 
-## Design Philosophy
+## Design philosophy
 
 Keep this tool a fairly simple React app focused on profile selection.
 This won't become a super-heavy, complex application. 
 
-### Why React?
+### Why react?
 
 ```{pull-quote}
 If this file gets over 200 lines of code long (not counting docs / comments), start using a framework
@@ -32,7 +32,7 @@ The file _did_ get more than 200 lines long, and BinderHub learned this lesson t
 - **Just Right**: Complex enough for multiple interactive features, not so heavy that it's hard to maintain
 - **Single Page**: Perfect scope for React—one complex page with state management
 
-## Development Setup
+## Development setup
 
 ### Setting up minikube
 
@@ -122,11 +122,11 @@ To run tests in a specific file (e.g., `ProfileForm.test.tsx`):
 npm test ProfileForm
 ```
 
-## Making a Release
+## Making a release
 
 We use [automation](https://github.com/pypa/gh-action-pypi-publish/) to publish releases to [PyPI](https://pypi.org/project/jupyterhub-fancy-profiles/). Release early and often!
 
-### Creating the Release
+### Creating the release
 
 1. **Update your local checkout**:
    ```bash
@@ -151,7 +151,7 @@ We use [automation](https://github.com/pypa/gh-action-pypi-publish/) to publish 
 
 4. **Done!** A new release will automatically be published to PyPI.
 
-### Generating Release Notes
+### Generating release notes
 
 After making the release:
 
@@ -175,43 +175,3 @@ After making the release:
 4. [Create a GitHub release](https://github.com/2i2c-org/jupyterhub-fancy-profiles/releases/new), use the tag as the title, and paste in the generated release notes.
 
 5. Click **Publish Release**.
-
-## Contributing Guidelines
-
-We welcome contributions! Here are some tips for contributing:
-
-- **Frontend changes**: Run `npm run build` to rebuild assets, or use `npm run webpack:watch` for automatic rebuilding
-- **Template changes**: Restart JupyterHub to see changes
-- **Code style**: Follow existing patterns and use the configured linters
-- **Testing**: Write tests for new features and run `npm test` before submitting
-- **Pull requests**: Ensure all tests pass and your code follows the project's style
-
-## Project Resources
-
-::::{grid} 1 1 2 2
-
-:::{card} GitHub
-:link: https://github.com/2i2c-org/jupyterhub-fancy-profiles
-
-View the repository
-:::
-
-:::{card} 🐛 Report Issues
-:link: https://github.com/2i2c-org/jupyterhub-fancy-profiles/issues
-
-File bugs or feature requests
-:::
-
-:::{card} 📦 PyPI Package
-:link: https://pypi.org/project/jupyterhub-fancy-profiles/
-
-View releases
-:::
-
-:::{card} 💬 Discussions
-:link: https://github.com/2i2c-org/jupyterhub-fancy-profiles/discussions
-
-Ask questions and share ideas
-:::
-
-::::
