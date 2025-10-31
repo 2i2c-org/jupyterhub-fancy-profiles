@@ -13,7 +13,7 @@ A beautiful, feature-rich implementation of user-selectable profiles for Jupyter
 
 {button}`Install <install.md>` {button}`User guide <guide.md>`
 
-![](../screenshot.png)
+![](images/ui.png)
 
 +++
 

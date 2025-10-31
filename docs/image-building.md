@@ -4,11 +4,16 @@
 
 This gives users the ability to build and share their own user environment images from the JupyterHub UI.
 
+```{figure} ./images/build-ui.png
+The Fancy Profiles UI with dynamic image building enabled.
+```
+
 ```{note} Requires a BinderHub Service
 This feature requires a [BinderHub](https://github.com/jupyterhub/binderhub/) instance deployed as a JupyterHub service.
 ```
 
 When enabled, users can:
+
 1. Provide a link to a GitHub repository
 2. Wait for BinderHub to build an image from that repository
 3. Launch their server with the freshly built image

@@ -3,7 +3,7 @@
 A react based, fancy implementation of user selectable profiles
 for use with [jupyterhub-kubespawner](https://github.com/jupyterhub/kubespawner).
 
-![Screenshot showing an image selector](screenshot.png)
+![Screenshot showing an image selector](docs/images/ui.png)
 
 ## Documentation
 
