@@ -25,7 +25,18 @@ This is particularly useful for:
 
 ## Enable dynamic image building
 
-[TODO: Where is the configuration for how to do this?]
+Dynamic image building requires two components:
+
+1. **A BinderHub service** configured in your JupyterHub
+2. **The `dynamic_image_building` flag** enabled in your profile options
+
+### Example configuration
+
+The repository includes working example configurations for local development:
+
+- [`jupyterhub_config.py`](https://github.com/2i2c-org/jupyterhub-fancy-profiles/blob/main/jupyterhub_config.py) - Shows how to [configure BinderHub as a JupyterHub service](https://github.com/2i2c-org/jupyterhub-fancy-profiles/blob/5fb2d060f4c45b2e5cd35c132fc6f3f3223f8d01/jupyterhub_config.py#L22-L32) and [enable the `dynamic_image_building` flag in profile options](https://github.com/2i2c-org/jupyterhub-fancy-profiles/blob/5fb2d060f4c45b2e5cd35c132fc6f3f3223f8d01/jupyterhub_config.py#L138-L152)
+- [`binderhub_config.py`](https://github.com/2i2c-org/jupyterhub-fancy-profiles/blob/main/binderhub_config.py) - Basic BinderHub configuration for local development
+
 
 ## When to use this vs. the binderhub ui
 
