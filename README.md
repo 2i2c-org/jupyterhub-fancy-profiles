@@ -13,7 +13,7 @@ Here are some quick links:
 
 - **[Installation Guide](./docs/install.md)** - Get started with z2jh or KubeSpawner
 - **[User Guide](./docs/guide.md)** - Configure profiles and features
-- **[Developer Guide](./docs/develop.md)** - Architecture and contributing
+- **[Developer Guide](./docs/contribute/develop.md)** - Architecture and contributing
 
 ## Features
 
@@ -24,7 +24,7 @@ See the [User Guide](./docs/guide.md) for more details.
 
 ## Contributing
 
-We welcome contributions! See the [Developer Guide](./docs/develop.md) for architecture details and contributing guidelines.
+We welcome contributions! See the [Developer Guide](./docs/contribute/develop.md) for architecture details and contributing guidelines.
 
 ## Funding
 
