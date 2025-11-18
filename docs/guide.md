@@ -12,6 +12,8 @@ The package interprets your existing KubeSpawner `profile_list` configuration an
 - Better looking and more featureful interface
 - Descriptions for various options
 - Better descriptions for "write-in" choices
+- Permalink generation for pre-selected profile configurations
+- Auto-Start via Permalink Feature
 
 You configure profiles the same way as standard KubeSpawner—`jupyterhub-fancy-profiles` provides the enhanced UI!
 
