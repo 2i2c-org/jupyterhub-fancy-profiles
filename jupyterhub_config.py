@@ -28,7 +28,18 @@ c.JupyterHub.services = [
         "command": ["python", "-m", "binderhub", "-f", "binderhub_config.py"],
         # Pass on environment variables required for binderhub to find where the docker image is
         "environment": os.environ.copy(),
+        "oauth_client_id": "service-binderhub",
+        "oauth_no_confirm": True,
+        "oauth_redirect_uri": "http://localhost:8585/oauth_callback"        
     }
+]
+
+c.JupyterHub.load_roles = [
+    {
+        "name": "user",
+        # grant all users access to services
+        "scopes": ["self", "access:services"],
+    },
 ]
 
 # Find the IP of the machine that minikube is most likely able to talk to
