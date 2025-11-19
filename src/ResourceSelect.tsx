@@ -84,6 +84,10 @@ function ResourceSelect({
             }
           }
           onChange={(e) => setUnlistedChoiceValue(e.target.value)}
+          onBlur={() => { 
+            const trimmedValue = unlistedChoiceValue.trim();
+            setUnlistedChoiceValue(trimmedValue);
+          }}
           tabIndex={isActive ? 0 : -1}
           options={choiceOptions}
           autoComplete="off"

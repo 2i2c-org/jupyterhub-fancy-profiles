@@ -54,8 +54,8 @@ c.KubeSpawner.profile_list = [
                 "unlisted_choice": {
                     "enabled": True,
                     "display_name": "Custom image",
-                    "validation_regex": "^\S.+:.+\S$",
-                    "validation_message": "Must be a publicly available docker image, of form <image-name>:<tag>. Make sure there is no extra space.",
+                    "validation_regex": "^.+:.+$",
+                    "validation_message": "Must be a publicly available docker image, of form <image-name>:<tag>",
                     "display_name_in_choices": "Specify an existing docker image",
                     "description_in_choices": "Use a pre-existing docker image from a public docker registry",
                     "kubespawner_override": {"image": "{value}"},
