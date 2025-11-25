@@ -154,12 +154,15 @@ describe("Profile form", () => {
       e.preventDefault();
     });
     const submitButton = screen.getByRole("button", { "name": "Start" });
+
     // Since test environment doesn't have access to form
     // we have to stop handleSubmit event of React coponent
     // Use capture phase to run before React's handler
     submitButton.addEventListener("click", mockClick, { capture: true });
-  
     await user.click(submitButton);
+
+    // Clean up
+    submitButton.removeEventListener("click", mockClick);
 
     expect(customImageField).toHaveValue("trailing:spaces");
   });
