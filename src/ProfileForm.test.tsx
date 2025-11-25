@@ -5,7 +5,6 @@ import userEvent from "@testing-library/user-event";
 import ProfileForm from "./ProfileForm";
 import renderWithContext from "./test/renderWithContext";
 
-
 describe("Profile form", () => {
   test("image and resource fields initially not tabable", async () => {
     renderWithContext(<ProfileForm />);
@@ -131,6 +130,38 @@ describe("Profile form", () => {
         "Must be a publicly available docker image, of form <image-name>:<tag>",
       ),
     ).not.toBeInTheDocument();
+  });
+
+  test("custom image field trims extra spaces", async () => {
+    const user = userEvent.setup();
+
+    renderWithContext(<ProfileForm />);
+
+    const radio = screen.getByRole("radio", {
+      name: "CPU only No GPU, only CPU",
+    });
+    await user.click(radio);
+
+    const imageField = screen.getByLabelText("Image");
+    await user.click(imageField);
+    await user.click(screen.getByText("Specify an existing docker image"));
+
+    const customImageField = screen.getByLabelText("Custom image");
+    await user.type(customImageField, "  trailing:spaces  ");
+
+    const mockClick = jest.fn((e) => {
+      e.stopImmediatePropagation(); // Stop React's handler from firing
+      e.preventDefault();
+    });
+    const submitButton = screen.getByRole("button", { "name": "Start" });
+    // Since test environment doesn't have access to form
+    // we have to stop handleSubmit event of React coponent
+    // Use capture phase to run before React's handler
+    submitButton.addEventListener("click", mockClick, { capture: true });
+  
+    await user.click(submitButton);
+
+    expect(customImageField).toHaveValue("trailing:spaces");
   });
 
   test("Multiple profiles renders", async () => {
