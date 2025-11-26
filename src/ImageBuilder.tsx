@@ -220,8 +220,8 @@ export function ImageBuilder({ name, isActive, optionKey }: ICustomOptionProps) 
           }
         }
         onChange={(e) => setRef(e.target.value)}
-        onBlur={() => {
-          setRef(ref.trim());
+        onBlur={(e) => {
+          setRef(e.target.value.trim());
         }}
         tabIndex={isActive ? 0 : -1}
         options={refOptions}
