@@ -19,6 +19,7 @@ Here are some quick links:
 
 1. **Enhanced Profile Selection** - Better looking UI for KubeSpawner's `profileList` with rich descriptions
 2. **Dynamic Image Building** - Optional integration with BinderHub to build images on-demand
+3. **Permalinkes and Auto-Start** - Automatically start pre-defined environments via permalinks.
 
 See the [User Guide](./docs/guide.md) for more details.
 

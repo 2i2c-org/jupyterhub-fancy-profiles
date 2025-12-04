@@ -1,4 +1,6 @@
-import { useEffect, useState, useRef, useContext, useMemo, KeyboardEventHandler } from "react";
+import { useEffect, useState, useRef, useContext, useMemo, KeyboardEventHandler,
+  Dispatch, SetStateAction,
+} from "react";
 import { type Terminal } from "xterm";
 import { type FitAddon } from "xterm-addon-fit";
 
@@ -166,28 +168,48 @@ export function ImageBuilder({ name, isActive, optionKey }: ICustomOptionProps) 
   const binderRepo= permalinkValues[`${optionKey}:binderRepo`];
   const { repo, repoId, repoFieldProps, repoError } =
     useRepositoryField(binderRepo);
-  const { getRepositoryOptions, getRefOptions, removeRefOption, removeRepositoryOption } = useFormCache();
+  const { getRepositoryOptions, getRefOptions, removeRefOption, removeRepositoryOption,
+    setBuildImageStart } = useFormCache();
 
   const [ref, setRef] = useState<string>(repoRef || "HEAD");
   const repoFieldRef = useRef<HTMLInputElement>();
   const branchFieldRef = useRef<HTMLInputElement>();
 
   const [customImage, setCustomImage] = useState<string>("");
-  const [customImageError, setCustomImageError] = useState<string>(null);
+  const [customImageError] = useState<string>(null);
 
   const [term, setTerm] = useState<Terminal>(null);
   const [fitAddon, setFitAddon] = useState<FitAddon>(null);
 
-  const [isBuildingImage, setIsBuildingImage] = useState<boolean>(false);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [_isBuildingImage, setIsBuildingImage] = useState<boolean>(false);
 
+  const hrefReop = useRef<string>(repo);
+  const hrefRef = useRef<string>(ref);
+  const hrefRepoId = useRef<string>(repoId);
+  const hrefTerm = useRef<Terminal>(term);
+  const hrefFitAddon = useRef<FitAddon>(fitAddon);
+  const hrefSetCustomImage = useRef<Dispatch<SetStateAction<string>>>(null);
+  const hrefSetCustomImageError = useRef<Dispatch<SetStateAction<string>>>(null);
+  const hrefSetIsBuildingImage = useRef<Dispatch<SetStateAction<boolean>>>(null);
+
+  useEffect(() => {
+    hrefReop.current = repo;
+    hrefRef.current = ref;
+    hrefRepoId.current = repoId;
+    hrefTerm.current = term;
+    hrefFitAddon.current = fitAddon;
+    hrefSetCustomImage.current = setCustomImage;
+    hrefSetIsBuildingImage.current = setIsBuildingImage;
+
+  }, [repo, ref, repoId, term, fitAddon, setIsBuildingImage, setCustomImage]);
+  
   const repositoryOptions = getRepositoryOptions(name);
   const refOptions = useMemo(() => {
     return getRefOptions(name, repoId);
   }, [repoId]);
 
-  useEffect(() => {
-    if (!isActive) setCustomImageError("");
-  }, [isActive]);
+
 
   if (isActive) {
     setPermalinkValue(`${optionKey}:binderProvider`, "gh");
@@ -196,29 +218,40 @@ export function ImageBuilder({ name, isActive, optionKey }: ICustomOptionProps) 
   }
 
   const handleBuildStart = async () => {
-    if (repoFieldRef.current && !repo) {
+    if (repoFieldRef.current && !hrefReop.current) {
       repoFieldRef.current.focus();
       repoFieldRef.current.blur();
       return;
     }
 
-    if (branchFieldRef.current && !ref) {
+    if (branchFieldRef.current && !hrefRef.current) {
       branchFieldRef.current.focus();
       branchFieldRef.current.blur();
       return;
     }
 
-    setIsBuildingImage(true);
-    buildImage(repoId, ref, term, fitAddon)
-      .then((imageName) => {
-        setCustomImage(imageName);
-        term.write(
-          "\nImage has been built! Click the start button to launch your server",
-        );
-      })
-      .catch(() => console.log("Error building image."))
-      .finally(() => setIsBuildingImage(false));
+    try {
+      hrefSetIsBuildingImage.current(true);
+      const imageName = await buildImage(hrefRepoId.current, hrefRef.current, 
+        hrefTerm.current, hrefFitAddon.current);
+      //console.log("handleBuildStart: step 4", imageName);
+      hrefSetCustomImage.current(imageName);
+      hrefTerm.current.write("\nImage has been built! Starting your server...");
+      hrefSetCustomImageError.current("");
+    } catch (e) {
+      console.log("Error building image: ", (e as Error)?.message || e);
+
+    } finally {
+      hrefSetIsBuildingImage.current(false);
+    }
   };
+
+  useEffect(() => {
+    setBuildImageStart(() => handleBuildStart);
+    return () => {
+      setBuildImageStart(null);
+    };
+  }, []);
 
   const handleKeyDown: KeyboardEventHandler<HTMLInputElement> = (e) => {
     if (e.key === "Enter") {
@@ -279,16 +312,6 @@ export function ImageBuilder({ name, isActive, optionKey }: ICustomOptionProps) 
         }}
       />
 
-      <div className="right-button">
-        <button
-          type="button"
-          className="btn btn-jupyter"
-          onClick={handleBuildStart}
-          disabled={isBuildingImage}
-        >
-          Build image
-        </button>
-      </div>
       <input
         type="text"
         name={name}
@@ -297,8 +320,7 @@ export function ImageBuilder({ name, isActive, optionKey }: ICustomOptionProps) 
         required={isActive}
         aria-hidden="true"
         style={{ display: "none" }}
-        onInvalid={() =>
-          setCustomImageError("Wait for the image build to complete.")}
+        onInvalid={() => {}}
         onChange={() => {}} // Hack to prevent a console error, while at the same time allowing for this field to be validatable, ie. not making it read-only
       />
       <div className="profile-option-container">
