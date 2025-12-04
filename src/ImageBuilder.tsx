@@ -10,6 +10,46 @@ import useFormCache from "./hooks/useFormCache";
 import { PermalinkContext } from "./context/Permalink";
 import { ICustomOptionProps } from "./types/fields";
 
+const TOKEN_KEY = "jupytherhub-build-token";
+
+async function getApiToken () {
+  const xsrfToken = (`; ${document.cookie}`).split("; _xsrf=").pop().split(";")[0];
+  const userResponse = await fetch(`/hub/api/user?_xsrf=${xsrfToken}`);
+  const { name } = await userResponse.json();
+
+  const exisitingToken = localStorage.getItem(TOKEN_KEY);
+  if (exisitingToken) {
+    const { id, expires_at, token } = JSON.parse(exisitingToken);
+    const expiryDate = Date.parse(expires_at);
+    const isExpired = expiryDate < new Date().getTime();
+
+    if (isExpired) {
+      // Token is expired, deleting from server and localStorage
+      localStorage.removeItem(TOKEN_KEY);
+      await fetch(`/hub/api/users/${name}/tokens/${id}?_xsrf=${xsrfToken}`, {
+        method: "DELETE"
+      });
+    } else {
+      return token;
+    }
+  }
+
+  // No token or token is expired, requesting a new token
+  const tokenResponse = await fetch(`/hub/api/users/${name}/tokens?_xsrf=${xsrfToken}`, {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+    },
+    body: JSON.stringify({
+      expires_in: 3600,
+      note: "Created by Fancy Profiles for Build your Own Image"
+    }),
+    credentials: "include"
+  });
+  const res = await tokenResponse.json();
+  localStorage.setItem(TOKEN_KEY, JSON.stringify(res));
+  return res.token;
+}
 
 async function buildImage(
   repo: string,
@@ -17,18 +57,25 @@ async function buildImage(
   term: Terminal,
   fitAddon: FitAddon,
 ) {
-  const { BinderRepository } = await import("@jupyterhub/binderhub-client");
+  const apiToken = await getApiToken();
+
+  // @ts-expect-error - v0.5.0 client types not available
+  const { BinderRepository } = await import("@jupyterhub/binderhub-client/client.js");
   const providerSpec = "gh/" + repo + "/" + ref;
   // FIXME: Assume the binder api is available in the same hostname, under /services/binder/
   const buildEndPointURL = new URL(
     "/services/binder/build/",
     window.location.origin,
   );
+
+  // Use new v0.5.0 API with options object - only apiToken needed for auth
   const image = new BinderRepository(
     providerSpec,
     buildEndPointURL,
-    null,
-    true,
+    {
+      apiToken,     // JupyterHub API token for Authorization header
+      buildOnly: true,
+    }
   );
   // Clear the last line written, so we start from scratch
   term.write("\x1b[2K\r");
@@ -242,7 +289,6 @@ export function ImageBuilder({ name, isActive, optionKey }: ICustomOptionProps) 
         }
         onKeyDown={handleKeyDown}
       />
-
       <Combobox
         id={`${name}--ref`}
         label="Git Ref"
@@ -255,6 +301,9 @@ export function ImageBuilder({ name, isActive, optionKey }: ICustomOptionProps) 
           }
         }
         onChange={(e) => setRef(e.target.value)}
+        onBlur={(e) => {
+          setRef(e.target.value.trim());
+        }}
         tabIndex={isActive ? 0 : -1}
         options={refOptions}
         autoComplete="off"

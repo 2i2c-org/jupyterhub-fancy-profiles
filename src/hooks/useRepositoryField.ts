@@ -50,7 +50,9 @@ export default function useRepositoryField(defaultValue: string) {
     if (err) {
       setError(err);
     } else {
-      setRepoId(extractOrgAndRepo(value));
+      const trimmedValue = value.trim();
+      setRepoId(extractOrgAndRepo(trimmedValue));
+      setValue(trimmedValue);
     }
   }, [value]);
 

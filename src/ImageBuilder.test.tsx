@@ -178,6 +178,51 @@ test("invalid org/repo string (not matching pattern)", async () => {
   );
 });
 
+test("repofield trims leading/trailing spaces", async () => {
+  const user = userEvent.setup();
+
+  renderWithContext(<ProfileForm />);
+  const radio = screen.getByRole("radio", {
+    name: "CPU only No GPU, only CPU",
+  });
+  await user.click(radio);
+
+  const select = screen.getByLabelText("Image - dynamic image building");
+  await user.click(select);
+
+  await user.click(screen.getByText("Build your own image"));
+
+  const repoField = screen.getByLabelText("Repository");
+  await user.type(repoField, "     extra/spaces  ");
+  await user.click(document.body);
+  await user.click(screen.getByRole("button", { name: "Build image" }));
+
+  expect(repoField).toHaveValue("extra/spaces");
+});
+
+test("ref trims leading/trailing spaces", async () => {
+  const user = userEvent.setup();
+
+  renderWithContext(<ProfileForm />);
+  const radio = screen.getByRole("radio", {
+    name: "CPU only No GPU, only CPU",
+  });
+  await user.click(radio);
+
+  const select = screen.getByLabelText("Image - dynamic image building");
+  await user.click(select);
+
+  await user.click(screen.getByText("Build your own image"));
+
+  const refField = screen.getByLabelText("Git Ref");
+  await user.clear(refField);
+  await user.type(refField, " branch ");
+  await user.click(document.body);
+  await user.click(screen.getByRole("button", { name: "Build image" }));
+
+  expect(refField).toHaveValue("branch");
+});
+
 test("invalid org/repo string (wrong base URL)", async () => {
   const user = userEvent.setup();
 
