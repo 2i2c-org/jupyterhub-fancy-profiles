@@ -174,8 +174,7 @@ export function ImageBuilder({ name, isActive, optionKey }: ICustomOptionProps) 
   const { repo, repoId, repoFieldProps, repoError } =
     useRepositoryField(binderRepo);
   const { getRepositoryOptions, getRefOptions, removeRefOption, removeRepositoryOption,
-    setBuildImageStart, isBuildingImage, setIsBuildingImage,
-    setIsDynamicBuildActive } = useFormCache();
+    setBuildImageSelected, isBuildingImage, setIsBuildingImage } = useFormCache();
 
   const [ref, setRef] = useState<string>(repoRef || "HEAD");
   const repoFieldRef = useRef<HTMLInputElement>();
@@ -214,8 +213,7 @@ export function ImageBuilder({ name, isActive, optionKey }: ICustomOptionProps) 
       branchFieldRef.current.blur();
       throw new Error("Git ref is required.");
     }
-    console.log(repo);
-    console.log(repoId);
+
     try {
       setIsBuildingImage(true);
       setCustomImageError("");
@@ -240,24 +238,16 @@ export function ImageBuilder({ name, isActive, optionKey }: ICustomOptionProps) 
 
   useEffect(() => {
     if (!isActive) return;
-    setIsDynamicBuildActive(true);
-    return () => {
-      setIsDynamicBuildActive(false);
-    };
-  }, [isActive, setIsDynamicBuildActive]);
-
-  useEffect(() => {
-    if (!isActive) return;
     // Creating the wrapper so it can read latestBuildHandler.current when it runs. (preventing stale clusure)
     const wrapper = () => {
       const handler = latestBuildHandler.current;
       return handler ? handler() : Promise.resolve();
     };
-    setBuildImageStart(() => wrapper);
+    setBuildImageSelected(() => wrapper);
     return () => {
-      setBuildImageStart(null);
+      setBuildImageSelected(null);
     };
-  }, [isActive, setBuildImageStart]);
+  }, [isActive, setBuildImageSelected]);
 
   const handleKeyDown: KeyboardEventHandler<HTMLInputElement> = (e) => {
     if (e.key === "Enter") {

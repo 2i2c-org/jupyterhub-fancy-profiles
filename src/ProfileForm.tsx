@@ -33,10 +33,10 @@ function Form() {
   const {
     cacheChoiceOption,
     cacheRepositorySelection,
-    buildImageStart,
+    buildImageSelected,
     isBuildingImage,
-    isDynamicBuildActive,
   } = useFormCache();
+  const isDynamicBuildActive = buildImageSelected !== null;
 
 
   const collectFormErrors = (form: HTMLFormElement) => {
@@ -99,7 +99,7 @@ function Form() {
       return false;
     }
     // when dynamic image build is requested
-    if (isDynamicBuildActive && buildImageStart) {
+    if (buildImageSelected) {
       if (!form) return false;
       nativeEvent?.preventDefault();
       // but there is an error in form
@@ -109,7 +109,7 @@ function Form() {
       }
 
       try {
-        await buildImageStart();
+        await buildImageSelected();
       } catch {
         collectFormErrors(form);
         return false;
