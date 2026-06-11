@@ -13,6 +13,7 @@ import { ProfileOptions } from "./ProfileOptions";
 import useFormCache from "./hooks/useFormCache";
 import { PermalinkContext } from "./context/Permalink";
 import Permalink from "./components/Permalink";
+import { cacheFormValues, collectFormErrors, preBuildValidate } from "./utils/formSubmit";
 
 /**
  * Generates the *contents* of the form shown in the profile selection page
@@ -38,54 +39,6 @@ function Form() {
   } = useFormCache();
   const isDynamicBuildActive = buildImageSelected !== null;
 
-
-  const collectFormErrors = (form: HTMLFormElement) => {
-    setTimeout(() => {
-      const errors = form.getElementsByClassName("invalid-feedback");
-      setFormErrors(Array.from(errors));
-    }, 10);
-    setTimeout(() => {
-      window.scrollTo(0, document.body.scrollHeight);
-    }, 100);
-  };
-
-  const cacheFormValues = (form: HTMLFormElement) => {
-    const cacheUnlistedChoices = form.getElementsByClassName("cache-unlisted-choice");
-    Array.from(cacheUnlistedChoices).forEach((el) => {
-      const { id, value } = el as HTMLInputElement;
-      cacheChoiceOption(id, value);
-    });
-
-    const cacheRepositories = form.getElementsByClassName("cache-repository");
-    Array.from(cacheRepositories).forEach((el) => {
-      const { id, value } = el as HTMLInputElement;
-      if (id.endsWith("--repo")) {
-        const fieldName = id.slice(0, -6);
-        const refField = form.querySelector(`#${CSS.escape(`${fieldName}--ref`)}`);
-        if (refField) {
-          cacheRepositorySelection(fieldName, value, (refField as HTMLInputElement).value);
-        }
-      }
-    });
-  };
-
-  const preBuildValidate = (form: HTMLFormElement): boolean => {
-    let firstInvalid: HTMLInputElement | null = null;
-    form.querySelectorAll<HTMLInputElement>("input, select, textarea").forEach((field) => {
-      // Hidden text input for dynamically buit image name (input is empty)
-      if (field.dataset.dynamicBuild === "true") return;
-      if (field.disabled) return;
-      if (!field.checkValidity()) {
-        if (!firstInvalid) firstInvalid = field;
-      }
-    });
-    if (firstInvalid) {
-      firstInvalid!.reportValidity();
-      return false;
-    }
-    return true;
-  };
-
   const submitFlow = async (
     form: HTMLFormElement | null,
     nativeEvent?: { preventDefault: () => void },
@@ -104,30 +57,30 @@ function Form() {
       nativeEvent?.preventDefault();
       // but there is an error in form
       if (!preBuildValidate(form)) {
-        collectFormErrors(form);
+        collectFormErrors(form, setFormErrors);
         return false;
       }
 
       try {
         await buildImageSelected();
       } catch {
-        collectFormErrors(form);
+        collectFormErrors(form, setFormErrors);
         return false;
       }
 
-      cacheFormValues(form);
+      cacheFormValues(form, cacheChoiceOption, cacheRepositorySelection);
       form.requestSubmit();
       return true;
     }
 
     if (form && !form.checkValidity()) {
       nativeEvent?.preventDefault();
-      collectFormErrors(form);
+      collectFormErrors(form, setFormErrors);
       return false;
     }
 
     if (form) {
-      cacheFormValues(form);
+      cacheFormValues(form, cacheChoiceOption, cacheRepositorySelection);
     }
     // When submit happened by mimicking the button (from query parameter)
     if (!nativeEvent) {
