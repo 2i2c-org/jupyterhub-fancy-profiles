@@ -11,6 +11,7 @@ import "./form.css";
 import { SpawnerFormContext } from "./state";
 import { ProfileOptions } from "./ProfileOptions";
 import useFormCache from "./hooks/useFormCache";
+import useFormState from "./hooks/useFormState";
 import { PermalinkContext } from "./context/Permalink";
 import Permalink from "./components/Permalink";
 import { cacheFormValues, collectFormErrors, preBuildValidate } from "./utils/formSubmit";
@@ -30,13 +31,13 @@ function Form() {
   } = useContext(SpawnerFormContext);
   const { permalinkValues, setPermalinkValue, permalinkParseError } = useContext(PermalinkContext);
   const [profileError, setProfileError] = useState("");
-  const [formErrors, setFormErrors] = useState<Element[]>([]);
   const {
     cacheChoiceOption,
     cacheRepositorySelection,
     buildImageSelected,
     isBuildingImage,
   } = useFormCache();
+  const { formErrors, setFormErrors } = useFormState();
   const isDynamicBuildActive = buildImageSelected !== null;
 
   const submitFlow = async (
