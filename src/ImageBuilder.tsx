@@ -1,5 +1,4 @@
 import { useEffect, useState, useRef, useContext, useMemo, KeyboardEventHandler } from "react";
-import { flushSync } from "react-dom";
 import { type Terminal } from "xterm";
 import { type FitAddon } from "xterm-addon-fit";
 
@@ -180,8 +179,9 @@ export function ImageBuilder({ name, isActive, optionKey }: ICustomOptionProps) 
   const [ref, setRef] = useState<string>(repoRef || "HEAD");
   const repoFieldRef = useRef<HTMLInputElement>();
   const branchFieldRef = useRef<HTMLInputElement>();
+  const customImageRef = useRef<HTMLInputElement>(null);
 
-  const [customImage, setCustomImage] = useState<string>("");
+  const [hasBuiltImage, setHasBuiltImage] = useState(false);
   const [customImageError, setCustomImageError] = useState<string>("");
 
   const [term, setTerm] = useState<Terminal>(null);
@@ -199,7 +199,10 @@ export function ImageBuilder({ name, isActive, optionKey }: ICustomOptionProps) 
   }
 
   useEffect(() => {
-    if (!isActive) setCustomImageError("");
+    if (!isActive) {
+      setCustomImageError("");
+      setHasBuiltImage(false);
+    }
   }, [isActive]);
 
   const handleBuildStart = async () => {
@@ -219,9 +222,8 @@ export function ImageBuilder({ name, isActive, optionKey }: ICustomOptionProps) 
       setIsBuildingImage(true);
       setCustomImageError("");
       const imageName = await buildImage(repoId!, ref, term, fitAddon);
-      // flushSync forces React to update the hidden input's DOM value synchronously,
-      // so form.requestSubmit() in submitFlow sees the correct value immediately.
-      flushSync(() => { setCustomImage(imageName); });
+      customImageRef.current.value = imageName;
+      setHasBuiltImage(true);
       term.write("\nImage has been built! Starting your server...");
     } catch (e) {
       const message = (e as Error)?.message || "Image build failed.";
@@ -314,14 +316,13 @@ export function ImageBuilder({ name, isActive, optionKey }: ICustomOptionProps) 
       <input
         type="text"
         name={name}
-        value={customImage}
-        aria-invalid={isActive && !customImage}
+        ref={customImageRef}
+        defaultValue=""
+        aria-invalid={isActive && !hasBuiltImage}
         required={isActive}
         aria-hidden="true"
         style={{ display: "none" }}
-        data-dynamic-build="true" 
-        onInvalid={() => {}}
-        onChange={() => {}} // Hack to prevent a console error, while at the same time allowing for this field to be validatable, ie. not making it read-only
+        data-dynamic-build="true"
       />
       <div className="profile-option-container">
         <div className="profile-option-label-container">
