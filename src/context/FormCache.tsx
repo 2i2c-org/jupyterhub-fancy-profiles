@@ -5,8 +5,6 @@ import {
   useEffect,
   useState,
   useMemo,
-  Dispatch,
-  SetStateAction
 } from "react";
 import { cacheOption, getRecords, removeOption, removeRepository } from "../utils/indexedDb";
 
@@ -23,11 +21,6 @@ export interface IFormCache {
     repository: string,
     ref: string,
   ) => void;
-
-  buildImageSelected: (() => Promise<void>) | null;
-  setBuildImageSelected: Dispatch<SetStateAction<(() => Promise<void>) | null>>;
-  isBuildingImage: boolean;
-  setIsBuildingImage: Dispatch<SetStateAction<boolean>>;
 }
 
 type TChoiceEntry = {
@@ -161,9 +154,6 @@ export const FormCacheProvider = ({ children }: PropsWithChildren) => {
     loadPreviousRepositories();
   }, []);
 
-  const [buildImageSelected, setBuildImageSelected] = useState<(() => Promise<void>) | null>(null);
-  const [isBuildingImage, setIsBuildingImage] = useState<boolean>(false);
-
   const contextValue = useMemo(() => ({
     getChoiceOptions,
     cacheChoiceOption,
@@ -173,10 +163,6 @@ export const FormCacheProvider = ({ children }: PropsWithChildren) => {
     removeChoiceOption,
     removeRepositoryOption,
     removeRefOption,
-    buildImageSelected,
-    setBuildImageSelected,
-    isBuildingImage,
-    setIsBuildingImage,
   }), [
     getChoiceOptions,
     cacheChoiceOption,
@@ -186,10 +172,6 @@ export const FormCacheProvider = ({ children }: PropsWithChildren) => {
     removeChoiceOption,
     removeRepositoryOption,
     removeRefOption,
-    buildImageSelected,
-    setBuildImageSelected,
-    isBuildingImage,
-    setIsBuildingImage,
   ]);
 
   return (

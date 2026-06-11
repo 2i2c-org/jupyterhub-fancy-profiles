@@ -6,6 +6,7 @@ import { type FitAddon } from "xterm-addon-fit";
 import useRepositoryField from "./hooks/useRepositoryField";
 import Combobox from "./components/form/Combobox";
 import useFormCache from "./hooks/useFormCache";
+import useFormState from "./hooks/useFormState";
 import { PermalinkContext } from "./context/Permalink";
 import { ICustomOptionProps } from "./types/fields";
 
@@ -173,8 +174,8 @@ export function ImageBuilder({ name, isActive, optionKey }: ICustomOptionProps) 
   const binderRepo= permalinkValues[`${optionKey}:binderRepo`];
   const { repo, repoId, repoFieldProps, repoError } =
     useRepositoryField(binderRepo);
-  const { getRepositoryOptions, getRefOptions, removeRefOption, removeRepositoryOption,
-    setBuildImageSelected, isBuildingImage, setIsBuildingImage } = useFormCache();
+  const { getRepositoryOptions, getRefOptions, removeRefOption, removeRepositoryOption } = useFormCache();
+  const { setBuildImageSelected, isBuildingImage, setIsBuildingImage } = useFormState();
 
   const [ref, setRef] = useState<string>(repoRef || "HEAD");
   const repoFieldRef = useRef<HTMLInputElement>();

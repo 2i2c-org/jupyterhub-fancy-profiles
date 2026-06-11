@@ -31,13 +31,8 @@ function Form() {
   } = useContext(SpawnerFormContext);
   const { permalinkValues, setPermalinkValue, permalinkParseError } = useContext(PermalinkContext);
   const [profileError, setProfileError] = useState("");
-  const {
-    cacheChoiceOption,
-    cacheRepositorySelection,
-    buildImageSelected,
-    isBuildingImage,
-  } = useFormCache();
-  const { formErrors, setFormErrors } = useFormState();
+  const { cacheChoiceOption, cacheRepositorySelection } = useFormCache();
+  const { formErrors, setFormErrors, buildImageSelected, isBuildingImage } = useFormState();
   const isDynamicBuildActive = buildImageSelected !== null;
 
   const submitFlow = async (
