@@ -1,6 +1,8 @@
-import { describe, expect, test } from "@jest/globals";
-import { screen, waitFor } from "@testing-library/react";
+import { afterEach, describe, expect, test } from "@jest/globals";
+import { cleanup, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+
+afterEach(cleanup);
 
 import ProfileForm from "./ProfileForm";
 import renderWithContext, { renderWithJupyterForm } from "./test/renderWithContext";

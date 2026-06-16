@@ -220,14 +220,16 @@ function Form() {
         </div>
       )}
 
-      <button
-        className="btn btn-jupyter form-control"
-        type="submit"
-        onClick={handleSubmit}
-        disabled={isBuildingImage}
-      >
-        {isDynamicBuildActive ? "Build Image and Start" : "Start"}
-      </button>
+      <div id="submit-slot">
+        <button
+          className="btn btn-jupyter form-control"
+          type="submit"
+          onClick={handleSubmit}
+          disabled={isBuildingImage}
+        >
+          {isDynamicBuildActive ? "Build Image and Start" : "Start"}
+        </button>
+      </div>
     </fieldset>
   );
 }
