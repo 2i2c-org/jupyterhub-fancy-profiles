@@ -96,21 +96,14 @@ function Form() {
     }
   }, [permalinkValues.profile]);
 
-  // @TODO: Replace setTimeout (hack for racing condition) + dispatchEvent (hack for stale closure)
-  // to proper sequencing of the events and calling submitflow directly
+  // Run autostart once on mount.
   useEffect(() => {
-    if (permalinkValues["autoStart"] === "true") {
-      const form = document.querySelector("form");
-      if (form) {
-        const button = form.querySelector("button[type=\"submit\"]") as HTMLButtonElement | null;
-        if (button) {
-          setTimeout(() => {
-            button.dispatchEvent(new window.MouseEvent("click", { bubbles: true, cancelable: true }));
-          }, 1000); // Give the form a second to render, and the profile to be selected, HACK but it works
-        }
-      }
-    }
-  }, [permalinkValues]);
+    if (permalinkValues["autoStart"] !== "true") return;
+    const form = document.querySelector("form") as HTMLFormElement | null;
+    if (!form) return;
+    if (form.querySelector("[data-dynamic-build='true'][required]")) return;
+    submitFlow(form);
+  }, []);
 
   return (
     <fieldset

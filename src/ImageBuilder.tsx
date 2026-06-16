@@ -218,6 +218,17 @@ export function ImageBuilder({ name, isActive, optionKey }: ICustomOptionProps) 
     setSubmitSlot(document.getElementById("submit-slot"));
   }, []);
 
+  const hasAutoStarted = useRef(false);
+  useEffect(() => {
+    if (!isActive) return;
+    if (!term) return;
+    if (permalinkValues["autoStart"] !== "true") return;
+    if (hasAutoStarted.current) return;
+    hasAutoStarted.current = true;
+    handleBuildAndStart();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isActive, term, permalinkValues]);
+
   const handleBuildAndStart = async () => {
     if (!customImageRef.current ) return;
     const form = customImageRef.current?.closest("form") as HTMLFormElement | null;
