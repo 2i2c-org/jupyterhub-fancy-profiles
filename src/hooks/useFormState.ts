@@ -7,8 +7,6 @@ function useFormState(): IFormState {
     setFormErrors,
     isImageBuildActive,
     setIsImageBuildActive,
-    isBuildingImage,
-    setIsBuildingImage,
   } = useContext(FormStateContext) as IFormState;
 
   return useMemo(
@@ -17,16 +15,12 @@ function useFormState(): IFormState {
       setFormErrors,
       isImageBuildActive,
       setIsImageBuildActive,
-      isBuildingImage,
-      setIsBuildingImage,
     }),
     [
       formErrors,
       setFormErrors,
       isImageBuildActive,
       setIsImageBuildActive,
-      isBuildingImage,
-      setIsBuildingImage,
     ],
   );
 }

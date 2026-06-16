@@ -10,6 +10,7 @@ import useFormState from "./hooks/useFormState";
 import { PermalinkContext } from "./context/Permalink";
 import { ICustomOptionProps } from "./types/fields";
 import { cacheFormValues, collectFormErrors, preBuildValidate } from "./utils/formSubmit";
+import { LuRotateCcw } from "react-icons/lu";
 
 const TOKEN_KEY = "jupytherhub-build-token";
 
@@ -176,7 +177,8 @@ export function ImageBuilder({ name, isActive, optionKey }: ICustomOptionProps) 
   const { repo, repoId, repoFieldProps, repoError } =
     useRepositoryField(binderRepo);
   const { getRepositoryOptions, getRefOptions, removeRefOption, removeRepositoryOption, cacheChoiceOption, cacheRepositorySelection } = useFormCache();
-  const { setIsImageBuildActive, setFormErrors, isBuildingImage, setIsBuildingImage } = useFormState();
+  const { setIsImageBuildActive, setFormErrors } = useFormState();
+  const [isBuildingImage, setIsBuildingImage] = useState<boolean>(false);
 
   const [ref, setRef] = useState<string>(repoRef || "HEAD");
   const customImageRef = useRef<HTMLInputElement>(null);
@@ -217,6 +219,7 @@ export function ImageBuilder({ name, isActive, optionKey }: ICustomOptionProps) 
   }, []);
 
   const handleBuildAndStart = async () => {
+    if (!customImageRef.current ) return;
     const form = customImageRef.current?.closest("form") as HTMLFormElement | null;
     if (!form) return;
 
@@ -247,7 +250,7 @@ export function ImageBuilder({ name, isActive, optionKey }: ICustomOptionProps) 
     if (e.key === "Enter") {
       e.preventDefault();
       (e.target as HTMLInputElement).blur();
-      void handleBuildAndStart();
+      handleBuildAndStart();
     }
   };
 
@@ -335,10 +338,13 @@ export function ImageBuilder({ name, isActive, optionKey }: ICustomOptionProps) 
         <button
           className="btn btn-jupyter form-control"
           type="submit"
-          onClick={(e) => { e.preventDefault(); void handleBuildAndStart(); }}
+          onClick={(e) => { e.preventDefault(); handleBuildAndStart(); }}
           disabled={isBuildingImage}
         >
-          Build Image and Start
+          {isBuildingImage
+            ? <><LuRotateCcw className="spin" />Building...</>
+            : "Build Image and Start"
+          }
         </button>,
         submitSlot
       )}
