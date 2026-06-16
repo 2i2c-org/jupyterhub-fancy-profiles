@@ -258,6 +258,8 @@ describe("Profile form with URL Params", () => {
     });
   }
 
+  afterEach(() => setHash(""));
+
   test("ignores irrelevant params", () => {
     setHash("#foo=bar");
     const { container } = renderWithContext(<ProfileForm />);
@@ -324,5 +326,14 @@ describe("Profile form with URL Params", () => {
       name: "No Options Profile with no options",
     });
     expect(noObject).toBeInTheDocument();
+  });
+
+});
+
+describe("submit slot", () => {
+  test("submit button renders inside #submit-slot", async () => {
+    const { container } = renderWithJupyterForm(<ProfileForm />);
+    const startButton = screen.getByRole("button", { name: "Start" });
+    expect(container.querySelector("#submit-slot")).toContainElement(startButton);
   });
 });
