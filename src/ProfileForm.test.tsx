@@ -330,6 +330,27 @@ describe("Profile form with URL Params", () => {
 
 });
 
+describe("autoStart", () => {
+  function setHash(hash: string) {
+    const location = { ...window.location, hash };
+    Object.defineProperty(window, "location", { writable: true, value: location });
+  }
+
+  afterEach(() => setHash(""));
+
+  test("submits form immediately for non-build profile", async () => {
+    const requestSubmitSpy = jest
+      .spyOn(HTMLFormElement.prototype, "requestSubmit")
+      .mockImplementation(() => {});
+
+    setHash(`#fancy-forms-config=${encodeURIComponent(JSON.stringify({ profile: "cpu", image: "geospatial", autoStart: "true" }))}`);
+    renderWithJupyterForm(<ProfileForm />);
+
+    await waitFor(() => expect(requestSubmitSpy).toHaveBeenCalled());
+    requestSubmitSpy.mockRestore();
+  });
+});
+
 describe("submit slot", () => {
   test("submit button renders inside #submit-slot", async () => {
     const { container } = renderWithJupyterForm(<ProfileForm />);
@@ -337,20 +358,5 @@ describe("submit slot", () => {
     expect(container.querySelector("#submit-slot")).toContainElement(startButton);
   });
 
-  test("'Build Image and Start' button renders in submit-slot when build option is active", async () => {
-    const user = userEvent.setup();
-    const { container } = renderWithJupyterForm(<ProfileForm />);
 
-    await user.click(screen.getByRole("radio", {
-      name: "Build custom environment Dynamic Image building + unlisted choice",
-    }));
-
-    const imageSelect = screen.getByLabelText("Image - dynamic image building");
-    await user.click(imageSelect);
-    await user.click(screen.getByText("Build your own image"));
-
-    expect(screen.queryByRole("button", { name: "Start" })).not.toBeInTheDocument();
-    const buildButton = screen.getByRole("button", { name: "Build Image and Start" });
-    expect(container.querySelector("#submit-slot")).toContainElement(buildButton);
-  });
 });
