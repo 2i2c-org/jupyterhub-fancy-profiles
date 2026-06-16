@@ -5,8 +5,8 @@ function useFormState(): IFormState {
   const {
     formErrors,
     setFormErrors,
-    buildImageSelected,
-    setBuildImageSelected,
+    isImageBuildActive,
+    setIsImageBuildActive,
     isBuildingImage,
     setIsBuildingImage,
   } = useContext(FormStateContext) as IFormState;
@@ -15,16 +15,16 @@ function useFormState(): IFormState {
     () => ({
       formErrors,
       setFormErrors,
-      buildImageSelected,
-      setBuildImageSelected,
+      isImageBuildActive,
+      setIsImageBuildActive,
       isBuildingImage,
       setIsBuildingImage,
     }),
     [
       formErrors,
       setFormErrors,
-      buildImageSelected,
-      setBuildImageSelected,
+      isImageBuildActive,
+      setIsImageBuildActive,
       isBuildingImage,
       setIsBuildingImage,
     ],

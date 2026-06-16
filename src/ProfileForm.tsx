@@ -14,7 +14,7 @@ import useFormCache from "./hooks/useFormCache";
 import useFormState from "./hooks/useFormState";
 import { PermalinkContext } from "./context/Permalink";
 import Permalink from "./components/Permalink";
-import { cacheFormValues, collectFormErrors, preBuildValidate } from "./utils/formSubmit";
+import { cacheFormValues, collectFormErrors } from "./utils/formSubmit";
 
 /**
  * Generates the *contents* of the form shown in the profile selection page
@@ -32,8 +32,7 @@ function Form() {
   const { permalinkValues, setPermalinkValue, permalinkParseError } = useContext(PermalinkContext);
   const [profileError, setProfileError] = useState("");
   const { cacheChoiceOption, cacheRepositorySelection } = useFormCache();
-  const { formErrors, setFormErrors, buildImageSelected, isBuildingImage } = useFormState();
-  const isDynamicBuildActive = buildImageSelected !== null;
+  const { formErrors, setFormErrors, isImageBuildActive } = useFormState();
 
   const submitFlow = async (
     form: HTMLFormElement | null,
@@ -47,28 +46,6 @@ function Form() {
       setProfileError("Select a container profile");
       return false;
     }
-    // when dynamic image build is requested
-    if (buildImageSelected) {
-      if (!form) return false;
-      nativeEvent?.preventDefault();
-      // but there is an error in form
-      if (!preBuildValidate(form)) {
-        collectFormErrors(form, setFormErrors);
-        return false;
-      }
-
-      try {
-        await buildImageSelected();
-      } catch {
-        collectFormErrors(form, setFormErrors);
-        return false;
-      }
-
-      cacheFormValues(form, cacheChoiceOption, cacheRepositorySelection);
-      form.requestSubmit();
-      return true;
-    }
-
     if (form && !form.checkValidity()) {
       nativeEvent?.preventDefault();
       collectFormErrors(form, setFormErrors);
@@ -221,14 +198,15 @@ function Form() {
       )}
 
       <div id="submit-slot">
-        <button
-          className="btn btn-jupyter form-control"
-          type="submit"
-          onClick={handleSubmit}
-          disabled={isBuildingImage}
-        >
-          {isDynamicBuildActive ? "Build Image and Start" : "Start"}
-        </button>
+        {!isImageBuildActive && (
+          <button
+            className="btn btn-jupyter form-control"
+            type="submit"
+            onClick={handleSubmit}
+          >
+            Start
+          </button>
+        )}
       </div>
     </fieldset>
   );

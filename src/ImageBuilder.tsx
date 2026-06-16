@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef, useContext, useMemo, KeyboardEventHandler } from "react";
+import { createPortal } from "react-dom";
 import { type Terminal } from "xterm";
 import { type FitAddon } from "xterm-addon-fit";
 
@@ -8,6 +9,7 @@ import useFormCache from "./hooks/useFormCache";
 import useFormState from "./hooks/useFormState";
 import { PermalinkContext } from "./context/Permalink";
 import { ICustomOptionProps } from "./types/fields";
+import { cacheFormValues, collectFormErrors, preBuildValidate } from "./utils/formSubmit";
 
 const TOKEN_KEY = "jupytherhub-build-token";
 
@@ -173,12 +175,10 @@ export function ImageBuilder({ name, isActive, optionKey }: ICustomOptionProps) 
   const binderRepo= permalinkValues[`${optionKey}:binderRepo`];
   const { repo, repoId, repoFieldProps, repoError } =
     useRepositoryField(binderRepo);
-  const { getRepositoryOptions, getRefOptions, removeRefOption, removeRepositoryOption } = useFormCache();
-  const { setBuildImageSelected, isBuildingImage, setIsBuildingImage } = useFormState();
+  const { getRepositoryOptions, getRefOptions, removeRefOption, removeRepositoryOption, cacheChoiceOption, cacheRepositorySelection } = useFormCache();
+  const { setIsImageBuildActive, setFormErrors, isBuildingImage, setIsBuildingImage } = useFormState();
 
   const [ref, setRef] = useState<string>(repoRef || "HEAD");
-  const repoFieldRef = useRef<HTMLInputElement>();
-  const branchFieldRef = useRef<HTMLInputElement>();
   const customImageRef = useRef<HTMLInputElement>(null);
 
   const [hasBuiltImage, setHasBuiltImage] = useState(false);
@@ -205,58 +205,49 @@ export function ImageBuilder({ name, isActive, optionKey }: ICustomOptionProps) 
     }
   }, [isActive]);
 
-  const handleBuildStart = async () => {
-    if (repoFieldRef.current && !repo) {
-      repoFieldRef.current.focus();
-      repoFieldRef.current.blur();
-      throw new Error("Repository is required.");
+  useEffect(() => {
+    if (!isActive) return;
+    setIsImageBuildActive(true);
+    return () => setIsImageBuildActive(false);
+  }, [isActive, setIsImageBuildActive]);
+
+  const [submitSlot, setSubmitSlot] = useState<HTMLElement | null>(null);
+  useEffect(() => {
+    setSubmitSlot(document.getElementById("submit-slot"));
+  }, []);
+
+  const handleBuildAndStart = async () => {
+    const form = customImageRef.current?.closest("form") as HTMLFormElement | null;
+    if (!form) return;
+
+    if (!preBuildValidate(form)) {
+      collectFormErrors(form, setFormErrors);
+      return;
     }
 
-    if (branchFieldRef.current && !ref) {
-      branchFieldRef.current.focus();
-      branchFieldRef.current.blur();
-      throw new Error("Git ref is required.");
-    }
-
+    setIsBuildingImage(true);
+    setCustomImageError("");
     try {
-      setIsBuildingImage(true);
-      setCustomImageError("");
       const imageName = await buildImage(repoId!, ref, term, fitAddon);
       customImageRef.current.value = imageName;
       setHasBuiltImage(true);
       term.write("\nImage has been built! Starting your server...");
+      cacheFormValues(form, cacheChoiceOption, cacheRepositorySelection);
+      form.requestSubmit();
     } catch (e) {
       const message = (e as Error)?.message || "Image build failed.";
       setCustomImageError(message);
-      throw e;
+      collectFormErrors(form, setFormErrors);
     } finally {
       setIsBuildingImage(false);
     }
   };
 
-  // Single ref that always points at the latest handleBuildStart, so the
-  // stable wrapper registered in the context never sees a stale closure.
-  const latestBuildHandler = useRef<() => Promise<void>>();
-  latestBuildHandler.current = handleBuildStart;
-
-  useEffect(() => {
-    if (!isActive) return;
-    // Creating the wrapper so it can read latestBuildHandler.current when it runs. (preventing stale clusure)
-    const wrapper = () => {
-      const handler = latestBuildHandler.current;
-      return handler ? handler() : Promise.resolve();
-    };
-    setBuildImageSelected(() => wrapper);
-    return () => {
-      setBuildImageSelected(null);
-    };
-  }, [isActive, setBuildImageSelected]);
-
   const handleKeyDown: KeyboardEventHandler<HTMLInputElement> = (e) => {
     if (e.key === "Enter") {
       e.preventDefault();
       (e.target as HTMLInputElement).blur();
-      handleBuildStart().catch(() => {});
+      void handleBuildAndStart();
     }
   };
 
@@ -275,7 +266,6 @@ export function ImageBuilder({ name, isActive, optionKey }: ICustomOptionProps) 
         id={`${name}--repo`}
         className={isActive ? "cache-repository" : undefined}
         label="Repository"
-        ref={repoFieldRef}
         {...repoFieldProps}
         error={repoError}
         options={repositoryOptions}
@@ -292,7 +282,6 @@ export function ImageBuilder({ name, isActive, optionKey }: ICustomOptionProps) 
       <Combobox
         id={`${name}--ref`}
         label="Git Ref"
-        ref={branchFieldRef}
         hint="Branch, Tag or Commit to use. HEAD will use the default branch"
         value={ref}
         validate={
@@ -342,6 +331,17 @@ export function ImageBuilder({ name, isActive, optionKey }: ICustomOptionProps) 
           )}
         </div>
       </div>
+      {isActive && submitSlot && createPortal(
+        <button
+          className="btn btn-jupyter form-control"
+          type="submit"
+          onClick={(e) => { e.preventDefault(); void handleBuildAndStart(); }}
+          disabled={isBuildingImage}
+        >
+          Build Image and Start
+        </button>,
+        submitSlot
+      )}
     </>
   );
 }
