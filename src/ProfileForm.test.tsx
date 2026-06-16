@@ -336,4 +336,21 @@ describe("submit slot", () => {
     const startButton = screen.getByRole("button", { name: "Start" });
     expect(container.querySelector("#submit-slot")).toContainElement(startButton);
   });
+
+  test("'Build Image and Start' button renders in submit-slot when build option is active", async () => {
+    const user = userEvent.setup();
+    const { container } = renderWithJupyterForm(<ProfileForm />);
+
+    await user.click(screen.getByRole("radio", {
+      name: "Build custom environment Dynamic Image building + unlisted choice",
+    }));
+
+    const imageSelect = screen.getByLabelText("Image - dynamic image building");
+    await user.click(imageSelect);
+    await user.click(screen.getByText("Build your own image"));
+
+    expect(screen.queryByRole("button", { name: "Start" })).not.toBeInTheDocument();
+    const buildButton = screen.getByRole("button", { name: "Build Image and Start" });
+    expect(container.querySelector("#submit-slot")).toContainElement(buildButton);
+  });
 });
