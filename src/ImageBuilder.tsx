@@ -361,8 +361,7 @@ export function ImageBuilder({ name, isActive, optionKey }: ICustomOptionProps) 
         >
           {isBuildingImage
             ? <><LuRotateCcw className="spin" />Building...</>
-            : "Build Image and Start"
-          }
+            : "Build Image and Start"}
         </button>,
         submitSlot
       )}

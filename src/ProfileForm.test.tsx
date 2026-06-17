@@ -104,6 +104,29 @@ describe("Profile form", () => {
     ).toBeInTheDocument();
   });
 
+  test("invalid docker image format blocks form submission without blur", async () => {
+    const user = userEvent.setup();
+    const requestSubmitSpy = jest.spyOn(HTMLFormElement.prototype, "requestSubmit").mockImplementation(() => {});
+
+    renderWithJupyterForm(<ProfileForm />);
+
+    await user.click(screen.getByRole("radio", { name: "CPU only No GPU, only CPU" }));
+    await user.click(screen.getByLabelText("Image"));
+    await user.click(screen.getByText("Specify an existing docker image"));
+
+    // Type an invalid format (no colon) without explicitly blurring first
+    await user.type(screen.getByLabelText("Custom image"), "ubuntu");
+
+    await user.click(screen.getByRole("button", { name: "Start" }));
+
+    expect(requestSubmitSpy).not.toHaveBeenCalled();
+    await waitFor(() => expect(
+      screen.getByText("Must be a publicly available docker image, of form <image-name>:<tag>")
+    ).toBeInTheDocument());
+
+    requestSubmitSpy.mockRestore();
+  });
+
   test("custom image field accepts specific format", async () => {
     const user = userEvent.setup();
 
