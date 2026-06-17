@@ -174,7 +174,7 @@ export function ImageBuilder({ name, isActive, optionKey }: ICustomOptionProps) 
 
   const repoRef = permalinkValues[`${optionKey}:ref`];
   const binderRepo= permalinkValues[`${optionKey}:binderRepo`];
-  const { repo, repoId, repoFieldProps, repoError } =
+  const { repo, repoId, repoFieldProps, repoError, forceValidation } =
     useRepositoryField(binderRepo);
   const { getRepositoryOptions, getRefOptions, removeRefOption, removeRepositoryOption, cacheChoiceOption, cacheRepositorySelection } = useFormCache();
   const { setIsImageBuildActive, setFormErrors } = useFormState();
@@ -239,10 +239,17 @@ export function ImageBuilder({ name, isActive, optionKey }: ICustomOptionProps) 
       return;
     }
 
+    // preBuildValidate only checks required (non-empty). Validate repo format explicitly.
+    forceValidation();
+    if (!repoId) {
+      collectFormErrors(form, setFormErrors);
+      return;
+    }
+
     setIsBuildingImage(true);
     setCustomImageError("");
     try {
-      const imageName = await buildImage(repoId!, ref, term, fitAddon);
+      const imageName = await buildImage(repoId, ref, term, fitAddon);
       customImageRef.current.value = imageName;
       setHasBuiltImage(true);
       term.write("\nImage has been built! Starting your server...");
