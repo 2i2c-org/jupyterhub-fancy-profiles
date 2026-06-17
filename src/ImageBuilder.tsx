@@ -174,7 +174,7 @@ export function ImageBuilder({ name, isActive, optionKey }: ICustomOptionProps) 
 
   const repoRef = permalinkValues[`${optionKey}:ref`];
   const binderRepo= permalinkValues[`${optionKey}:binderRepo`];
-  const { repo, repoId, repoFieldProps, repoError, forceValidation } =
+  const { repoId, repoFieldProps, repoError, forceValidation, resetError } =
     useRepositoryField(binderRepo);
   const { getRepositoryOptions, getRefOptions, removeRefOption, removeRepositoryOption, cacheChoiceOption, cacheRepositorySelection } = useFormCache();
   const { setIsImageBuildActive, setFormErrors } = useFormState();
@@ -204,6 +204,7 @@ export function ImageBuilder({ name, isActive, optionKey }: ICustomOptionProps) 
     if (!isActive) {
       setCustomImageError("");
       setHasBuiltImage(false);
+      resetError();
     }
   }, [isActive]);
 
@@ -226,7 +227,6 @@ export function ImageBuilder({ name, isActive, optionKey }: ICustomOptionProps) 
     if (hasAutoStarted.current) return;
     hasAutoStarted.current = true;
     handleBuildAndStart();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isActive, term, permalinkValues]);
 
   const handleBuildAndStart = async () => {
@@ -241,6 +241,7 @@ export function ImageBuilder({ name, isActive, optionKey }: ICustomOptionProps) 
 
     // preBuildValidate only checks required (non-empty). Validate repo format explicitly.
     forceValidation();
+    // If repoID is invalid, it is undefined 
     if (!repoId) {
       collectFormErrors(form, setFormErrors);
       return;
@@ -248,6 +249,7 @@ export function ImageBuilder({ name, isActive, optionKey }: ICustomOptionProps) 
 
     setIsBuildingImage(true);
     setCustomImageError("");
+    resetError();
     try {
       const imageName = await buildImage(repoId, ref, term, fitAddon);
       customImageRef.current.value = imageName;

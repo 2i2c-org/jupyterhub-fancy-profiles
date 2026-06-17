@@ -34,8 +34,13 @@ export default function useRepositoryField(defaultValue: string) {
     }
   }, [defaultValue]);
 
+  const resetError = useCallback(() => {
+    setError(undefined);
+  }, []);
+
   const onChange: ChangeEventHandler<HTMLInputElement> = useCallback((e) => {
     setValue(e.target.value);
+    setError(undefined);
   }, []);
 
   // Show format error without trimming — for use when a button is clicked before blur
@@ -54,6 +59,7 @@ export default function useRepositoryField(defaultValue: string) {
     repoError: error,
     repoId,
     forceValidation,
+    resetError,
     repoFieldProps: {
       value,
       onChange,

@@ -74,6 +74,7 @@ function Form() {
     setProfile(slug);
     setPermalinkValue("profile", slug);
     setProfileError("");
+    setFormErrors([]);
   };
 
   useEffect(() => {
@@ -131,6 +132,8 @@ function Form() {
             onClick={() => {
               setProfile(slug);
               setPermalinkValue("profile", slug);
+              setProfileError("");
+              setFormErrors([]);
             }}
           >
             {profileList.length > 1 && (
