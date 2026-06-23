@@ -269,6 +269,8 @@ export function ImageBuilder({ name, isActive, optionKey }: ICustomOptionProps) 
   const handleKeyDown: KeyboardEventHandler<HTMLInputElement> = (e) => {
     if (e.key === "Enter") {
       e.preventDefault();
+      // Because it is rendered through portal, the event bubbles to React parent
+      e.stopPropagation();
       (e.target as HTMLInputElement).blur();
       handleBuildAndStart();
     }
@@ -358,7 +360,8 @@ export function ImageBuilder({ name, isActive, optionKey }: ICustomOptionProps) 
         <button
           className="btn btn-jupyter form-control"
           type="submit"
-          onClick={(e) => { e.preventDefault(); handleBuildAndStart(); }}
+          // Because it is rendered through portal, the event bubbles to React parent
+          onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleBuildAndStart(); }}
           disabled={isBuildingImage}
         >
           {isBuildingImage
