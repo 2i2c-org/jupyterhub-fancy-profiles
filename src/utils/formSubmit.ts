@@ -4,10 +4,10 @@ export const collectFormErrors = (
   form: HTMLFormElement,
   setFormErrors: Dispatch<SetStateAction<Element[]>>,
 ) => {
-  setTimeout(() => {
+  queueMicrotask(() => {
     const errors = form.getElementsByClassName("invalid-feedback");
     setFormErrors(Array.from(errors));
-  }, 10);
+  });
   setTimeout(() => {
     window.scrollTo(0, document.body.scrollHeight);
   }, 100);

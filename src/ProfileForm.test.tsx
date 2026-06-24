@@ -121,8 +121,8 @@ describe("Profile form", () => {
 
     expect(requestSubmitSpy).not.toHaveBeenCalled();
     await waitFor(() => expect(
-      screen.getByText("Must be a publicly available docker image, of form <image-name>:<tag>")
-    ).toBeInTheDocument());
+      screen.getAllByText("Must be a publicly available docker image, of form <image-name>:<tag>").length
+    ).toBeGreaterThanOrEqual(1));
 
     requestSubmitSpy.mockRestore();
   });
@@ -308,6 +308,7 @@ describe("Profile form with URL Params", () => {
   });
 
   test("shows error for malformed config", () => {
+    const consoleSpy = jest.spyOn(console, "error").mockImplementation(() => {});
     setHash("#fancy-forms-config=%7B%22profile%22%3A%22build-custom-environment%22%2C%22image%22%3A%22--extra-selectable-item%22%2C%22image%3Aunlisted_choice%22%3A%22%22%2C%22image%3AbinderProvider%22%3A%22gh%22%2C%22image%3AbinderRepo%22%3A%22org%2Fre");
     const { container } = renderWithContext(<ProfileForm />);
     const hiddenRadio = container.querySelector("[name='profile']");
@@ -317,6 +318,7 @@ describe("Profile form with URL Params", () => {
     });
     expect((defaultRadio as HTMLInputElement).checked).toBeTruthy();
     expect(screen.queryByText("Unable to parse permalink configuration.")).toBeInTheDocument();
+    consoleSpy.mockRestore();
   });
 
   test("preselects values", async () => {
