@@ -7,12 +7,14 @@ import { ICustomOption } from "./types/fields";
 import Combobox from "./components/form/Combobox";
 import useFormCache from "./hooks/useFormCache";
 import { PermalinkContext } from "./context/Permalink";
+import { ProfileOptions } from "./ProfileOptions";
 
 interface IResourceSelect {
   id: string;
   profile: string;
   config: IProfileOption;
   customOptions: ICustomOption[];
+  isActive?: boolean;
 }
 
 function ResourceSelect({
@@ -20,6 +22,7 @@ function ResourceSelect({
   profile,
   config,
   customOptions = [],
+  isActive: isActiveProp,
 }: IResourceSelect) {
   const { display_name, unlisted_choice } = config;
 
@@ -33,10 +36,11 @@ function ResourceSelect({
   const FIELD_ID = `profile-option-${profile}--${id}`;
   const FIELD_ID_UNLISTED = `${FIELD_ID}--unlisted-choice`;
 
-  const isActive = selectedProfile?.slug === profile;
-  const setVal = isActive && permalinkValues["profile"] === selectedProfile.slug;
+  const isNested = isActiveProp !== undefined;
+  const isActive = isNested ? isActiveProp : selectedProfile?.slug === profile;
+  const setVal = isActive && permalinkValues["profile"] === selectedProfile?.slug;
 
-  const [value, setValue] = useState((setVal && permalinkValues[id]) || defaultOption?.value);
+  const [value, setValue] = useState((setVal && permalinkValues[id]) || (isNested ? "" : defaultOption?.value));
   const [unlistedChoiceValue, setUnlistedChoiceValue] = useState((setVal && permalinkValues[`${id}:unlisted_choice`]) || "");
 
   if (!(options.length > 0)) {
@@ -50,6 +54,7 @@ function ResourceSelect({
 
   const selectedCustomOption = customOptions.find((opt) => opt.value === value);
   const choiceOptions = getChoiceOptions(FIELD_ID_UNLISTED);
+  const nestedProfileOptions = config.choices[value]?.profile_options;
   return (
     <>
       {(options.length > 1 || hasDefaultChoices) && (
@@ -98,6 +103,14 @@ function ResourceSelect({
           name={FIELD_ID_UNLISTED}
           isActive={isActive}
           optionKey={id}
+        />
+      )}
+      {isActive && nestedProfileOptions && (
+        <ProfileOptions
+          key={value}
+          profile={`${profile}--${id}--${value}`}
+          config={nestedProfileOptions}
+          isActive={true}
         />
       )}
     </>

@@ -6,9 +6,10 @@ import { IProfileOptions } from "./types/config";
 interface IProfileOptionsProps {
   profile: string;
   config: IProfileOptions;
+  isActive?: boolean;
 }
 
-export function ProfileOptions({ config, profile }: IProfileOptionsProps) {
+export function ProfileOptions({ config, profile, isActive }: IProfileOptionsProps) {
   return (
     <div className="form-grid">
       {Object.entries(config).map(([key, option]) => {
@@ -31,6 +32,7 @@ export function ProfileOptions({ config, profile }: IProfileOptionsProps) {
             profile={profile}
             config={option}
             customOptions={customOptions}
+            isActive={isActive}
           />
         );
       })}

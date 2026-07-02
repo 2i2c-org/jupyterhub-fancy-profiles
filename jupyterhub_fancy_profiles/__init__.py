@@ -26,3 +26,17 @@ def setup_ui(c):
 
     # Add extra handler to serve JS & CSS assets
     c.JupyterHub.extra_handlers.append(STATIC_HANDLER_TUPLE)
+
+    async def pre_spawn_hook(spawner):
+        """Apply kubespawner_override values collected from nested profile options."""
+        handler = getattr(spawner, "handler", None)
+        if handler is None:
+            return
+        prefix = "profile-nested-override--"
+        for key, values in handler.request.body_arguments.items():
+            if key.startswith(prefix):
+                attr = key[len(prefix):]
+                value = values[0].decode("utf-8") if values else ""
+                setattr(spawner, attr, value)
+
+    c.KubeSpawner.pre_spawn_hook = pre_spawn_hook

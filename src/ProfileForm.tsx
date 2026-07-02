@@ -13,6 +13,42 @@ import { ProfileOptions } from "./ProfileOptions";
 import useFormCache from "./hooks/useFormCache";
 import { PermalinkContext } from "./context/Permalink";
 import Permalink from "./components/Permalink";
+import { IProfileOptions } from "./types/config";
+
+/**
+ * Walks the profile_options tree to collect kubespawner_override values from
+ * nested choices (depth > 0). KubeSpawner already handles depth-0 choices.
+ */
+function collectNestedOverrides(
+  profileOptions: IProfileOptions,
+  fieldPrefix: string,
+  form: HTMLFormElement,
+  depth = 0,
+): Record<string, string> {
+  const overrides: Record<string, string> = {};
+  for (const [optionKey, option] of Object.entries(profileOptions)) {
+    const fieldName = `${fieldPrefix}--${optionKey}`;
+    const input = form.querySelector<HTMLInputElement>(`[name="${fieldName}"]`);
+    if (!input?.value) continue;
+    const choice = option.choices?.[input.value];
+    if (!choice) continue;
+    if (depth > 0 && choice.kubespawner_override) {
+      Object.assign(overrides, choice.kubespawner_override);
+    }
+    if (choice.profile_options) {
+      Object.assign(
+        overrides,
+        collectNestedOverrides(
+          choice.profile_options,
+          `${fieldName}--${input.value}`,
+          form,
+          depth + 1,
+        ),
+      );
+    }
+  }
+  return overrides;
+}
 
 /**
  * Generates the *contents* of the form shown in the profile selection page

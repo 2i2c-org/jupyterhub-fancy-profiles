@@ -3,8 +3,11 @@ interface IChoice {
   description?: string;
   default?: boolean;
   slug?: string;
-  kubespawner_overwrite: {
+  kubespawner_override: {
     [key: string]: string;
+  };
+  profile_options?: {
+    [key: string]: IProfileOption;
   };
 }
 
@@ -32,8 +35,7 @@ export interface IProfileOption {
 }
 
 export interface IProfileOptions {
-  image: IProfileOption;
-  resources?: IProfileOption;
+  [key: string]: IProfileOption;
 }
 
 export interface IProfile {
