@@ -50,7 +50,7 @@ helm upgrade --install jupyterhub jupyterhub/jupyterhub \
   --values values.yaml
 ```
 
-That's it! Your JupyterHub should now have fancy profiles enabled.
+That's it! Your JupyterHub will now show the fancy profiles selector when users start a server.
 
 ## Installation with kubespawner in jupyterhub configuration
 
@@ -91,7 +91,7 @@ After installation, you should see the fancy profile selector when users try to 
 - Improved form controls for custom selections
 
 If you don't see the new UI:
-1. Check that your profiles are configured in KubeSpawner (see the [User Guide](guide.md))
+1. Check that your profiles are configured in KubeSpawner (see the [User Guide](guide/index.md))
 2. Verify that `setup_ui(c)` is being called in your configuration
 3. Check the JupyterHub logs for any errors
 
@@ -99,13 +99,13 @@ If you don't see the new UI:
 
 ::::{grid} 1 1 2 2
 
-:::{card} 📖 Configure Profiles
-:link: guide
+:::{card} Configure Profiles
+:link: guide/configuration
 
 Learn how to set up and customize your profile list
 :::
 
-:::{card} ❓ Troubleshooting
+:::{card} Troubleshooting
 :link: https://github.com/2i2c-org/jupyterhub-fancy-profiles/issues
 
 Get help or report issues

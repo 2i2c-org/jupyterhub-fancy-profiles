@@ -10,8 +10,11 @@ project:
   toc:
     - file: index.md
     - file: install.md
-    - file: guide.md
-    - file: image-building.md
+    - file: guide/index.md
+      children:
+      - file: guide/configuration.md
+      - file: guide/permalink.md
+      - file: guide/image-building.md
     - file: contribute/index.md
       children:
       - file: contribute/develop.md
