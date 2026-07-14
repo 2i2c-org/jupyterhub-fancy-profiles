@@ -40,7 +40,7 @@ export const cacheFormValues = (
 export const preBuildValidate = (form: HTMLFormElement): boolean => {
   let firstInvalid: HTMLInputElement | null = null;
   form.querySelectorAll<HTMLInputElement>("input, select, textarea").forEach((field) => {
-    // Hidden text input for dynamically buit image name (input is empty)
+    // Hidden text input for dynamically built image name
     if (field.dataset.dynamicBuild === "true") return;
     if (field.disabled) return;
     if (!field.checkValidity()) {
