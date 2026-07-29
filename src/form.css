@@ -91,6 +91,62 @@
   font-size: 0.9rem;
 }
 
+[data-bs-theme="dark"] .profile-option-control-hint {
+  color: #aaa;
+}
+
+/* Permalink */
+
+.permalink-container {
+  border-top: 1px solid #ddd;
+  padding-top: 1rem;
+}
+
+.permalink-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.permalink-copied {
+  color: #555;
+  font-size: 0.9rem;
+}
+
+.permalink-options {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+/* Align the hints and fields with the checkbox label above them */
+.permalink-option .profile-option-control-hint,
+.permalink-fields {
+  margin-left: 1.5rem;
+}
+
+.permalink-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+  max-width: 32rem;
+}
+
+.permalink-field .form-label {
+  margin-bottom: 0.25rem;
+}
+
+[data-bs-theme="dark"] .permalink-container {
+  border-top-color: #333;
+}
+
+[data-bs-theme="dark"] .permalink-copied {
+  color: #aaa;
+}
+
 .profile-form-error {
   color: red;
   margin-bottom: 1rem;
