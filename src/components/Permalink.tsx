@@ -2,10 +2,6 @@ import { KeyboardEventHandler, useContext, useState } from "react";
 import { PermalinkContext } from "../context/Permalink";
 import { parseRepositoryUrl } from "../utils/permalink";
 
-// These fields live inside JupyterHub's <form>, so they deliberately carry no
-// "name": anything named is POSTed to the spawner as a profile option. They
-// also must not be "required" or carry a pattern, which would block the form
-// from submitting. Values are validated here instead, on copy.
 interface ILinkField {
   id: string;
   label: string;
@@ -91,9 +87,6 @@ function Permalink() {
   };
 
   return (
-    // The surrounding profile card re-selects its profile on any click, which
-    // clears the recorded option values. This panel only exists for the
-    // already-selected profile, so those clicks have nothing to do here.
     <div className="permalink-container" onClick={(e) => e.stopPropagation()}>
       <div className="permalink-actions">
         <button

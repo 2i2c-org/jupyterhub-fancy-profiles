@@ -73,20 +73,12 @@ export const PermalinkProvider = ({ children }: PropsWithChildren) => {
 
     setPermalinkValue("autoStart", autoStart ? "true" : "false");
 
-    // Any "next" already on the page belongs to the link that opened it;
-    // keeping it would leave the copied link with two competing destinations.
     const search = new URLSearchParams(location.search);
     search.delete("next");
     const query = search.toString();
     const prefix = `${location.origin}/hub/login${query ? `?${query}&` : "?"}next=`;
 
     if (gitPuller?.repo) {
-      // nbgitpuller runs once the server is up, so it is chained onto the spawn
-      // page as its own "next". That gives the spawn URL a query of its own,
-      // which is read after this "next" has already been decoded once — so the
-      // whole thing is encoded here as well. With only one layer, the "&"
-      // separating the git-pull parameters breaks out of the value and its
-      // branch and urlpath end up as stray parameters on the spawn page.
       const spawnUrl =
         `/hub/spawn?next=${encodeURIComponent(buildGitPullerPath(gitPuller))}` +
         `#${queryParamName}=${JSON.stringify(urlParams)}`;
