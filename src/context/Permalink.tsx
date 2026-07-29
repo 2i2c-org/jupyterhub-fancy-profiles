@@ -72,23 +72,30 @@ export const PermalinkProvider = ({ children }: PropsWithChildren) => {
     const { autoStart = false, gitPuller = null } = options;
 
     setPermalinkValue("autoStart", autoStart ? "true" : "false");
-    const params = new URLSearchParams();
-    params.set(queryParamName, JSON.stringify(urlParams));
-
-    // nbgitpuller runs after the server has started, so it is chained onto the
-    // spawn page as its own "next" destination.
-    const spawnPath = gitPuller?.repo
-      ? `/hub/spawn?next=${encodeURIComponent(buildGitPullerPath(gitPuller))}`
-      : "/hub/spawn";
 
     // Any "next" already on the page belongs to the link that opened it;
     // keeping it would leave the copied link with two competing destinations.
     const search = new URLSearchParams(location.search);
     search.delete("next");
     const query = search.toString();
+    const prefix = `${location.origin}/hub/login${query ? `?${query}&` : "?"}next=`;
 
-    const link = `${location.origin}/hub/login${query ? `?${query}&` : "?"}next=${spawnPath}%23${params.toString()}`;
-    return navigator.clipboard.writeText(link);
+    if (gitPuller?.repo) {
+      // nbgitpuller runs once the server is up, so it is chained onto the spawn
+      // page as its own "next". That gives the spawn URL a query of its own,
+      // which is read after this "next" has already been decoded once — so the
+      // whole thing is encoded here as well. With only one layer, the "&"
+      // separating the git-pull parameters breaks out of the value and its
+      // branch and urlpath end up as stray parameters on the spawn page.
+      const spawnUrl =
+        `/hub/spawn?next=${encodeURIComponent(buildGitPullerPath(gitPuller))}` +
+        `#${queryParamName}=${JSON.stringify(urlParams)}`;
+      return navigator.clipboard.writeText(prefix + encodeURIComponent(spawnUrl));
+    }
+
+    const params = new URLSearchParams();
+    params.set(queryParamName, JSON.stringify(urlParams));
+    return navigator.clipboard.writeText(`${prefix}/hub/spawn%23${params.toString()}`);
   };
 
   const contextValue = {

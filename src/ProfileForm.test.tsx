@@ -262,23 +262,53 @@ describe("Profile form", () => {
     expect(clipboardText).toContain("%22autoStart%22%3A%22true%22");
   });
 
-  test("permalink can open a repository with nbgitpuller", async () => {
+  test("permalink opens a repository with nbgitpuller, intact through both redirects", async () => {
     const user = await openLinkOptions();
 
     await user.click(screen.getByLabelText("Open a Git repository in the server"));
     await user.type(screen.getByLabelText("Repository"), "https://github.com/org/repo");
     await user.type(screen.getByLabelText("Branch"), "main");
-    await user.type(screen.getByLabelText("File to open"), "example.ipynb");
+    await user.type(screen.getByLabelText("File to open"), "a/b.ipynb");
     await user.click(screen.getByRole("button", { name: "Copy Permalink" }));
 
-    const clipboardText = await navigator.clipboard.readText();
-    const next = new URL(clipboardText).searchParams.get("next");
-    expect(next).toContain("/hub/spawn?next=/hub/user-redirect/git-pull?");
+    // Hop 1: the hub reads "next" off /hub/login and redirects to it.
+    const login = new URL(await navigator.clipboard.readText());
+    const spawn = new URL(login.searchParams.get("next"), login.origin);
 
-    const gitPull = new URLSearchParams(next.split("git-pull?")[1].split("#")[0]);
-    expect(gitPull.get("repo")).toEqual("https://github.com/org/repo");
-    expect(gitPull.get("branch")).toEqual("main");
-    expect(gitPull.get("urlpath")).toEqual("lab/tree/repo/example.ipynb");
+    // Hop 2: the spawn page reads its own query. Only "next" may appear here —
+    // if the git-pull parameters leak out they are lost before nbgitpuller runs.
+    const spawnKeys: string[] = [];
+    spawn.searchParams.forEach((_, key) => spawnKeys.push(key));
+    expect(spawnKeys).toEqual(["next"]);
+
+    // Hop 3: after the server starts, JupyterHub follows the spawn page's next.
+    const pull = new URL(spawn.searchParams.get("next"), login.origin);
+    expect(pull.pathname).toEqual("/hub/user-redirect/git-pull");
+    expect(pull.searchParams.get("repo")).toEqual("https://github.com/org/repo");
+    expect(pull.searchParams.get("branch")).toEqual("main");
+    expect(pull.searchParams.get("urlpath")).toEqual("lab/tree/repo/a/b.ipynb");
+
+    expect(decodeURIComponent(spawn.hash)).toContain("\"autoStart\":\"false\"");
+  });
+
+  test("selected options survive using the link options panel", async () => {
+    const user = await openLinkOptions();
+
+    // Interacting with the panel must not clear what was chosen above it.
+    await user.click(screen.getByLabelText("Start the server automatically"));
+    await user.click(screen.getByRole("button", { name: "Copy Permalink" }));
+
+    const config = JSON.parse(
+      decodeURIComponent(
+        (await navigator.clipboard.readText()).split("fancy-forms-config=")[1],
+      ),
+    );
+    expect(config).toMatchObject({
+      profile: "gpu",
+      image: "geospatial",
+      resources: "mem_2_7",
+      autoStart: "true",
+    });
   });
 
   test("pasting a file URL fills in the branch and file", async () => {

@@ -91,7 +91,10 @@ function Permalink() {
   };
 
   return (
-    <div className="permalink-container">
+    // The surrounding profile card re-selects its profile on any click, which
+    // clears the recorded option values. This panel only exists for the
+    // already-selected profile, so those clicks have nothing to do here.
+    <div className="permalink-container" onClick={(e) => e.stopPropagation()}>
       <div className="permalink-actions">
         <button
           type="button"

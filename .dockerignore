@@ -1,0 +1,8 @@
+# The image build runs "npm install" and "npm run webpack" itself, so host
+# build output and dependencies must not be copied in.
+# .git has to stay: setuptools_scm reads the version from it.
+node_modules
+docs/_build
+jupyterhub_fancy_profiles/static/dist
+__pycache__/
+*.egg-info/
