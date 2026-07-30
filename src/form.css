@@ -105,6 +105,18 @@
   margin-top: 0.5rem;
 }
 
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.spin {
+  animation: spin 1s linear infinite;
+  display: inline-block;
+  margin-right: 0.4rem;
+  vertical-align: middle;
+}
+
 .right-button {
   text-align: right;
   margin-bottom: 2rem;

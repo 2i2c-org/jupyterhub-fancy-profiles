@@ -1,4 +1,4 @@
-import { expect, test } from "@jest/globals";
+import { afterEach, describe, expect, test } from "@jest/globals";
 import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import fetchMock from "jest-fetch-mock";
@@ -346,10 +346,74 @@ test("build image and start submits form on first click with image name in hidde
   await user.click(screen.getByRole("button", { name: "Build Image and Start" }));
 
   // Build should complete and form should submit in this single click.
-  // If flushSync is missing, the hidden input still has value="" at submit time.
+  // If the hidden input's ref isn't written synchronously before submit, it still has value="" here.
   await waitFor(() => expect(requestSubmitSpy).toHaveBeenCalledTimes(1));
   expect(hiddenValueAtSubmit).toBe("ghcr.io/org/repo:abc123");
 
   localStorage.removeItem("jupytherhub-build-token");
   requestSubmitSpy.mockRestore();
+});
+
+describe("submit slot", () => {
+  test("'Build Image and Start' button renders in submit-slot when build option is active", async () => {
+    const user = userEvent.setup();
+    const { container } = renderWithJupyterForm(<ProfileForm />);
+
+    await user.click(screen.getByRole("radio", {
+      name: "Build custom environment Dynamic Image building + unlisted choice",
+    }));
+
+    const imageSelect = screen.getByLabelText("Image - dynamic image building");
+    await user.click(imageSelect);
+    await user.click(screen.getByText("Build your own image"));
+
+    expect(screen.queryByRole("button", { name: "Start" })).not.toBeInTheDocument();
+    const buildButton = screen.getByRole("button", { name: "Build Image and Start" });
+    expect(container.querySelector("#submit-slot")).toContainElement(buildButton);
+  });
+});
+
+describe("autoStart", () => {
+  function setHash(hash: string) {
+    const location = { ...window.location, hash };
+    Object.defineProperty(window, "location", { writable: true, value: location });
+  }
+
+  afterEach(() => setHash(""));
+
+  test("triggers build and submits form automatically when autoStart=true", async () => {
+    localStorage.setItem("jupytherhub-build-token", JSON.stringify({
+      id: "test-id",
+      expires_at: "2099-01-01T00:00:00Z",
+      token: "test-token",
+    }));
+    fetchMock.mockResponseOnce(JSON.stringify({ name: "testuser" }));
+
+    setHash(
+      `#fancy-forms-config=${encodeURIComponent(
+        JSON.stringify({
+          profile: "build-custom-environment",
+          image: "--extra-selectable-item",
+          "image:binderRepo": "org/repo",
+          "image:ref": "HEAD",
+          autoStart: "true",
+        })
+      )}`
+    );
+
+    const { container } = renderWithJupyterForm(<ProfileForm />);
+
+    const form = container.querySelector("form");
+    let hiddenValueAtSubmit = "";
+    const requestSubmitSpy = jest.spyOn(form, "requestSubmit").mockImplementation(() => {
+      const input = form.querySelector("[data-dynamic-build='true']") as HTMLInputElement;
+      hiddenValueAtSubmit = input?.value ?? "";
+    });
+
+    await waitFor(() => expect(requestSubmitSpy).toHaveBeenCalledTimes(1));
+    expect(hiddenValueAtSubmit).toBe("ghcr.io/org/repo:abc123");
+
+    localStorage.removeItem("jupytherhub-build-token");
+    requestSubmitSpy.mockRestore();
+  });
 });

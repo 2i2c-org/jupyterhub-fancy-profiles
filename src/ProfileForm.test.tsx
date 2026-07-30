@@ -1,6 +1,8 @@
-import { describe, expect, test } from "@jest/globals";
-import { screen, waitFor } from "@testing-library/react";
+import { afterEach, describe, expect, test } from "@jest/globals";
+import { cleanup, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+
+afterEach(cleanup);
 
 import ProfileForm from "./ProfileForm";
 import renderWithContext, { renderWithJupyterForm } from "./test/renderWithContext";
@@ -100,6 +102,29 @@ describe("Profile form", () => {
         "Must be a publicly available docker image, of form <image-name>:<tag>",
       ),
     ).toBeInTheDocument();
+  });
+
+  test("invalid docker image format blocks form submission without blur", async () => {
+    const user = userEvent.setup();
+    const requestSubmitSpy = jest.spyOn(HTMLFormElement.prototype, "requestSubmit").mockImplementation(() => {});
+
+    renderWithJupyterForm(<ProfileForm />);
+
+    await user.click(screen.getByRole("radio", { name: "CPU only No GPU, only CPU" }));
+    await user.click(screen.getByLabelText("Image"));
+    await user.click(screen.getByText("Specify an existing docker image"));
+
+    // Type an invalid format (no colon) without explicitly blurring first
+    await user.type(screen.getByLabelText("Custom image"), "ubuntu");
+
+    await user.click(screen.getByRole("button", { name: "Start" }));
+
+    expect(requestSubmitSpy).not.toHaveBeenCalled();
+    await waitFor(() => expect(
+      screen.getAllByText("Must be a publicly available docker image, of form <image-name>:<tag>").length
+    ).toBeGreaterThanOrEqual(1));
+
+    requestSubmitSpy.mockRestore();
   });
 
   test("custom image field accepts specific format", async () => {
@@ -256,6 +281,8 @@ describe("Profile form with URL Params", () => {
     });
   }
 
+  afterEach(() => setHash(""));
+
   test("ignores irrelevant params", () => {
     setHash("#foo=bar");
     const { container } = renderWithContext(<ProfileForm />);
@@ -281,6 +308,7 @@ describe("Profile form with URL Params", () => {
   });
 
   test("shows error for malformed config", () => {
+    const consoleSpy = jest.spyOn(console, "error").mockImplementation(() => {});
     setHash("#fancy-forms-config=%7B%22profile%22%3A%22build-custom-environment%22%2C%22image%22%3A%22--extra-selectable-item%22%2C%22image%3Aunlisted_choice%22%3A%22%22%2C%22image%3AbinderProvider%22%3A%22gh%22%2C%22image%3AbinderRepo%22%3A%22org%2Fre");
     const { container } = renderWithContext(<ProfileForm />);
     const hiddenRadio = container.querySelector("[name='profile']");
@@ -290,6 +318,7 @@ describe("Profile form with URL Params", () => {
     });
     expect((defaultRadio as HTMLInputElement).checked).toBeTruthy();
     expect(screen.queryByText("Unable to parse permalink configuration.")).toBeInTheDocument();
+    consoleSpy.mockRestore();
   });
 
   test("preselects values", async () => {
@@ -323,4 +352,36 @@ describe("Profile form with URL Params", () => {
     });
     expect(noObject).toBeInTheDocument();
   });
+
+});
+
+describe("autoStart", () => {
+  function setHash(hash: string) {
+    const location = { ...window.location, hash };
+    Object.defineProperty(window, "location", { writable: true, value: location });
+  }
+
+  afterEach(() => setHash(""));
+
+  test("submits form immediately for non-build profile", async () => {
+    const requestSubmitSpy = jest
+      .spyOn(HTMLFormElement.prototype, "requestSubmit")
+      .mockImplementation(() => {});
+
+    setHash(`#fancy-forms-config=${encodeURIComponent(JSON.stringify({ profile: "cpu", image: "geospatial", autoStart: "true" }))}`);
+    renderWithJupyterForm(<ProfileForm />);
+
+    await waitFor(() => expect(requestSubmitSpy).toHaveBeenCalled());
+    requestSubmitSpy.mockRestore();
+  });
+});
+
+describe("submit slot", () => {
+  test("submit button renders inside #submit-slot", async () => {
+    const { container } = renderWithJupyterForm(<ProfileForm />);
+    const startButton = screen.getByRole("button", { name: "Start" });
+    expect(container.querySelector("#submit-slot")).toContainElement(startButton);
+  });
+
+
 });
