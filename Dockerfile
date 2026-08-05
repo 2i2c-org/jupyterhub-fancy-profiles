@@ -24,4 +24,10 @@ USER root
 COPY --from=builder /srv/wheels/*.whl /srv/wheels/
 RUN pip install /srv/wheels/*
 
+# Nested profile_options support: not yet merged upstream (jupyterhub/kubespawner).
+# git is needed here for pip's git+ install, it's not part of the base image.
+RUN apt update > /dev/null && \
+    apt install --yes git >/dev/null && \
+    pip install "git+https://github.com/rtmiz/kubespawner.git@nested-profile-options"
+
 USER ${NB_USER}
