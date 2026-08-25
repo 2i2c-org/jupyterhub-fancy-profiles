@@ -1,6 +1,6 @@
 import { ChangeEventHandler, useCallback, useEffect, useState } from "react";
 
-function extractOrgAndRepo(value: string) {
+export function extractOrgAndRepo(value: string) {
   let orgRepoString;
   const orgRepoMatch = /^[^/]+\/[^/]+$/.exec(value);
 
@@ -19,47 +19,47 @@ function extractOrgAndRepo(value: string) {
   return orgRepoString;
 }
 
+const FORMAT_ERROR = "Provide the repository as the format 'organization/repository'.";
+
 export default function useRepositoryField(defaultValue: string) {
   const [value, setValue] = useState<string>(defaultValue || "");
   const [error, setError] = useState<string>();
-  const [repoId, setRepoId] = useState<string>();
+
+  // Always derived from current value — no separate state, no blur needed
+  const repoId = extractOrgAndRepo(value.trim());
 
   useEffect(() => {
     if (defaultValue) {
-      // Automatically validate the value if the defaultValue is set
       onBlur();
     }
   }, [defaultValue]);
 
-  const validate = () => {
+  const resetError = useCallback(() => {
     setError(undefined);
-    const orgRepoString = extractOrgAndRepo(value);
-
-    if (!orgRepoString) {
-      return "Provide the repository as the format 'organization/repository'.";
-    }
-  };
+  }, []);
 
   const onChange: ChangeEventHandler<HTMLInputElement> = useCallback((e) => {
     setValue(e.target.value);
+    setError(undefined);
   }, []);
 
+  // Show format error without trimming — for use when a button is clicked before blur
+  const forceValidation = useCallback(() => {
+    setError(extractOrgAndRepo(value.trim()) ? undefined : FORMAT_ERROR);
+  }, [value]);
+
   const onBlur = useCallback(() => {
-    setRepoId(undefined);
-    const err = validate();
-    if (err) {
-      setError(err);
-    } else {
-      const trimmedValue = value.trim();
-      setRepoId(extractOrgAndRepo(trimmedValue));
-      setValue(trimmedValue);
-    }
+    const trimmedValue = value.trim();
+    setValue(trimmedValue);
+    setError(extractOrgAndRepo(trimmedValue) ? undefined : FORMAT_ERROR);
   }, [value]);
 
   return {
     repo: value,
     repoError: error,
     repoId,
+    forceValidation,
+    resetError,
     repoFieldProps: {
       value,
       onChange,

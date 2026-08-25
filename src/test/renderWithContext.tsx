@@ -2,6 +2,7 @@ import { render } from "@testing-library/react";
 
 import { SpawnerFormProvider } from "../state";
 import { FormCacheProvider } from "../context/FormCache";
+import { FormStateProvider } from "../context/FormState";
 import { PermalinkProvider } from "../context/Permalink";
 
 function renderWithContext(children: React.ReactNode) {
@@ -9,7 +10,9 @@ function renderWithContext(children: React.ReactNode) {
     <PermalinkProvider>
       <SpawnerFormProvider>
         <FormCacheProvider>
-          {children}
+          <FormStateProvider>
+            {children}
+          </FormStateProvider>
         </FormCacheProvider>
       </SpawnerFormProvider>
     </PermalinkProvider>

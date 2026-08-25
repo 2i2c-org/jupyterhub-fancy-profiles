@@ -156,6 +156,7 @@ function Combobox(
 
   const listboxId = `${id}-listbox`;
   const required = !!validate.required;
+  const pattern = typeof validate === "object" ? validate.pattern?.value : undefined;
   const validateError = validateField(value, validate, touched);
 
   return (
@@ -184,6 +185,7 @@ function Combobox(
         onInvalid={() => setTouched(true)}
         tabIndex={tabIndex}
         required={required}
+        pattern={pattern}
         ref={fieldRef}
         style={{ position: "relative" }}
       />

@@ -50,6 +50,7 @@ function ResourceSelect({
 
   const selectedCustomOption = customOptions.find((opt) => opt.value === value);
   const choiceOptions = getChoiceOptions(FIELD_ID_UNLISTED);
+
   return (
     <>
       {(options.length > 1 || hasDefaultChoices) && (
