@@ -149,20 +149,19 @@ function Form() {
               />
             )}
             <div className="profile-select-body">
-              <div className="d-flex align-items-start">
-                <div
-                  id={`profile-option-${slug}-label`}
-                  className="profile-select-label flex-grow-1"
-                >
-                  <h2>{display_name}</h2>
-                  <p>{description}</p>
-                </div>
-                {selectedProfile?.slug === slug && <Permalink />}
+              <div
+                id={`profile-option-${slug}-label`}
+                className="profile-select-label"
+              >
+                <h2>{display_name}</h2>
+                <p>{description}</p>
               </div>
 
               {profile_options && (
                 <ProfileOptions profile={slug} config={profile_options} />
               )}
+
+              {selectedProfile?.slug === slug && <Permalink />}
             </div>
           </div>
         );

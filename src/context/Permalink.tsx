@@ -1,11 +1,23 @@
 import { createContext, PropsWithChildren, useMemo, useState } from "react";
 
+import {
+  buildGitPullerPath,
+  parseGitPullerPath,
+  TGitPullerConfig,
+} from "../utils/permalink";
+
 type TPermalinkValues = { [key: string]: string }
+
+export type TPermalinkOptions = {
+  autoStart?: boolean;
+  gitPuller?: TGitPullerConfig | null;
+};
 
 interface IPermalink {
   permalinkParseError: boolean;
   permalinkValues: TPermalinkValues;
-  copyPermalink: () => Promise<void>;
+  initialLinkOptions: TPermalinkOptions;
+  copyPermalink: (options?: TPermalinkOptions) => Promise<void>;
   setPermalinkValue: (key: string, value: string) => void;
 }
 
@@ -35,6 +47,16 @@ export const PermalinkProvider = ({ children }: PropsWithChildren) => {
     return {};
   }, []);
 
+  // When the page was opened through a generated link, its options are shown
+  // in the form so that copying a new link doesn't silently drop them.
+  const initialLinkOptions: TPermalinkOptions = useMemo(() => {
+    const next = new URLSearchParams(window.location.search).get("next");
+    return {
+      autoStart: urlParams["autoStart"] === "true",
+      gitPuller: next ? parseGitPullerPath(next) : null,
+    };
+  }, [urlParams]);
+
   const resetParams = () => {
     for (const key of Object.keys(urlParams)) {
       delete urlParams[key];
@@ -46,17 +68,32 @@ export const PermalinkProvider = ({ children }: PropsWithChildren) => {
     urlParams[key] = value;
   };
 
-  const copyPermalink = () => {
-    setPermalinkValue("autoStart", "false");
+  const copyPermalink = (options: TPermalinkOptions = {}) => {
+    const { autoStart = false, gitPuller = null } = options;
+
+    setPermalinkValue("autoStart", autoStart ? "true" : "false");
+
+    const search = new URLSearchParams(location.search);
+    search.delete("next");
+    const query = search.toString();
+    const prefix = `${location.origin}/hub/login${query ? `?${query}&` : "?"}next=`;
+
+    if (gitPuller?.repo) {
+      const spawnUrl =
+        `/hub/spawn?next=${encodeURIComponent(buildGitPullerPath(gitPuller))}` +
+        `#${queryParamName}=${JSON.stringify(urlParams)}`;
+      return navigator.clipboard.writeText(prefix + encodeURIComponent(spawnUrl));
+    }
+
     const params = new URLSearchParams();
     params.set(queryParamName, JSON.stringify(urlParams));
-    const link = `${location.origin}/hub/login${location.search ? location.search + "&" : "?"}next=/hub/spawn%23${params.toString()}`;
-    return navigator.clipboard.writeText(link);
+    return navigator.clipboard.writeText(`${prefix}/hub/spawn%23${params.toString()}`);
   };
 
   const contextValue = {
     permalinkParseError,
     permalinkValues: urlParams,
+    initialLinkOptions,
     setPermalinkValue,
     copyPermalink
   };
