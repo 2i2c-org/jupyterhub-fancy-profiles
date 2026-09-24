@@ -41,3 +41,19 @@ Ask questions and share ideas
 :::
 
 ::::
+
+## Documentation versions
+
+The documentation site has a different version of the docs for each release. Use the version menu in the navigation bar to change the version.
+
+- `main` shows the docs from the `main` branch. These docs can include features that are not released.
+- `stable` shows the docs for the newest release.
+- `v<X.Y.Z>` shows the docs for that release.
+- `pr-<N>` shows a preview of the docs for an open pull request.
+
+The [MyST version switcher plugin](https://github.com/DiamondLightSource/myst-version-switcher-plugin) supplies the version menu and the publish workflows.
+
+- `.github/workflows/docs-ci.yml` builds the docs for each pull request, each push to `main`, and each tag. For a tag, it also attaches the docs as `docs.zip` to the GitHub Release.
+- `.github/workflows/docs-publish.yml` collects all the versions, writes `switcher.json`, and publishes the site to GitHub Pages.
+
+To add the docs for a new release, push the release tag. You do not have to do other steps.

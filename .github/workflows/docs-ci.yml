@@ -1,0 +1,29 @@
+# Builds the docs for each PR, each push to main, and each tag. This workflow does
+# not publish. docs-publish.yml publishes the docs after this workflow completes.
+#
+# The reusable workflows come from
+# https://github.com/DiamondLightSource/myst-version-switcher-plugin. Keep the tag
+# the same as the tag in docs-publish.yml and docs/myst.yml.
+name: Docs
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+    tags: ["*"]
+
+jobs:
+  docs:
+    uses: DiamondLightSource/myst-version-switcher-plugin/.github/workflows/docs.yml@v0.28.0
+    with:
+      # The workflow sets BASE_URL to /jupyterhub-fancy-profiles/<version>.
+      build-command: cd docs && npx -y mystmd build --html
+
+  # On a tag, attach the built docs (docs.zip) to the GitHub Release.
+  # If the release does not exist, this job makes it.
+  release:
+    needs: [docs]
+    if: github.ref_type == 'tag'
+    uses: DiamondLightSource/myst-version-switcher-plugin/.github/workflows/release.yml@v0.28.0
+    permissions:
+      contents: write

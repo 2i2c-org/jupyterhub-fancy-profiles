@@ -7,6 +7,10 @@ project:
   # keywords: []
   # authors: []
   github: https://github.com/2i2c-org/jupyterhub-fancy-profiles
+  plugins:
+    # Version picker in the navbar. Keep this tag the same as the tag in
+    # .github/workflows/docs-ci.yml and docs-publish.yml.
+    - https://github.com/DiamondLightSource/myst-version-switcher-plugin/releases/download/v0.28.0/version-switcher.mjs
   toc:
     - file: index.md
     - file: install.md
@@ -20,6 +24,8 @@ project:
       - file: contribute/develop.md
 site:
   template: book-theme
+  parts:
+    navbar_end: navbar_end.md
   options:
     logo: images/logo.svg
     logo_dark: images/logo-dark.svg
