@@ -1,37 +1,29 @@
-# Publishes all versions of the docs to GitHub Pages:
-# main, each GitHub Release that has a docs.zip asset, and each open PR (pr-<n>).
-# It also writes switcher.json for the version picker, and makes stable/ point to
-# the newest release.
-#
-# Keep the tag the same as the tag in docs-ci.yml and docs/myst.yml.
 name: Docs publish
 
 on:
-  # This matches the `name:` of docs-ci.yml, not its file name.
   workflow_run:
+    # Matches `name: Docs` in docs-ci.yml
     workflows: [Docs]
     types: [completed]
-  # Fork-PR previews and manual re-deploys.
   workflow_dispatch:
     inputs:
       pr:
-        description: "Fork PR to approve + preview (empty = plain re-deploy)"
+        description: "Number of a fork PR to publish a preview for. Leave empty to redeploy the site."
         required: false
         default: ""
 
 jobs:
   publish:
-    # Do not remove these guards. They stop a failed run, a fork PR (which gets a
-    # write token through workflow_run), or a merge-queue run from deploying.
+    # Skip failed runs and fork PRs
     if: >-
       github.event_name == 'workflow_dispatch' ||
       (github.event.workflow_run.conclusion == 'success' &&
-       github.event.workflow_run.head_repository.full_name == github.repository &&
-       github.event.workflow_run.event != 'merge_group')
+       github.event.workflow_run.head_repository.full_name == github.repository)
+    # Keep the plugin version in sync with docs-ci.yml and docs/myst.yml
     uses: DiamondLightSource/myst-version-switcher-plugin/.github/workflows/publish-gh-pages.yml@v0.28.0
     with:
       pr: ${{ inputs.pr }}
-      # GitHub Pages rejects a site larger than 1 GB. These limits keep the site small.
+      # GitHub Pages sites are capped at 1 GB
       max-releases: "30"
       max-prs: "20"
     permissions:
