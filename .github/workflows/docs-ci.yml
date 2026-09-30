@@ -1,0 +1,24 @@
+# Publishing happens in docs-publish.yml, which runs after this workflow.
+name: Docs
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+    tags: ["*"]
+
+jobs:
+  docs:
+    # Keep the plugin version in sync with docs-publish.yml and docs/myst.yml
+    uses: DiamondLightSource/myst-version-switcher-plugin/.github/workflows/docs.yml@v0.28.0
+    with:
+      build-command: cd docs && npx -y mystmd build --html
+
+  # Attaches docs.zip to the release (creating it if needed), which
+  # docs-publish.yml uses to publish that version
+  release:
+    needs: [docs]
+    if: github.ref_type == 'tag'
+    uses: DiamondLightSource/myst-version-switcher-plugin/.github/workflows/release.yml@v0.28.0
+    permissions:
+      contents: write

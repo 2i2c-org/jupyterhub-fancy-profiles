@@ -7,6 +7,9 @@ project:
   # keywords: []
   # authors: []
   github: https://github.com/2i2c-org/jupyterhub-fancy-profiles
+  plugins:
+    # Keep the version in sync with .github/workflows/docs-*.yml
+    - https://github.com/DiamondLightSource/myst-version-switcher-plugin/releases/download/v0.28.0/version-switcher.mjs
   toc:
     - file: index.md
     - file: install.md
@@ -20,6 +23,8 @@ project:
       - file: contribute/develop.md
 site:
   template: book-theme
+  parts:
+    navbar_end: navbar_end.md
   options:
     logo: images/logo.svg
     logo_dark: images/logo-dark.svg
