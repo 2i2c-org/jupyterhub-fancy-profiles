@@ -47,9 +47,10 @@ jobs:
           push: "${{ github.event_name == 'push' }}"
           platforms: linux/amd64,linux/arm64
           tags: ${{ steps.taggen.outputs.tags }}
-          # Use GitHub Actions cache to speed up builds
+          # Use GitHub Actions cache to speed up builds. Write the cache only
+          # on merge, so that PR builds do not spend time exporting it.
           cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-to: ${{ github.event_name == 'push' && 'type=gha,mode=max' || '' }}
 
       - name: Image Tag
         run: echo ${{ steps.taggen.outputs.tags }}
