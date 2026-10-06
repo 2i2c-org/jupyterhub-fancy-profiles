@@ -114,17 +114,17 @@
   font-size: 0.9rem;
 }
 
-.permalink-options {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  margin-top: 1rem;
+.permalink-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-top: 0.75rem;
 }
 
-/* Align the hints and fields with the checkbox label above them */
-.permalink-option .profile-option-control-hint,
-.permalink-fields {
-  margin-left: 1.5rem;
+/* Align with the toggle's label, past its chevron */
+.permalink-options {
+  margin-top: 0.5rem;
+  margin-left: 1.25rem;
 }
 
 .permalink-fields {

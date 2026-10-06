@@ -7,7 +7,7 @@ for use with [jupyterhub-kubespawner](https://github.com/jupyterhub/kubespawner)
 
 ## Documentation
 
-📖 **[Read the full documentation](https://2i2c-org.github.io/jupyterhub-fancy-profiles/)**
+📖 **[Read the full documentation](https://2i2c.org/jupyterhub-fancy-profiles/)**
 
 Here are some quick links:
 
