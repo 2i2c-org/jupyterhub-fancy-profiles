@@ -7,7 +7,7 @@ The permalink feature lets you share a URL that pre-fills the profile form with 
 ### How it works
 
 1. Configure your desired server options in the profile form (profile type, image, resources, etc.)
-2. Click the **Copy Link** button to copy a permalink to your clipboard
+2. Click the **Copy Permalink** button to copy a permalink to your clipboard
 3. Share the URL with others or bookmark it for yourself
 
 When someone visits the URL, the form automatically populates with the saved configuration. The user can review the options and click **Start** to launch.
@@ -27,7 +27,7 @@ Auto-start extends permalinks by automatically submitting the form after a brief
 When someone visits a URL with `autoStart=true`, the form populates with the saved configuration and submits itself automatically.
 
 ```{tip}
-The **Copy Link** button sets `autoStart=false` by default. Change `false` to `true` in the URL to enable auto-start.
+The **Copy Permalink** button sets `autoStart=false` by default. Change `false` to `true` in the URL to enable auto-start.
 ```
 
 This is particularly useful for:
