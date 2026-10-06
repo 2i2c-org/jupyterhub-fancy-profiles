@@ -5,6 +5,7 @@ import userEvent from "@testing-library/user-event";
 afterEach(cleanup);
 
 import ProfileForm from "./ProfileForm";
+import Permalink from "./components/Permalink";
 import renderWithContext, { renderWithJupyterForm } from "./test/renderWithContext";
 
 describe("Profile form", () => {
@@ -267,13 +268,132 @@ describe("Profile form", () => {
 
     expect(clipboardText).toBe("http://localhost/hub/login?next=/hub/spawn%23fancy-forms-config=%7B%22profile%22%3A%22gpu%22%2C%22image%22%3A%22geospatial%22%2C%22image%3Aunlisted_choice%22%3A%22%22%2C%22resources%22%3A%22mem_2_7%22%2C%22resources%3Aunlisted_choice%22%3A%22%22%2C%22autoStart%22%3A%22false%22%7D");
   });
+
+  async function selectGpuProfile() {
+    const user = userEvent.setup();
+    const rendered = renderWithContext(<ProfileForm />);
+    await user.click(screen.getByRole("radio", { name: "GPU Nvidia Tesla T4 GPU" }));
+    return { user, ...rendered };
+  }
+
+  async function copiedConfig() {
+    const login = new URL(await navigator.clipboard.readText());
+    const spawn = new URL(login.searchParams.get("next"), login.origin);
+    const config = JSON.parse(
+      new URLSearchParams(spawn.hash.slice(1)).get("fancy-forms-config"),
+    );
+    return { spawn, config };
+  }
+
+  test("permalink can enable auto-start", async () => {
+    const { user } = await selectGpuProfile();
+
+    await user.click(screen.getByRole("switch", { name: "Auto-start" }));
+    await user.click(screen.getByRole("button", { name: "Copy Permalink" }));
+
+    const { config } = await copiedConfig();
+    expect(config.autoStart).toEqual("true");
+  });
+
+  test("permalink carries the nbgitpuller options in its config", async () => {
+    const { user } = await selectGpuProfile();
+
+    await user.click(screen.getByRole("button", { name: "nbgitpuller options" }));
+    await user.type(screen.getByLabelText("Repository"), "https://github.com/org/repo");
+    await user.type(screen.getByLabelText("Branch"), "main");
+    await user.type(screen.getByLabelText("File to open"), "a/b.ipynb");
+    await user.click(screen.getByRole("button", { name: "Copy Permalink" }));
+
+    const { spawn, config } = await copiedConfig();
+    expect(spawn.pathname).toEqual("/hub/spawn");
+    expect(spawn.search).toEqual("");
+    expect(config).toMatchObject({
+      profile: "gpu",
+      autoStart: "false",
+      "gitPuller:repo": "https://github.com/org/repo",
+      "gitPuller:branch": "main",
+      "gitPuller:filePath": "a/b.ipynb",
+    });
+  });
+
+  test("selected options survive using the permalink options", async () => {
+    const { user } = await selectGpuProfile();
+
+    // Interacting with the options must not clear what was chosen above them.
+    await user.click(screen.getByRole("switch", { name: "Auto-start" }));
+    await user.click(screen.getByRole("button", { name: "nbgitpuller options" }));
+    await user.type(screen.getByLabelText("Repository"), "https://github.com/org/repo");
+    await user.click(screen.getByRole("button", { name: "Copy Permalink" }));
+
+    const { config } = await copiedConfig();
+    expect(config).toMatchObject({
+      profile: "gpu",
+      image: "geospatial",
+      resources: "mem_2_7",
+      autoStart: "true",
+    });
+  });
+
+  test("pasting a file URL fills in the branch and file", async () => {
+    const { user } = await selectGpuProfile();
+
+    await user.click(screen.getByRole("button", { name: "nbgitpuller options" }));
+    await user.click(screen.getByLabelText("Repository"));
+    await user.paste("https://github.com/org/repo/blob/v1.0/notebooks/example.ipynb");
+
+    expect(screen.getByLabelText("Repository")).toHaveValue("https://github.com/org/repo");
+    expect(screen.getByLabelText("Branch")).toHaveValue("v1.0");
+    expect(screen.getByLabelText("File to open")).toHaveValue("notebooks/example.ipynb");
+  });
+
+  test("starting the server opens the repository with nbgitpuller", async () => {
+    const { user, container } = await selectGpuProfile();
+    expect(container.querySelector("[name='next']")).toBeNull();
+
+    await user.click(screen.getByRole("button", { name: "nbgitpuller options" }));
+    await user.type(screen.getByLabelText("Repository"), "https://github.com/org/repo");
+    await user.type(screen.getByLabelText("File to open"), "a/b.ipynb");
+
+    const next = container.querySelector("[name='next']") as HTMLInputElement;
+    const pull = new URL(next.value, "http://localhost");
+    expect(pull.pathname).toEqual("/hub/user-redirect/git-pull");
+    expect(pull.searchParams.get("repo")).toEqual("https://github.com/org/repo");
+    expect(pull.searchParams.get("urlpath")).toEqual("lab/tree/repo/a/b.ipynb");
+  });
+
+  test("permalink option fields are not submitted with the spawn form", async () => {
+    const { user } = await selectGpuProfile();
+
+    await user.click(screen.getByRole("button", { name: "nbgitpuller options" }));
+
+    // Anything with a "name" inside JupyterHub's form is POSTed to the spawner.
+    for (const label of ["Repository", "Branch", "File to open", "Auto-start"]) {
+      expect(screen.getByLabelText(label)).not.toHaveAttribute("name");
+    }
+  });
+
+  test("permalink options reset when the profile changes", async () => {
+    const { user, container } = await selectGpuProfile();
+
+    await user.click(screen.getByRole("switch", { name: "Auto-start" }));
+    await user.click(screen.getByRole("button", { name: "nbgitpuller options" }));
+    await user.type(screen.getByLabelText("Repository"), "https://github.com/org/repo");
+
+    await user.click(screen.getByRole("radio", { name: "CPU only No GPU, only CPU" }));
+    await user.click(screen.getByRole("button", { name: "nbgitpuller options" }));
+
+    expect(screen.getByRole("switch", { name: "Auto-start" })).not.toBeChecked();
+    expect(screen.getByLabelText("Repository")).toHaveValue("");
+    expect(container.querySelector("[name='next']")).toBeNull();
+  });
 });
 
 describe("Profile form with URL Params", () => {
-  function setHash(hash: string) {
+  function setHash(hash: string, search = "") {
     const location = {
       ...window.location,
-      hash
+      hash,
+      search,
     };
     Object.defineProperty(window, "location", {
       writable: true,
@@ -319,6 +439,50 @@ describe("Profile form with URL Params", () => {
     expect((defaultRadio as HTMLInputElement).checked).toBeTruthy();
     expect(screen.queryByText("Unable to parse permalink configuration.")).toBeInTheDocument();
     consoleSpy.mockRestore();
+  });
+
+  test("permalink options load from the link the page was opened with", async () => {
+    const user = userEvent.setup();
+    setHash(`#fancy-forms-config=${encodeURIComponent(JSON.stringify({
+      autoStart: "true",
+      "gitPuller:repo": "https://github.com/org/repo",
+      "gitPuller:branch": "main",
+      "gitPuller:filePath": "notebooks/x.ipynb",
+    }))}`);
+
+    renderWithContext(<Permalink />);
+
+    expect(screen.getByRole("switch", { name: "Auto-start" })).toBeChecked();
+    expect(screen.getByRole("button", { name: "nbgitpuller options" })).toHaveAttribute("aria-expanded", "true");
+    expect(screen.getByLabelText("Repository")).toHaveValue("https://github.com/org/repo");
+    expect(screen.getByLabelText("Branch")).toHaveValue("main");
+    expect(screen.getByLabelText("File to open")).toHaveValue("notebooks/x.ipynb");
+
+    await user.click(screen.getByRole("button", { name: "Copy Permalink" }));
+    const copied = decodeURIComponent(await navigator.clipboard.readText());
+    expect(copied).toContain("\"gitPuller:repo\":\"https://github.com/org/repo\"");
+  });
+
+  test("permalink options load from an older link with the repository in ?next=", async () => {
+    const user = userEvent.setup();
+    const gitPull =
+      "/hub/user-redirect/git-pull?repo=https%3A%2F%2Fgithub.com%2Forg%2Frepo&branch=main&urlpath=lab%2Ftree%2Frepo%2Fnotebooks%2Fx.ipynb";
+    setHash("", `?next=${encodeURIComponent(gitPull)}`);
+
+    const { container } = renderWithContext(<ProfileForm />);
+
+    expect(screen.getByLabelText("Repository")).toHaveValue("https://github.com/org/repo");
+    expect(screen.getByLabelText("Branch")).toHaveValue("main");
+    expect(screen.getByLabelText("File to open")).toHaveValue("notebooks/x.ipynb");
+
+    // The "next" already in the address bar must not end up in the copied link.
+    await user.click(screen.getByRole("button", { name: "Copy Permalink" }));
+    const copied = new URL(await navigator.clipboard.readText());
+    expect(copied.searchParams.getAll("next")).toHaveLength(1);
+
+    // Clearing the repository has to override the git-pull in the page's query.
+    await user.clear(screen.getByLabelText("Repository"));
+    expect(container.querySelector("[name='next']")).toHaveValue("");
   });
 
   test("preselects values", async () => {
