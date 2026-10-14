@@ -7,6 +7,10 @@
     "jsx": "react-jsx",
     "allowJs": true,
     "moduleResolution": "node",
+    "skipLibCheck": true,
     "types": ["node", "jest", "@testing-library/jest-dom"]
-  }
+  },
+  // Without this, "allowJs" makes TypeScript pull in every .js file in the
+  // repository, including a built docs/_build site, and run out of memory.
+  "include": ["src"]
 }

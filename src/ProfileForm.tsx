@@ -29,7 +29,13 @@ function Form() {
     setProfile,
     profileList
   } = useContext(SpawnerFormContext);
-  const { permalinkValues, setPermalinkValue, permalinkParseError } = useContext(PermalinkContext);
+  const {
+    permalinkValues,
+    setPermalinkValue,
+    permalinkParseError,
+    autoStartOnLoad,
+    spawnNextUrl,
+  } = useContext(PermalinkContext);
   const [profileError, setProfileError] = useState("");
   const { cacheChoiceOption, cacheRepositorySelection } = useFormCache();
   const { formErrors, setFormErrors, isImageBuildActive } = useFormState();
@@ -99,7 +105,7 @@ function Form() {
 
   // Run autostart once on mount.
   useEffect(() => {
-    if (permalinkValues["autoStart"] !== "true") return;
+    if (!autoStartOnLoad) return;
     const form = document.querySelector("form") as HTMLFormElement | null;
     if (!form) return;
     if (form.querySelector("[data-dynamic-build='true'][required]")) return;
@@ -120,6 +126,9 @@ function Form() {
         checked
         readOnly
       />
+      {spawnNextUrl !== null && (
+        <input type="hidden" name="next" value={spawnNextUrl} />
+      )}
       {profileList.map((profile) => {
         const { display_name, description, profile_options, slug } = profile;
 
@@ -149,20 +158,19 @@ function Form() {
               />
             )}
             <div className="profile-select-body">
-              <div className="d-flex align-items-start">
-                <div
-                  id={`profile-option-${slug}-label`}
-                  className="profile-select-label flex-grow-1"
-                >
-                  <h2>{display_name}</h2>
-                  <p>{description}</p>
-                </div>
-                {selectedProfile?.slug === slug && <Permalink />}
+              <div
+                id={`profile-option-${slug}-label`}
+                className="profile-select-label"
+              >
+                <h2>{display_name}</h2>
+                <p>{description}</p>
               </div>
 
               {profile_options && (
                 <ProfileOptions profile={slug} config={profile_options} />
               )}
+
+              {selectedProfile?.slug === slug && <Permalink />}
             </div>
           </div>
         );

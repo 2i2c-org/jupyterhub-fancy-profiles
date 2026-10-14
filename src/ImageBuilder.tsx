@@ -170,7 +170,7 @@ function ImageLogs({ setTerm, setFitAddon, name, onSetupError }: IImageLogs) {
 }
 
 export function ImageBuilder({ name, isActive, optionKey }: ICustomOptionProps) {
-  const { setPermalinkValue, permalinkValues } = useContext(PermalinkContext);
+  const { setPermalinkValue, permalinkValues, autoStartOnLoad } = useContext(PermalinkContext);
 
   const repoRef = permalinkValues[`${optionKey}:ref`];
   const binderRepo= permalinkValues[`${optionKey}:binderRepo`];
@@ -223,11 +223,11 @@ export function ImageBuilder({ name, isActive, optionKey }: ICustomOptionProps) 
   useEffect(() => {
     if (!isActive) return;
     if (!term) return;
-    if (permalinkValues["autoStart"] !== "true") return;
+    if (!autoStartOnLoad) return;
     if (hasAutoStarted.current) return;
     hasAutoStarted.current = true;
     handleBuildAndStart();
-  }, [isActive, term, permalinkValues]);
+  }, [isActive, term, autoStartOnLoad]);
 
   const handleBuildAndStart = async () => {
     if (!customImageRef.current ) return;

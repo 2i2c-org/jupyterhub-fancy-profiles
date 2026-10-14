@@ -14,91 +14,49 @@ When someone visits the URL, the form automatically populates with the saved con
 
 The permalink encodes the selected configuration in the URL hash as `#fancy-forms-config=<encoded-json>`.
 
-### Auto-start
+## Auto-start
 
-Auto-start extends permalinks by automatically submitting the form after a brief timeout, launching the server immediately without user interaction.
-
-#### How it works
-
-1. Create a permalink as described above
-2. In the copied URL, change `autoStart=false` to `autoStart=true`
-3. Share the modified URL
-
-When someone visits a URL with `autoStart=true`, the form populates with the saved configuration and submits itself automatically.
-
-```{tip}
-The **Copy Permalink** button sets `autoStart=false` by default. Change `false` to `true` in the URL to enable auto-start.
-```
+Turn on the **Auto-start** toggle next to **Copy Permalink** to have the copied link launch the server as soon as it is opened, instead of waiting for the person to press **Start**. The form still populates with the saved configuration first, so the options are visible while the server starts.
 
 This is particularly useful for:
 - **Workshops and tutorials**: provide participants with a link that starts their environment with the exact configuration needed
 - **Course materials**: embed links in course content that launch students directly into the right environment
 - **Shared environments**: create standardized setups for teams or projects
 
-### Combining with nbgitpuller
+```{note}
+Auto-start is stored in the link as `"autoStart":"true"` inside the `fancy-forms-config` hash. Links copied with the toggle off contain `"autoStart":"false"` and behave like a normal permalink.
+```
 
-```{dropdown} Advanced: auto-start with nbgitpuller
-:icon: code-square
+## Opening a Git repository (nbgitpuller)
 
-If your JupyterHub environment has [nbgitpuller](https://github.com/jupyterhub/nbgitpuller) installed, you can combine auto-start permalinks with git-pull functionality to create URLs that both clone a repository and launch a pre-configured server.
+Expand **nbgitpuller options**, below **Copy Permalink**, to clone a repository into the server and open it. This is especially useful for distributing workshop materials or course notebooks, where participants need both the right environment and the right content.
 
-This is especially useful for distributing workshop materials or course notebooks where you want participants to have both the right environment and the right content.
+The repository is opened when you press **Start**, and is also saved in the permalink you copy. Fill in:
 
-Here's a Python script that generates such URLs:
+- **Repository** — the repository to clone, for example `https://github.com/org/repo`. You can paste a link to a file within the repository instead, such as `https://github.com/org/repo/blob/main/notebooks/example.ipynb`, and the branch and file fields are filled in for you. Leave it empty to not clone anything.
+- **Branch** — the branch to pull. Leave empty to use the repository's default branch.
+- **File to open** — the path within the repository to open, for example `notebooks/example.ipynb`. Leave empty to open the repository folder.
 
-~~~python
-import urllib.parse
-import re
-
-# Configuration
-notebook_url = "https://github.com/org/repo/blob/branch/notebooks/example.ipynb"
-permalink = ""  # Permalink copied from fancy profiles form
-jupyterhub_url = "https://jupyterhub.example.org"
-
-# Extract repository information from notebook URL
-git_repo_url = notebook_url.split("/blob/")[0]
-branch = notebook_url.split("/blob/")[1].split("/")[0]
-notebook_path = "/".join(notebook_url.split("/blob/")[1].split("/")[1:])
-notebook_suburl = git_repo_url.split("/")[-1] + "/" + notebook_path
-
-# Build git-pull URL (requires nbgitpuller)
-gitpull_next = (
-    f"/hub/user-redirect/git-pull"
-    f"?repo={git_repo_url}"
-    f"&branch={branch}"
-    f"&urlpath=lab/tree/{notebook_suburl}"
-)
-
-# Build spawn URL with git-pull as next parameter
-spawn_next = "/hub/spawn?next=" + urllib.parse.quote(gitpull_next, safe="")
-
-# Extract fancy-forms-config from permalink and enable auto-start
-config_match = re.search(r"%23.+?(?=%7D)", permalink)
-if config_match:
-    fancy_forms_config = config_match[0].replace(
-        "%22autoStart%22%3A%22false%22",
-        "%22autoStart%22%3A%22true%22"
-    )
-    # Construct final URL
-    final_url = (
-        f"{jupyterhub_url}/hub/login"
-        f"?next={urllib.parse.quote(spawn_next, safe='')}"
-        f"{fancy_forms_config}%7D"
-    )
-    print(final_url)
-else:
-    print("Error: Could not extract config from permalink")
-~~~
-
-**How it works:**
-
-1. The script extracts the git repository URL and branch from a GitHub notebook URL
-2. It creates a git-pull URL that clones the repository and opens the specified notebook
-3. It combines this with the fancy profiles configuration from your permalink
-4. It sets `autoStart=true` to automatically launch the server
-5. The result is a single URL that authenticates users, clones the repository, configures the server environment, and launches it automatically
+Combine this with auto-start to get a single link that logs the user in, configures the server, starts it, clones the repository and opens a notebook.
 
 ```{note}
-This requires [nbgitpuller](https://github.com/jupyterhub/nbgitpuller) to be installed in your JupyterHub environment.
+This requires [nbgitpuller](https://github.com/jupyterhub/nbgitpuller) to be installed in the user image. Without it, the server still starts with the right configuration, but the repository is not cloned.
 ```
+
+```{dropdown} Advanced: how the repository is opened
+:icon: code-square
+
+The repository is stored in the `fancy-forms-config` hash alongside the other options:
+
+~~~json
+{"gitPuller:repo": "https://github.com/org/repo", "gitPuller:branch": "main", "gitPuller:filePath": "notebooks/example.ipynb"}
+~~~
+
+When the form is submitted, it sends a `next` field pointing at the nbgitpuller endpoint. JupyterHub redirects there once the server has started, and nbgitpuller clones the repository and opens the requested file:
+
+~~~text
+/hub/user-redirect/git-pull?repo=<repo>&branch=<branch>&urlpath=lab/tree/<repo-name>/<file>
+~~~
+
+`urlpath` is prefixed with the repository's directory name, because nbgitpuller clones into a directory named after the repository.
 ```
