@@ -104,7 +104,9 @@ async function buildImage(
         return Promise.resolve(data.imageName);
       }
       default: {
+        // eslint-disable-next-line no-console
         console.log("Unknown phase in response from server");
+        // eslint-disable-next-line no-console
         console.log(data);
         break;
       }
@@ -155,6 +157,7 @@ function ImageLogs({ setTerm, setFitAddon, name, onSetupError }: IImageLogs) {
     let cancelled = false;
     setup().catch((e) => {
       if (!cancelled) {
+        // eslint-disable-next-line no-console
         console.error("ImageLogs setup failed:", e);
         onSetupError(e instanceof Error ? e : new Error(String(e)));
       }
