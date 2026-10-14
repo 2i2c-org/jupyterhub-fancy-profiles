@@ -57,6 +57,11 @@
   background-color: #070707;
 }
 
+/* Neither browsers nor Bootstrap give checkboxes (or switches) a pointer */
+input[type="checkbox"]:not(:disabled) {
+  cursor: pointer;
+}
+
 #submit-button {
   grid-column-start: 1;
   grid-column-end: 3;
@@ -97,54 +102,15 @@
 
 /* Permalink */
 
-.permalink-container {
-  border-top: 1px solid #ddd;
-  padding-top: 1rem;
-}
-
-.permalink-actions {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 1rem;
-}
-
-.permalink-copied {
-  color: #555;
-  font-size: 0.9rem;
-}
-
-.permalink-toggle {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
-  margin-top: 0.75rem;
-}
+/* Layout comes from Bootstrap utilities; these two have no utility equivalent. */
 
 /* Align with the toggle's label, past its chevron */
 .permalink-options {
-  margin-top: 0.5rem;
   margin-left: 1.25rem;
 }
 
 .permalink-fields {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  margin-top: 0.75rem;
   max-width: 32rem;
-}
-
-.permalink-field .form-label {
-  margin-bottom: 0.25rem;
-}
-
-[data-bs-theme="dark"] .permalink-container {
-  border-top-color: #333;
-}
-
-[data-bs-theme="dark"] .permalink-copied {
-  color: #aaa;
 }
 
 .profile-form-error {

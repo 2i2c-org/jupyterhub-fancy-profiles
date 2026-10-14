@@ -20,8 +20,8 @@ function LinkField({ id, label, value, hint, placeholder, onChange }: ILinkField
   };
 
   return (
-    <div className="permalink-field">
-      <label htmlFor={id} className="form-label">
+    <div>
+      <label htmlFor={id} className="form-label mb-1">
         {label}
       </label>
       <input
@@ -63,8 +63,54 @@ function Permalink() {
   };
 
   return (
-    <div className="permalink-container" onClick={(e) => e.stopPropagation()}>
-      <div className="permalink-actions">
+    <div className="border-top" onClick={(e) => e.stopPropagation()}>
+      <div className="mt-2 mb-2">
+        <button
+          type="button"
+          className="btn btn-link p-0 d-inline-flex align-items-center gap-1"
+          aria-expanded={showGitPuller}
+          aria-controls="permalink-gitpuller"
+          onClick={() => setShowGitPuller((shown) => !shown)}
+        >
+          {showGitPuller ? <LuChevronDown aria-hidden /> : <LuChevronRight aria-hidden />}
+          nbgitpuller options
+        </button>
+        {showGitPuller && (
+          <div className="permalink-options mt-2" id="permalink-gitpuller">
+            <div className="profile-option-control-hint">
+              Clones the repository into the server and opens it. Requires nbgitpuller to be installed in
+              the image.
+            </div>
+            <div className="permalink-fields d-flex flex-column gap-3 mt-3">
+              <LinkField
+                id="permalink-repo"
+                label="Repository"
+                value={gitPuller.repo}
+                placeholder="https://github.com/org/repo"
+                hint="Paste a link to a file in the repository to fill in the branch and file below."
+                onChange={handleRepoChange}
+              />
+              <LinkField
+                id="permalink-branch"
+                label="Branch"
+                value={gitPuller.branch}
+                placeholder="main"
+                hint="Leave empty to use the repository's default branch."
+                onChange={(branch) => setGitPuller({ ...gitPuller, branch })}
+              />
+              <LinkField
+                id="permalink-file"
+                label="File to open"
+                value={gitPuller.filePath}
+                placeholder="notebooks/example.ipynb"
+                hint="Path within the repository. Leave empty to open the repository folder."
+                onChange={(filePath) => setGitPuller({ ...gitPuller, filePath })}
+              />
+            </div>
+          </div>
+        )}
+      </div>
+      <div className="d-flex flex-wrap align-items-center gap-3">
         <button
           type="button"
           className="btn btn-link p-0"
@@ -87,7 +133,7 @@ function Permalink() {
           </label>
         </div>
         {justCopied && (
-          <span className="permalink-copied" role="status">
+          <span className="small text-body-secondary" role="status">
             Copied to clipboard
           </span>
         )}
@@ -97,51 +143,6 @@ function Permalink() {
         waiting for Start to be pressed.
       </div>
 
-      <button
-        type="button"
-        className="btn btn-link p-0 permalink-toggle"
-        aria-expanded={showGitPuller}
-        aria-controls="permalink-gitpuller"
-        onClick={() => setShowGitPuller((shown) => !shown)}
-      >
-        {showGitPuller ? <LuChevronDown aria-hidden /> : <LuChevronRight aria-hidden />}
-        nbgitpuller options
-      </button>
-
-      {showGitPuller && (
-        <div className="permalink-options" id="permalink-gitpuller">
-          <div className="profile-option-control-hint">
-            Clones the repository into the server and opens it. Requires nbgitpuller to be installed in
-            the image.
-          </div>
-          <div className="permalink-fields">
-            <LinkField
-              id="permalink-repo"
-              label="Repository"
-              value={gitPuller.repo}
-              placeholder="https://github.com/org/repo"
-              hint="Paste a link to a file in the repository to fill in the branch and file below."
-              onChange={handleRepoChange}
-            />
-            <LinkField
-              id="permalink-branch"
-              label="Branch"
-              value={gitPuller.branch}
-              placeholder="main"
-              hint="Leave empty to use the repository's default branch."
-              onChange={(branch) => setGitPuller({ ...gitPuller, branch })}
-            />
-            <LinkField
-              id="permalink-file"
-              label="File to open"
-              value={gitPuller.filePath}
-              placeholder="notebooks/example.ipynb"
-              hint="Path within the repository. Leave empty to open the repository folder."
-              onChange={(filePath) => setGitPuller({ ...gitPuller, filePath })}
-            />
-          </div>
-        </div>
-      )}
     </div>
   );
 }

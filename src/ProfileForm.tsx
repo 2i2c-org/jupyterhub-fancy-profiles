@@ -149,6 +149,7 @@ function Form() {
             {profileList.length > 1 && (
               <input
                 type="radio"
+                className="d-flex align-self-start mt-3"
                 name="select-profile"
                 id={`profile-option-${slug}`}
                 value={slug}
