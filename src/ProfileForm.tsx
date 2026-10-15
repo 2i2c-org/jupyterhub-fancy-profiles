@@ -71,7 +71,6 @@ function Form() {
   const handleSubmit: MouseEventHandler<HTMLButtonElement> = (e) => {
     const button = e.currentTarget;
     const form = button.closest("form");
-
     void submitFlow(form, e);
   };
 
@@ -148,6 +147,7 @@ function Form() {
             {profileList.length > 1 && (
               <input
                 type="radio"
+                className="align-self-start mt-3"
                 name="select-profile"
                 id={`profile-option-${slug}`}
                 value={slug}
