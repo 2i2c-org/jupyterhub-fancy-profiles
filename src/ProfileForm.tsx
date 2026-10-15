@@ -71,8 +71,6 @@ function Form() {
   const handleSubmit: MouseEventHandler<HTMLButtonElement> = (e) => {
     const button = e.currentTarget;
     const form = button.closest("form");
-    console.log("spawnNextUrl");
-    console.log(spawnNextUrl);
     void submitFlow(form, e);
   };
 
