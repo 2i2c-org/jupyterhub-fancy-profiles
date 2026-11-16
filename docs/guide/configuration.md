@@ -97,3 +97,15 @@ You can combine this with `choices` so users can either pick a default image or 
 ## Build from a repository
 
 Users can also provide a GitHub repository URL and have BinderHub build a docker image from it on the fly. See [Dynamic image building](image-building.md) for setup and configuration details.
+
+## Saved options
+
+When a user starts a server again, the form shows the options that the user selected the last time for that server. This applies to named servers and to the default server.
+
+- If a saved profile or choice is not in `profile_list` anymore, the form uses the default for that field.
+- If the user opens a [permalink](permalink.md), the permalink options replace the saved options.
+- A saved image from "Build your own image" shows as a custom image. The form does not build the image again.
+
+```{note}
+This feature requires `jupyterhub-kubespawner` 7.1.0 or later. With older versions, the form shows the default options.
+```

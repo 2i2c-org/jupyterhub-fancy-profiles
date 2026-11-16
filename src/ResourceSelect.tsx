@@ -36,7 +36,12 @@ function ResourceSelect({
   const isActive = selectedProfile?.slug === profile;
   const setVal = isActive && permalinkValues["profile"] === selectedProfile.slug;
 
-  const [value, setValue] = useState((setVal && permalinkValues[id]) || defaultOption?.value);
+  const [value, setValue] = useState(() => {
+    const permalinkValue = setVal && permalinkValues[id];
+    return options.some((option) => option.value === permalinkValue)
+      ? permalinkValue
+      : defaultOption?.value;
+  });
   const [unlistedChoiceValue, setUnlistedChoiceValue] = useState((setVal && permalinkValues[`${id}:unlisted_choice`]) || "");
 
   if (!(options.length > 0)) {

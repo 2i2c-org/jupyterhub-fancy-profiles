@@ -47,4 +47,5 @@ export interface IProfile {
 export type IJupytherHubWindowObject = Window &
   typeof globalThis & {
     profileList: IProfile[];
+    userOptions?: Record<string, string>;
   };

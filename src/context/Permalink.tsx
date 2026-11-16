@@ -5,6 +5,8 @@ import {
   parseGitPullerPath,
   TGitPullerConfig,
 } from "../utils/permalink";
+import { userOptionsToFormValues } from "../utils/userOptions";
+import { IJupytherHubWindowObject } from "../types/config";
 
 type TPermalinkValues = { [key: string]: string }
 
@@ -52,8 +54,10 @@ export const PermalinkProvider = ({ children }: PropsWithChildren) => {
         console.error("Error parsing form config", e);
         setPermalinkParseError(true);
       }
+      return {};
     }
-    return {};
+    const { userOptions, profileList } = window as IJupytherHubWindowObject;
+    return userOptionsToFormValues(userOptions, profileList);
   }, []);
 
   // Older links carried the nbgitpuller path in the spawn page's ?next=.
