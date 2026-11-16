@@ -519,6 +519,73 @@ describe("Profile form with URL Params", () => {
 
 });
 
+describe("Profile form with saved user options", () => {
+  type TWindow = Window & { userOptions?: Record<string, string> };
+
+  function setHash(hash: string) {
+    const location = { ...window.location, hash };
+    Object.defineProperty(window, "location", { writable: true, value: location });
+  }
+
+  function fieldValue(container: HTMLElement, name: string) {
+    return (container.querySelector(`[name='${name}']`) as HTMLInputElement)?.value;
+  }
+
+  afterEach(() => {
+    setHash("");
+    delete (window as TWindow).userOptions;
+  });
+
+  test("preselects the saved options", () => {
+    (window as TWindow).userOptions = {
+      profile: "cpu",
+      image: "scipy",
+      resources: "mem_10_8",
+    };
+    const { container } = renderWithContext(<ProfileForm />);
+
+    expect(screen.getByRole("radio", { name: "CPU only No GPU, only CPU" })).toBeChecked();
+    expect(fieldValue(container, "profile-option-cpu--image")).toEqual("scipy");
+    expect(fieldValue(container, "profile-option-cpu--resources")).toEqual("mem_10_8");
+  });
+
+  test("preselects a saved unlisted choice", () => {
+    (window as TWindow).userOptions = {
+      profile: "cpu",
+      image: "unlisted_choice",
+      "image--unlisted-choice": "quay.io/org/image:tag",
+    };
+    const { container } = renderWithContext(<ProfileForm />);
+
+    expect(fieldValue(container, "profile-option-cpu--image")).toEqual("unlisted_choice");
+    expect(screen.getByLabelText("Custom image")).toHaveValue("quay.io/org/image:tag");
+  });
+
+  test("permalink takes precedence over the saved options", () => {
+    (window as TWindow).userOptions = { profile: "cpu", image: "scipy" };
+    setHash(`#fancy-forms-config=${encodeURIComponent(JSON.stringify({ profile: "gpu" }))}`);
+    renderWithContext(<ProfileForm />);
+
+    expect(screen.getByRole("radio", { name: "GPU Nvidia Tesla T4 GPU" })).toBeChecked();
+  });
+
+  test("ignores saved options that are no longer in the profile list", () => {
+    (window as TWindow).userOptions = { profile: "removed", image: "scipy" };
+    renderWithContext(<ProfileForm />);
+
+    expect(
+      screen.getByRole("radio", { name: "Bring your own image Specify your own docker image" }),
+    ).toBeChecked();
+  });
+
+  test("uses the default for a saved choice that no longer exists", () => {
+    (window as TWindow).userOptions = { profile: "cpu", image: "removed" };
+    const { container } = renderWithContext(<ProfileForm />);
+
+    expect(fieldValue(container, "profile-option-cpu--image")).toEqual("geospatial");
+  });
+});
+
 describe("autoStart", () => {
   function setHash(hash: string) {
     const location = { ...window.location, hash };

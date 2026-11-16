@@ -32,7 +32,9 @@ export const SpawnerFormProvider = ({ children }: PropsWithChildren) => {
   const defaultProfile =
     profileList.find((profile) => profile.default === true) || profileList[0];
   const [selectedProfile, setProfile] = useState(() => {
-    const initialProfile = profileParam || defaultProfile.slug;
+    const initialProfile = profileList.some(({ slug }) => slug === profileParam)
+      ? profileParam
+      : defaultProfile.slug;
     // Fill the default permalink values, so the app knows the default profile is already selected
     permalinkValues["profile"] = initialProfile;
     return initialProfile;
